@@ -45,7 +45,7 @@ class MjcSim:
 
     def setup_gui(self):
         """Setup the GUI for the simulation."""
-        self.width, self.height = 1920 // 2, 1080 // 2 
+        self.width, self.height = 1920 // 4, 1080 // 4
         self.renderer = mujoco.Renderer(self.model, self.height, self.width)
         self.camera = mujoco.MjvCamera()
 

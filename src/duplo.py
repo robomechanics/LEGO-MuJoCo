@@ -282,7 +282,7 @@ def main():
 
     if args["record"]:
         recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
-        callbacks_dict["record_frame"] = recorder.record_frame
+        # callbacks_dict["record_frame"] = recorder.record_frame
         callbacks_dict["record_plot_data"] = recorder.record_plot_data
 
     robot.run_sim(callbacks=callbacks_dict)
@@ -291,10 +291,10 @@ def main():
         v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
         os.makedirs(v_dir, exist_ok=True)
         recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
-        recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
-        recorder.stack_video_frames(recorder.plot_frames, 
-                                    recorder.robot_frames,
-                                    output_path=f"{v_dir}/combined.mp4")
+        # recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
+        # recorder.stack_video_frames(recorder.plot_frames, 
+        #                             recorder.robot_frames,
+        #                             output_path=f"{v_dir}/combined.mp4")
     # Save to file
 
     with open("contact_dict.pkl", "wb") as f:
