@@ -135,66 +135,65 @@ class Zippy(MjcSim):
             #     return
 
             
-        
-def main():
-    args = arg_parser("Zippy Sim Args")
+# def main():
+#     args = arg_parser("Zippy Sim Args")
 
-    # Define the variables and their properties
-    plot_attributes = {
-        "actuator_actual_pos"   : {"title": "Joint Angle", "unit": "Rad"},
-        "actuator_torque"       : {"title": "Joint Torque", "unit": "Nm"},
-        "reference"             : {"title": "Joint Setpoint", "unit": "Rad"},
-        "actuator_speed"        : {"title": "Joint Speed", "unit": "Rad/s"},
-        "time"                  : {"title": "Time", "unit": "s"},  
-    }
+#     # Define the variables and their properties
+#     plot_attributes = {
+#         "actuator_actual_pos"   : {"title": "Joint Angle", "unit": "Rad"},
+#         "actuator_torque"       : {"title": "Joint Torque", "unit": "Nm"},
+#         "reference"             : {"title": "Joint Setpoint", "unit": "Rad"},
+#         "actuator_speed"        : {"title": "Joint Speed", "unit": "Rad/s"},
+#         "time"                  : {"title": "Time", "unit": "s"},  
+#     }
 
-    # Define the structure of the plots
-    plot_structure = [
-        ["time", "actuator_actual_pos"],  # Subplot 1: X = time, Y = angle & setpoint
-        ["time", "reference"],  # Subplot 1: X = time, Y = angle & setpoint
-        ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
-        # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
-        # ["actuator_speed", "actuator_torque"],
-    ]
+#     # Define the structure of the plots
+#     plot_structure = [
+#         ["time", "actuator_actual_pos"],  # Subplot 1: X = time, Y = angle & setpoint
+#         ["time", "reference"],  # Subplot 1: X = time, Y = angle & setpoint
+#         ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
+#         # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
+#         # ["actuator_speed", "actuator_torque"],
+#     ]
 
-    for i in np.arange(1,15,0.25):
-        print(f"Running simulation for hip freq: {i} Hz")
+#     for i in np.arange(1,15,0.25):
+#         print(f"Running simulation for hip freq: {i} Hz")
 
-        # dictionary of control parameters
-        args['ctrl_dict'] = {
-            # 'Kp': 0.1,
-            # 'Kd': 0.00007,
-            'leg_amp_deg': - np.rad2deg(0.01059232775) / 2,
-            # 'leg_amp_deg': 0,
-            # 'hip_omega': 3 * 2 * np.pi,
-            'hip_omega': i * 2 * np.pi,
-            'j_damping': 0.1,
-            'v_mean' : -0.1,
-        }
+#         # dictionary of control parameters
+#         args['ctrl_dict'] = {
+#             # 'Kp': 0.1,
+#             # 'Kd': 0.00007,
+#             'leg_amp_deg': - np.rad2deg(0.01059232775) / 2,
+#             # 'leg_amp_deg': 0,
+#             # 'hip_omega': 3 * 2 * np.pi,
+#             'hip_omega': i * 2 * np.pi,
+#             'j_damping': 0.1,
+#             'v_mean' : -0.1,
+#         }
 
-        robot = Zippy(args)
-        progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
-        callbacks_dict = {
-            # "progress_bar" : progress_cb.update
-            }
+#         robot = Zippy(args)
+#         progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
+#         callbacks_dict = {
+#             # "progress_bar" : progress_cb.update
+#             }
 
-        if args["record"]:
-            recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
-            callbacks_dict["record_frame"] = recorder.record_frame
-            # callbacks_dict["record_plot_data"] = recorder.record_plot_data
+#         if args["record"]:
+#             recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
+#             callbacks_dict["record_frame"] = recorder.record_frame
+#             # callbacks_dict["record_plot_data"] = recorder.record_plot_data
 
-        robot.run_sim(callbacks=callbacks_dict)
+#         robot.run_sim(callbacks=callbacks_dict)
 
-        if args["record"]:
-            v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
-            os.makedirs(v_dir, exist_ok=True)
-            # recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
-            recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking_{i}hz.mp4")
-            # recorder.stack_video_frames(recorder.plot_frames, 
-            #                             recorder.robot_frames,
-            #                             output_path=f"{v_dir}/combined.mp4")
+#         if args["record"]:
+#             v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
+#             os.makedirs(v_dir, exist_ok=True)
+#             # recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
+#             recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking_{i}hz.mp4")
+#             # recorder.stack_video_frames(recorder.plot_frames, 
+#             #                             recorder.robot_frames,
+#             #                             output_path=f"{v_dir}/combined.mp4")
             
-        robot.close()
+#         robot.close()
         
 def main2():
     args = arg_parser("Zippy Sim Args")
@@ -217,17 +216,17 @@ def main2():
         # ["actuator_speed", "actuator_torque"],
     ]
 
-    plot_time_range = [0.75,7]
+    plot_time_range = [2,5]
 
     # dictionary of control parameters
     args['ctrl_dict'] = {
         # 'Kp': 0.1,
         # 'Kd': 0.00007,
-        'leg_amp_deg': np.rad2deg(0.01059232775)/2,
+        'leg_amp_deg': 0.15,
         # 'leg_amp_deg': 0,
         # 'hip_omega': 0.1 * 2 * np.pi,
-        'hip_omega': 4.6 * 2 * np.pi,
-        'j_damping': 0.001,
+        'hip_omega': 2.8 * 2 * np.pi,
+        'j_damping': 0.00001,
         # 'v_mean' : -0.01,
     }
 

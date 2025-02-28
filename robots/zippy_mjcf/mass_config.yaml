@@ -21,7 +21,7 @@ l_arm:
 l_leg:
   mass: 0.0033
   scale: 1
-  volume: 2.50080670476385e-06
+  volume: 2.5043785280748025e-06
 mcu:
   mass: 0.00359
   scale: 1
@@ -33,7 +33,7 @@ r_arm:
 r_leg:
   mass: 0.00317
   scale: 1
-  volume: 2.631959473823758e-06
+  volume: 2.635513065358894e-06
 weight:
   mass: 0.00149
   scale: 0

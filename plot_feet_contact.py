@@ -7,7 +7,7 @@ from stl import mesh
 import pickle
 
 # Load your contact points dictionary from pickle
-with open('contact_dict.pkl', 'rb') as f:
+with open('contact_dict_A17.pkl', 'rb') as f:
     con_pts_dict = pickle.load(f)
 
 mesh_dir = con_pts_dict['params']['mesh_dir']
@@ -59,7 +59,7 @@ for key, v in con_pts_dict.items():
 
         # Add the mesh to the plotter (using a cyan color and some transparency)
         plotter.add_mesh(pv_mesh, 
-                        color='cyan', 
+                        color='pink', 
                         opacity=0.5, 
                         show_edges=True, 
                         edge_color='black', 

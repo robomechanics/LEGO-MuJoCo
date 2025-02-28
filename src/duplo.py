@@ -204,7 +204,7 @@ class Duplo(MjcSim):
             }
 
         for _ in loop:
-            self.calculate_sine_reference(start_freq_mult=3, 
+            self.calculate_sine_reference(start_freq_mult=2, 
                                           start_amp_mult=1.5)
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
@@ -250,7 +250,7 @@ def main():
         'Kp': 15,
         'Kd': 12,
         'leg_amp_deg': 35,
-        # 'leg_amp_deg': 0,
+        # 'leg_amp_deg': 0,s
         # 'hip_omega': 0.6 * 2 * np.pi,
     }
 

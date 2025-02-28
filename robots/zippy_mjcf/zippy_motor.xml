@@ -7,10 +7,10 @@
         <mesh name="hand_weight" file="hand_weight.stl" inertia="exact"/>
         <mesh name="l_arm" file="l_arm.stl" inertia="exact"/>
         <mesh name="battery" file="battery.stl" inertia="exact"/>
-        <mesh name="r_leg" file="r_leg2.stl" inertia="exact"/>
+        <mesh name="r_leg" file="r_leg3.stl" inertia="exact"/>
         <mesh name="r_arm" file="r_arm.stl" inertia="exact"/>
         <mesh name="mcu" file="mcu.stl" inertia="exact"/>
-        <mesh name="l_leg" file="l_leg2.stl" inertia="exact"/>
+        <mesh name="l_leg" file="l_leg3.stl" inertia="exact"/>
         <mesh name="weight" file="weight.stl" inertia="exact"/>
     </asset>
 
