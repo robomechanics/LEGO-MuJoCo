@@ -31,6 +31,11 @@ class MjcSim:
         self.mjcf_handler.update_design_params(design_params)
         new_scene_path = self.mjcf_handler.export_xml_scene()
         return new_scene_path
+    
+    def scale_up_xml(self, scale: float, mass_power: float) -> str:
+        """Scale up the model by a factor of scale."""
+        scale_scene_path = self.mjcf_handler.save_scale_up_robot(scale, mass_power)
+        return scale_scene_path
 
     def setup_ctrl_joints(self) -> int:
         """Convert actuator joint names to joint ids and dof addresses."""

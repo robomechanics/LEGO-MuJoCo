@@ -1,5 +1,6 @@
 <mujoco model="onshape">
     <compiler angle="radian"/>
+    <option cone="elliptic"/>
 
     <asset>
         <mesh name="driver" file="driver.stl" inertia="exact"/>
@@ -19,21 +20,21 @@
     </visual>
 
     <worldbody>
-        <body name="r_leg" pos="0 0 0.02496501">
+        <body name="r_leg" pos="0.2 0 0.02496501">
             <freejoint />
-            <geom mass="0.0006" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="driver"/>
-            <geom mass="0.00141" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hip_motor"/>
-            <geom mass="0.00248" pos="-0.003613 0.0169705 0.00694314" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight"/>
-            <geom mass="0.00058" pos="0.0253272 0.015541 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_arm"/>
-            <geom mass="0.02295" pos="0.0254272 0.015791 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="battery"/>
-            <geom mass="0.00317" pos="0.0254272 0.015691 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_leg"/>
+            <geom mass="0.0013" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh"  mesh="driver"/>
+            <geom mass="0.00141" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh"  mesh="hip_motor"/>
+            <geom mass="0.00248" pos="-0.003613 0.0169705 0.00694314" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh"  mesh="hand_weight"/>
+            <geom mass="0.00058" pos="0.0253272 0.015541 0.00858911" quat="1 0 0 0" type="mesh"  mesh="l_arm"/>
+            <geom mass="0.02295" pos="0.0254272 0.015791 0.00858911" type="mesh"  mesh="battery"/>
+            <geom name="r_leg" mass="0.00317" pos="0.0254272 0.015691 0.00858911" type="mesh"  mesh="r_leg" condim="6"/>
             <body name="l_leg" pos="0.005875 0 0" quat="0.5 0.5 0.5 0.5">
                 <joint name="hip" pos="0 0 0" axis="0 0 1" range="-0.349066 0.349066" solreflimit="4e-3 1" solimplimit=".95 .99 1e-3"/>
-                <geom mass="0.00047" pos="0.0157485 0.00866577 0.0205022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_arm"/>
-                <geom mass="0.00402" pos="0.015691 0.00858911 -0.009375" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="mcu"/>
-                <geom mass="0.0033" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_leg"/>
-                <geom mass="0.021" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="weight"/>
-                <geom mass="0.00248" pos="0.0168778 0.00737613 0.036162" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight"/>
+                <geom mass="0.00047" pos="0.0157485 0.00866577 0.0205022" quat="0.5 -0.5 -0.5 -0.5" type="mesh"  mesh="r_arm"/>
+                <geom mass="0.00402" pos="0.015691 0.00858911 -0.009375" quat="0.5 -0.5 -0.5 -0.5" type="mesh"  mesh="mcu"/>
+                <geom name="l_leg" mass="0.0033" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh"  mesh="l_leg" condim="6"/>
+                <geom mass="0.021" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh"  mesh="weight"/>
+                <geom mass="0.00248" pos="0.0168778 0.00737613 0.036162" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh"  mesh="hand_weight"/>
             </body>
         </body>
     </worldbody>

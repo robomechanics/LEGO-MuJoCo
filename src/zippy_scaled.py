@@ -11,15 +11,18 @@ from utils.sim_args import arg_parser
 class Zippy(MjcSim):
     def __init__(self, config: dict) -> None:
         """Initialize the Zippy simulation environment."""
-        scene_path = f"{config['robot_dir']}/zippy_mjcf/scene_motor.xml"
+        # scene_path = f"{config['robot_dir']}/zippy_mjcf/scene_motor.xml"
+        self.scale = config['scale']
+        scene_path = f"{config['robot_dir']}/zippy_mjcf/scene_motor_{self.scale}x.xml"
         self.camera_params = {
-            'tracking': "r_leg",
-            'distance': 0.15,
+            'tracking': f"r_leg_{self.scale}x",
+            'distance': 0.15*self.scale,
             'xyaxis': [1, -1, -1, 0, -0.5, 1],
         }
 
-        new_scene_path = self.update_xml(scene_path)
-        scaled_scene_path = self.scale_up_xml(3,3)
+        # new_scene_path = self.update_xml(scene_path)
+        new_scene_path = scene_path
+        # scaled_scene_path = self.scale_up_xml(2,3)
         super().__init__(new_scene_path, config)
         
         self.model.opt.enableflags |= 1 << 0  # enable override
@@ -34,21 +37,13 @@ class Zippy(MjcSim):
         self.model.opt.o_solimp[1] = 0.99 
         self.model.opt.o_solimp[2] = 1e-3
 
-        # geom_names = ["r_leg", "l_leg"]
-        # geom_ids = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, geom_name) for geom_name in geom_names]
-
-        # new_friction = np.array([0.6, 2e-3, 5e-5])
-        # for gid in geom_ids:
-        #     # print(self.model.geom_friction[gid])
-        #     self.model.geom_friction[gid] = new_friction
-
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data
 
     def get_hip_idx(self) -> None:
         """Get the joint ID and qpos index for the hip joint."""
-        self.ctrl_joint_names = ['hip']
+        self.ctrl_joint_names = [f'hip_{self.scale}x']
         n_ctrl_joints = self.setup_ctrl_joints()
         print(f"Number of control joints: {n_ctrl_joints}")
         self.hip_qpos_idx = self.model.jnt_qposadr[self.ctrl_joint_ids[0]] # qpos index for the hip joint
@@ -115,7 +110,7 @@ class Zippy(MjcSim):
 
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
-        self.data.actuator("hip_joint_act").ctrl = self.action
+        self.data.actuator(f"hip_joint_act_{self.scale}x").ctrl = self.action
 
     def data_log(self) -> None:
         """Log the data from the simulation."""
@@ -191,13 +186,17 @@ def main2():
 
     plot_time_range = [1,5]
 
+    scale = 3
+
+    args['scale'] = scale
+
     # dictionary of control parameters
     args['ctrl_dict'] = {
         # 'leg_amp_deg': 0.15,
-        'leg_amp_deg': np.rad2deg(2.8),
+        'leg_amp_deg': np.rad2deg(2.8 * scale**4),
         # 'leg_amp_deg': 0,
-        # 'hip_omega': 2.75 * 2 * np.pi,
-        'hip_omega': 7 * 2 * np.pi,
+        'hip_omega': 3 * 2 * scale**(-0.5) * np.pi,
+        # 'hip_omega': 7 * 2 * np.pi,
         'j_damping': 1e-5,
         # 'v_mean' : +0.4,
     }

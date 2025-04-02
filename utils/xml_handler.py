@@ -37,10 +37,15 @@ class MJCFHandler:
         assert self.assets is not None, "assets tag not found"
         self.worldbody = self.model_root.find('worldbody')
         assert self.worldbody is not None, "worldbody tag not found"
-        # find all meshes and geoms
+        self.actuator = self.model_root.find('actuator')
+        assert self.actuator is not None, "actuator tag not found"
+        # find all kinds of stuff
         self.meshes = self.assets.findall('.//mesh')
         self.geoms = self.worldbody.findall('.//geom')
         self.bodies = self.worldbody.findall('.//body')
+        self.joints = self.worldbody.findall('.//joint')
+        self.motors = self.actuator.findall('.//motor')
+
         self.mass_dict: dict[str,dict[str,float]] = {}
         self.config_export_path = self.scene_dir + "/mass_config.yaml"
         # if a mass_config file exists, load it
@@ -157,7 +162,38 @@ class MJCFHandler:
         new_scene_path = self.scene_path.replace(".xml", "_temp.xml")
         self.scene_tree.write(new_scene_path)
         return new_scene_path
+    
+    def save_scale_up_robot(self, scale: float, mass_power: float) -> None:
+        """Scale up the robot by a factor of scale. Rename all parts"""
+        for mesh in self.meshes:
+            mesh.set('scale', f"{scale} {scale} {scale}")
+            mesh.set('name', f"{mesh.get('name')}_{scale}x")
+        
+        for element in self.geoms + self.bodies + self.joints:
+            element_name = element.get('name')
+            if element_name is not None: element.set('name', f"{element_name}_{scale}x")
+            element_pos = element.get('pos')
+            scaled_element_pos = [float(x) * scale for x in element_pos.split()]
+            scaled_element_pos = f"{scaled_element_pos[0]} {scaled_element_pos[1]} {scaled_element_pos[2]}"
+            element.set('pos', scaled_element_pos)
+            if element.tag == "geom":
+                element_mass = element.get('mass')
+                element.set('mesh', f"{element.get('mesh')}_{scale}x")
+                scaled_element_mass = float(element_mass) * scale ** mass_power
+                element.set('mass', str(scaled_element_mass))
+        
+        for motor in self.motors:
+            motor.set('name', f"{motor.get('name')}_{scale}x")
+            motor.set('joint', f"{motor.get('joint')}_{scale}x")
 
+        scaled_model_path = self.model_path.replace(".xml", f"_{scale}x.xml")
+        self.model_tree.write(scaled_model_path)
+
+        new_model_name = scaled_model_path.split("/")[-1]
+        self.scene_root.find("include").set("file", new_model_name)
+        new_scene_path = self.scene_path.replace(".xml", f"_{scale}x.xml")
+        self.scene_tree.write(new_scene_path)
+        return new_scene_path
 
 if __name__ == "__main__":
     pass

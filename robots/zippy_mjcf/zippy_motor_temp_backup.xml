@@ -20,7 +20,7 @@
     </visual>
 
     <worldbody>
-        <body name="r_leg" pos="0.2 0 0.02496501">
+        <body name="r_leg" pos="0 0 0.02496501">
             <freejoint />
             <geom mass="0.0013" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh" mesh="driver" />
             <geom mass="0.00141" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh" mesh="hip_motor" />
