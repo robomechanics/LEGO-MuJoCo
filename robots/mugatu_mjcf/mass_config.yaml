@@ -5,7 +5,7 @@ left_arm:
 left_foot:
   mass: 0.13
   scale: 1
-  volume: 3.959364807279548e-05
+  volume: 3.9593648018762265e-05
 left_leg:
   mass: 0.07376726465798017
   scale: 1
@@ -21,7 +21,7 @@ right_battery:
 right_foot:
   mass: 0.13
   scale: 1
-  volume: 3.959332668907465e-05
+  volume: 3.9593326641620766e-05
 right_leg:
   mass: 0.0529787507353837
   scale: 1

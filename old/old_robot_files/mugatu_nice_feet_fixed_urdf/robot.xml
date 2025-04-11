@@ -1,0 +1,28 @@
+<mujoco model="onshape">
+  <compiler angle="radian"/>
+
+  <asset>
+    <mesh name="left_arm" file="left_arm.stl"/>
+    <mesh name="right_foot" file="right_foot.stl"/>
+    <mesh name="right_leg" file="right_leg.stl"/>
+    <mesh name="right_battery" file="right_battery.stl"/>
+    <mesh name="right_arm" file="right_arm.stl"/>
+    <mesh name="left_foot" file="left_foot.stl"/>
+    <mesh name="left_leg" file="left_leg.stl"/>
+  </asset>
+
+  <worldbody>
+    <geom pos="0.0414715 0.100847 -0.198551" quat="1 0 -0.000697422 1.01695e-07" type="mesh" mesh="left_arm"/>
+    <geom pos="0.0658465 0.0227089 -0.133251" quat="1 0 -0.000697422 1.01695e-07" type="mesh" mesh="right_foot"/>
+    <geom pos="0.0758744 -0.00279109 -0.153237" quat="0.707107 -0.000493152 -0.000493152 0.707107" type="mesh" mesh="right_leg"/>
+    <geom pos="-0.00851812 0.0574565 -0.0738297" quat="0.0621197 -0.704459 0.704373 0.0611371" type="mesh" mesh="right_battery"/>
+    <body name="left_leg" pos="0.0405605 0.00850001 5.65757e-05" quat="0.499615 -0.500385 -0.500312 0.499688">
+      <inertial pos="0.015831 0.0865829 -0.0193168" quat="0.429494 0.898507 -0.0880727 0.0215063" mass="0.413951" diaginertia="0.00218976 0.00159507 0.000895587"/>
+      <joint name="hip" pos="0 0 0" axis="0 0 1" range="-1.5708 1.5708" actuatorfrcrange="-1 1"/>
+      <geom pos="0.0924094 0.198961 -0.017434" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="right_arm"/>
+      <geom pos="-0.00788849 0.0842042 -0.0613817" quat="0.704416 -0.704416 0.0616284 -0.0616284" type="mesh" mesh="right_battery"/>
+      <geom pos="0.0142089 0.133343 0.013" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="left_foot"/>
+      <geom pos="-0.0112911 0.153343 0.023" quat="0.707107 0.707107 0 0" type="mesh" mesh="left_leg"/>
+    </body>
+  </worldbody>
+</mujoco>
