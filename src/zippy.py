@@ -19,7 +19,7 @@ class Zippy(MjcSim):
         }
 
         new_scene_path = self.update_xml(scene_path)
-        scaled_scene_path = self.scale_up_xml(3,3)
+        scaled_scene_path = self.scale_up_xml(6,2)
         super().__init__(new_scene_path, config)
         
         self.model.opt.enableflags |= 1 << 0  # enable override

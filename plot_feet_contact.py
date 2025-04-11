@@ -5,9 +5,16 @@ import pyvista as pv
 from scipy.spatial.transform import Rotation as R
 from stl import mesh
 import pickle
+import argparse
+
+parser = argparse.ArgumentParser(description="contact mapping")
+parser.add_argument("-fn", "--filename", type=str, default=f"contact_dict.pkl", help="name of the contact points path")
+args = vars(parser.parse_args())
+
+file_path = args['filename']
 
 # Load your contact points dictionary from pickle
-with open('contact_dict_A17.pkl', 'rb') as f:
+with open(file_path, 'rb') as f:
     con_pts_dict = pickle.load(f)
 
 mesh_dir = con_pts_dict['params']['mesh_dir']

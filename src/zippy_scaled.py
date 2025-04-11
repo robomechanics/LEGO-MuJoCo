@@ -97,10 +97,12 @@ class Zippy(MjcSim):
         self.action = np.clip(self.reference, a_min=-trq_lim, a_max=trq_lim)
         # self.action = self.reference
 
-    def voltage_to_torque(self, voltage: float) -> float:
+    def voltage_to_torque(self, voltage: float, raw_torque:bool=False) -> float:
         """Convert the voltage to torque."""
         R = 15 
         k = 0.029 # Nm/A, converted from 243 mA/oz-in
+
+        if raw_torque: return voltage
 
         hip_vel = self.data.qvel[self.hip_dof_idx]
         back_emf = k * hip_vel
@@ -139,7 +141,7 @@ class Zippy(MjcSim):
         for i in loop:
             # print(self.data.joint(self.ctrl_joint_names[0]).xanchor)
             self.calculate_sine_reference(b=1)
-            self.reference = self.voltage_to_torque(self.reference)
+            self.reference = self.voltage_to_torque(self.reference, raw_torque=True)
             self.direct_ctrl()
             self.apply_ctrl()
             self.step_sim()
@@ -186,14 +188,15 @@ def main2():
 
     plot_time_range = [1,5]
 
-    scale = 3
+    scale = 6
 
     args['scale'] = scale
 
     # dictionary of control parameters
     args['ctrl_dict'] = {
         # 'leg_amp_deg': 0.15,
-        'leg_amp_deg': np.rad2deg(2.8 * scale**4),
+        # 'leg_amp_deg': np.rad2deg(2.8 * scale**10),
+        'leg_amp_deg': np.rad2deg(0.005 * scale**3),
         # 'leg_amp_deg': 0,
         'hip_omega': 3 * 2 * scale**(-0.5) * np.pi,
         # 'hip_omega': 7 * 2 * np.pi,

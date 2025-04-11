@@ -1,0 +1,48 @@
+<mujoco model="onshape">
+    <compiler angle="radian" />
+    <option cone="elliptic" />
+
+    <asset>
+        <mesh name="driver_6x" file="driver.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="hip_motor_6x" file="hip_motor.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="hand_weight_6x" file="hand_weight.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="l_arm_6x" file="l_arm.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="battery_6x" file="battery.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="r_leg_6x" file="r_leg3.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="r_arm_6x" file="r_arm.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="mcu_6x" file="mcu.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="l_leg_6x" file="l_leg3.stl" inertia="exact" scale="6 6 6" />
+        <mesh name="weight_6x" file="weight.stl" inertia="exact" scale="6 6 6" />
+    </asset>
+
+    <visual>
+        <global offwidth="1920" offheight="1080" />
+    </visual>
+
+    <worldbody>
+        <body name="r_leg_6x" pos="1.2000000000000002 0.0 0.14979006">
+            <freejoint />
+            <geom mass="0.046799999999999994" pos="0.1523058 0.09403620000000001 0.05153466" quat="1 0 0 0" type="mesh" mesh="driver_6x" />
+            <geom mass="0.05076" pos="0.1525632 0.09414600000000001 0.05153466" quat="1 0 0 0" type="mesh" mesh="hip_motor_6x" />
+            <geom mass="0.08928" pos="-0.021678 0.101823 0.04165884" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh" mesh="hand_weight_6x" />
+            <geom mass="0.01116" pos="0.15196320000000002 0.093246 0.05153466" quat="1 0 0 0" type="mesh" mesh="l_arm_6x" />
+            <geom mass="0.113634" pos="0.1525632 0.094746 0.05153466" type="mesh" mesh="battery_6x" />
+            <geom name="r_leg_6x" mass="0.17118000000000003" pos="0.1525632 0.09414600000000001 0.05153466" type="mesh" mesh="r_leg_6x" condim="6" />
+            <body name="l_leg_6x" pos="0.035250000000000004 0.0 0.0" quat="0.5 0.5 0.5 0.5">
+                <joint name="hip_6x" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.349066 0.349066" solreflimit="4e-3 1" solimplimit=".95 .99 1e-3" />
+                <geom mass="0.01692" pos="0.09449099999999999 0.05199462 0.12301320000000002" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="r_arm_6x" />
+                <geom mass="0.12924" pos="0.09414600000000001 0.05153466 -0.056249999999999994" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="mcu_6x" />
+                <geom name="l_leg_6x" mass="0.17819999999999997" pos="0.09414600000000001 0.05153466 0.1212132" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="l_leg_6x" condim="6" />
+                <geom mass="0.0" pos="0.09414600000000001 0.05153466 0.1212132" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="weight_6x" />
+                <geom mass="0.08928" pos="0.10126679999999999 0.044256779999999996 0.216972" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh" mesh="hand_weight_6x" />
+            </body>
+        </body>
+    </worldbody>
+
+    
+
+    <actuator>
+        
+        <motor name="hip_joint_act_6x" joint="hip_6x" />
+    </actuator>
+</mujoco>

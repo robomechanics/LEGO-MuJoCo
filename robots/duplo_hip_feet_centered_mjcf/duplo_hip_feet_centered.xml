@@ -9,7 +9,7 @@
         <mesh name="arm" file="arm.stl" inertia="exact"/>
         <mesh name="leg_v" file="leg_v.stl" inertia="exact"/>
         <!-- <mesh name="part_1" file="part_1.stl" scale="1 1 1" inertia="exact"/> -->
-        <mesh name="part_1" file="part_2.stl" scale="1 1 1" inertia="exact"/>
+        <mesh name="part_1" file="part_3.stl" scale="1 1 1" inertia="exact"/>
     </asset>
 
     <visual>
