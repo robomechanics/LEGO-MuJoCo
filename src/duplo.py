@@ -55,7 +55,7 @@ class Duplo(MjcSim):
 
     def pendulum_length(self) -> tuple[float, float]:
         """Calculate the length and z offset of the pendulum."""
-        hip_pos = self.data.joint(self.ctrl_joint_names[0]).xanchor
+        hip_pos = self.data.joint(self.ctrl_joint_names[0]).xanchor        
         com_pos = self.mass_center()
         pedulum_length = np.linalg.norm(hip_pos - com_pos)
         pendulum_z = hip_pos[2] - com_pos[2]
@@ -204,7 +204,9 @@ class Duplo(MjcSim):
             }
 
         for _ in loop:
-            self.calculate_sine_reference(start_freq_mult=2, 
+            # self.calculate_sine_reference(start_freq_mult=2, 
+            #                               start_amp_mult=1.5)
+            self.calculate_sine_reference(start_freq_mult=1.25, 
                                           start_amp_mult=1.5)
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
@@ -247,20 +249,24 @@ def main():
 
     # dictionary of control parameters
     args['ctrl_dict'] = {
-        'Kp': 15,
+        # 'Kp': 15,
+        'Kp': 20,
         'Kd': 12,
-        'leg_amp_deg': 35,
-        # 'leg_amp_deg': 0,s
+        'leg_amp_deg': 30,
+        # 'leg_amp_deg': 0,
         # 'hip_omega': 0.6 * 2 * np.pi,
     }
 
     args['design_params'] = {
-        'body_pos_offset': {'leg_v' : [-0.04, 0, 0], 
-                            'leg_v_2' : [-0.04, 0, 0]},
+        # 'body_pos_offset': {'leg_v' : [-0.04, 0, 0], 
+        #                     'leg_v_2' : [-0.04, 0, 0]},
+        'body_pos_offset': {'leg_v' : [-0.0, 0, 0], 
+                            'leg_v_2' : [-0.0, 0, 0]},
         # 'body_quat' : {'motor' : [1, 0, 0, 0]},
         # 'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
         # 'body_quat' : {'motor' : [9.97807368e-01, 2.87891505e-02, 4.02491563e-05, 2.85128626e-03]},
-        'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
+        # 'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
+        'body_quat' : {'motor' : [9.97746446e-01, 6.69306849e-02, 1.68114705e-04, 4.66763733e-03]},
         'geom_pos_offset' : {
             'leg_v' : [0.265-0.1235, 0, 0],
             'leg_v_2' : [-0.265+0.1235, 0, 0],
