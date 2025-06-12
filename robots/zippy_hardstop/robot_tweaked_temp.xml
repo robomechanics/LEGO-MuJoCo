@@ -1,0 +1,54 @@
+<mujoco model="zippy_hardstop">
+  <compiler angle="radian" meshdir="assets" autolimits="true" />
+
+  <worldbody>
+    
+    <body name="left_leg" pos="0 0 0" quat="1 0 0 0">
+      <freejoint name="left_leg_freejoint" />
+      <geom type="mesh" mass="1.0" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="left_leg" />
+      <geom type="mesh" mass="1.0" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_hand_weight" />
+      <geom type="mesh" mass="1.0" pos="-0.0304044 -0.012563 0" quat="0 0 0 1" mesh="left_foot" />
+      <geom type="mesh" mass="1.0" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_arm" />
+      
+      <body name="left_hardstop_b" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 -0.5 -0.5 0.5">
+        <geom type="mesh" mass="1.0" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_b" />
+      </body>
+
+      <body name="left_hardstop_a" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 -0.5 -0.5 0.5">
+        <geom type="mesh" mass="1.0" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_a" />
+      </body>
+
+      <body name="right_foot" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 0.5 0.5 0.5">
+        <joint axis="0 0 1" name="hip" type="hinge" />
+        <geom type="mesh" mass="1.0" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_foot" />
+        <geom type="mesh" mass="1.0" pos="0.015691 0.00858911 0.0173272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop_cyl" />
+        <geom type="mesh" mass="1.0" pos="0.0160186 0.00825631 0.0300522" quat="0.4947 -0.505245 -0.4947 -0.505245" mesh="l_hand_weight" />
+        <geom type="mesh" mass="1.0" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_leg" />
+        <geom type="mesh" mass="1.0" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="l_arm" />
+        <body name="right_hardstop" pos="-4.27176e-17 -0.004545 0.004" quat="1 0 0 0">
+          <joint axis="0 0 1" name="rightHS" type="slide" />
+          <geom type="mesh" mass="1.0" pos="0.015691 0.0131341 0.0133272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop" />
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  
+  <asset>
+    <mesh file="left_hardstop_a.stl" inertia="exact" />
+    <mesh file="right_foot.stl" inertia="exact" />
+    <mesh file="r_hand_weight.stl" inertia="exact" />
+    <mesh file="left_foot.stl" inertia="exact" />
+    <mesh file="right_leg.stl" inertia="exact" />
+    <mesh file="r_arm.stl" inertia="exact" />
+    <mesh file="right_hardstop_cyl.stl" inertia="exact" />
+    <mesh file="right_hardstop.stl" inertia="exact" />
+    <mesh file="left_leg.stl" inertia="exact" />
+    <mesh file="l_hand_weight.stl" inertia="exact" />
+    <mesh file="left_hardstop_b.stl" inertia="exact" />
+    <mesh file="l_arm.stl" inertia="exact" />
+  </asset>
+  <actuator>
+    <motor name="hip" joint="hip" />
+  </actuator>
+  <equality />
+</mujoco>

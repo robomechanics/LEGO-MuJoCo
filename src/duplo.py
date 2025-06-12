@@ -202,6 +202,8 @@ class Duplo(MjcSim):
             'mesh_dir' : '/'.join((self.scene_path.split('/')[:-1])),
             'stretch_factors' : np.array(self.configs['design_params']['mesh_scale']['part_1'])
             }
+        
+        print(self.data.qpos)
 
         for _ in loop:
             # self.calculate_sine_reference(start_freq_mult=2, 
@@ -225,6 +227,8 @@ class Duplo(MjcSim):
         mean_quat = np.mean(quats, axis=0)
         # print(quats)
         print(f"mean quat: {mean_quat}")
+
+        print(self.data.qpos)
         # print(f"last quat: {quats[-1]}")
         
 def main():

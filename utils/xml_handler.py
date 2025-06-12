@@ -118,6 +118,7 @@ class MJCFHandler:
         """Update the volume of the geoms in the model."""
         for mesh in self.meshes:
             mesh_name = mesh.get('name')
+            if mesh_name is None: mesh_name = mesh.get('file').split('.')[0]
             mesh_path = f"{self.scene_dir}/{mesh.get('file')}"
             mesh = trimesh.load_mesh(mesh_path)
             assert mesh.is_watertight, "Mesh is not watertight"

@@ -1,0 +1,48 @@
+l_arm:
+  mass: 1.0
+  scale: 1
+  volume: 4.5989518393680296e-07
+l_hand_weight:
+  mass: 1.0
+  scale: 1
+  volume: 3.897712662946472e-07
+left_foot:
+  mass: 1.0
+  scale: 1
+  volume: 1.9888777689865917e-06
+left_hardstop_a:
+  mass: 1.0
+  scale: 1
+  volume: 6.076610901141082e-08
+left_hardstop_b:
+  mass: 1.0
+  scale: 1
+  volume: 6.076608210151153e-08
+left_leg:
+  mass: 1.0
+  scale: 1
+  volume: 1.1235063141094218e-06
+r_arm:
+  mass: 1.0
+  scale: 1
+  volume: 3.56724429281643e-07
+r_hand_weight:
+  mass: 1.0
+  scale: 1
+  volume: 3.8977126089529794e-07
+right_foot:
+  mass: 1.0
+  scale: 1
+  volume: 1.9888777689865917e-06
+right_hardstop:
+  mass: 1.0
+  scale: 1
+  volume: 2.9023835952562446e-08
+right_hardstop_cyl:
+  mass: 1.0
+  scale: 1
+  volume: 5.703598739886539e-07
+right_leg:
+  mass: 1.0
+  scale: 1
+  volume: 5.213972436843668e-07

@@ -15,8 +15,6 @@ class MjcSim:
         self.v_fps = config['video_fps']
         self.config = config
 
-        # new_scene_path = self.update_xml(model_path)
-
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
         total_mass = np.sum(self.model.body_mass)
