@@ -1,0 +1,129 @@
+<robot name="stick_bot">
+
+    <link name="left_leg">
+
+        <visual>
+            <origin xyz="0 0.005 0" rpy="0 0 0"/>
+            <!-- <box size="0 mot_y/2 0"/> -->
+            <geometry> <box size="0.02 0.01 0.02"/> </geometry>
+            <!-- <box size="mot_x mot_y mot_z"/> -->
+            <material> <color rgba="0.5 1 0.5 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 0.008 0" rpy="0 0 0"/>
+            <!-- <origin xyz="0 gap_ft/4 0" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.016 0.005"/> </geometry>
+            <!-- <geometry> <box size="s gap_ft/2 s"/> </geometry> -->
+            <material> <color rgba="1 0 0 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 -0.03125 0" rpy="0 0 0"/>
+            <!-- <origin xyz="0 -w_arm/2 0" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.0625 0.005"/> </geometry>
+            <!-- <geometry> <box size="s w_arm s"/> </geometry> -->
+            <material> <color rgba="1 0 0 0.75" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 -0.0625 -0.052" rpy="0 0 0"/>
+            <!-- <origin xyz="0 -w_arm -l_arm/2" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.005 0.104"/> </geometry>
+            <!-- <geometry> <box size="s s l_arm"/> </geometry> -->
+            <material> <color rgba="1 0 0 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 -0.0625 -0.104" rpy="0 0 0"/>
+            <!-- <origin xyz="0 -w_arm -l_arm" rpy="0 0 0"/> -->
+            <geometry> <box size="0.02 0.02 0.02"/> </geometry>
+            <!-- <geometry> <box size="s_hand s_hand s_hand"/> </geometry> -->
+            <material> <color rgba="1 0 0 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 0.016 -0.0765" rpy="0 0 0"/>
+            <!-- <origin xyz="0 gap_ft/2 -l_leg/2" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.005 0.153"/> </geometry>
+            <!-- <geometry> <box size="s s l_leg"/> </geometry> -->
+            <material> <color rgba="1 0 0 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0.014 0.016 -0.153" rpy="0 0 0"/>
+            <!-- <origin xyz="-hip_offset gap_ft/2 -l_leg" rpy="0 0 0"/> -->
+            <geometry> <mesh filename="X_0.24_Y_0.24_Z_0.24_box_x_0.101_box_y_0.0527/left_foot_geom.obj" /> </geometry>
+            <material> <color rgba="1 0 0 0.5" /> </material>
+        </visual>
+
+    </link>
+    
+    <link name="right_leg">
+
+        <visual>
+            <origin xyz="0 -0.005 0" rpy="0 0 0"/>
+            <!-- <box size="0 -mot_y/2 0"/> -->
+            <geometry> <box size="0.02 0.01 0.02"/> </geometry>
+            <!-- <box size="mot_x mot_y mot_z"/> -->
+            <material> <color rgba="0.5 0.5 1 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 -0.008 0" rpy="0 0 0"/>
+            <!-- <origin xyz="0 -gap_ft/4 0" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.016 0.005"/> </geometry>
+            <!-- <geometry> <box size="s gap_ft/2 s"/> </geometry> -->
+            <material> <color rgba="0 0 1 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 0.03125 0" rpy="0 0 0"/>
+            <!-- <origin xyz="0 w_arm/2 0" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.0625 0.005"/> </geometry>
+            <!-- <geometry> <box size="s w_arm s"/> </geometry> -->
+            <material> <color rgba="0 0 1 0.75" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 0.0625 -0.052" rpy="0 0 0"/>
+            <!-- <origin xyz="0 w_arm/2 -l_arm/2" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.005 0.104"/> </geometry>
+            <!-- <geometry> <box size="s s l_arm"/> </geometry> -->
+            <material> <color rgba="0 0 1 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 0.0625 -0.104" rpy="0 0 0"/>
+            <!-- <origin xyz="0 w_arm/2 -l_arm" rpy="0 0 0"/> -->
+            <geometry> <box size="0.02 0.02 0.02"/> </geometry>
+            <!-- <geometry> <box size="s_hand s_hand s_hand"/> </geometry> -->
+            <material> <color rgba="0 0 1 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0 -0.016 -0.0765" rpy="0 0 0"/>
+            <!-- <origin xyz="0 -gap_ft/2 -l_leg/2" rpy="0 0 0"/> -->
+            <geometry> <box size="0.005 0.005 0.153"/> </geometry>
+            <!-- <geometry> <box size="s s l_leg"/> </geometry> -->
+            <material> <color rgba="0 0 1 0.5" /> </material>
+        </visual>
+
+        <visual>
+            <origin xyz="0.014 -0.016 -0.153" rpy="0 0 0"/>
+            <!-- <origin xyz="-hip_offset -gap_ft/2 -l_leg" rpy="0 0 0"/> -->
+            <geometry> <mesh filename="X_0.24_Y_0.24_Z_0.24_box_x_0.101_box_y_0.0527/right_foot_geom.obj" /> </geometry>
+            <material> <color rgba="0 0 1 0.5" /> </material>
+        </visual>
+
+    </link>
+
+    <joint name="hip" type="revolute">
+        <origin xyz="0 0 0" rpy = "0 0 0"/>
+        <parent link="left_leg" />
+        <child link="right_leg" />
+        <axis xyz="0 1 0" />
+        <limit lower="-0.785398163397448279" upper="0.785398163397448279" />
+  </joint>
+
+</robot>

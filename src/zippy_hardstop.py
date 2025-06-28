@@ -25,21 +25,23 @@ class Zippy(MjcSim):
         self.model.opt.timestep = 0.001
         # solreflimit="4e-3 1" solimplimit=".95 .99 1e-3"
         # self.model.opt.iterations = 200
-        self.model.opt.o_solref[0] = 4e-3
-        # self.model.opt.o_solref[1] = 1
-        self.model.opt.o_solref[1] = 5
+        # self.model.opt.o_solref[0] = 4e-3        
+        # self.model.opt.o_solref[1] = 5
+        # # self.model.opt.o_solref[1] = 1
+        # self.model.opt.o_solimp[0] = 0.95 
+        # self.model.opt.o_solimp[1] = 0.99 
+        # self.model.opt.o_solimp[2] = 1e-3
 
-        self.model.opt.o_solimp[0] = 0.95 
-        self.model.opt.o_solimp[1] = 0.99 
-        self.model.opt.o_solimp[2] = 1e-3
+        geom_names = ["rfoot", "lfoot"]
+        geom_ids = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, geom_name) for geom_name in geom_names]
 
-        # geom_names = ["r_leg", "l_leg"]
-        # geom_ids = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, geom_name) for geom_name in geom_names]
-
-        # new_friction = np.array([0.6, 2e-3, 5e-5])
-        # for gid in geom_ids:
-        #     # print(self.model.geom_friction[gid])
-        #     self.model.geom_friction[gid] = new_friction
+        new_friction = np.array([0.6, 2e-3, 5e-5])
+        new_friction = np.array([1, 2e-1, 5e-10])
+        # new_friction = np.array([5.1, 0.05, 0.005])
+        for gid in geom_ids:
+            print(self.model.geom_friction[gid])
+            self.model.geom_friction[gid] = new_friction
+            print(self.model.geom_friction[gid])
 
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
@@ -149,7 +151,7 @@ class Zippy(MjcSim):
             self.step_sim()
             self.data_log()
 
-            # time.sleep(self.model.opt.timestep * 4)
+            time.sleep(self.model.opt.timestep * 4)
 
             # if i % 2 == 0:  # Update the progress bar every 2 steps
             #     print(f"Time: {self.data.time:.5f} / {self.simtime} s", end="\r")
@@ -193,11 +195,11 @@ def main2():
     # dictionary of control parameters
     args['ctrl_dict'] = {
         # 'leg_amp_deg': 0.15,
-        'leg_amp_deg': np.rad2deg(2.8),
+        'leg_amp_deg': np.rad2deg(4),
         # 'leg_amp_deg': 0,
-        # 'hip_omega': 2.75 * 2 * np.pi,
-        'hip_omega': 7 * 2 * np.pi,
-        'j_damping': 1e-5,
+        # 'hip_omega': 3.7 * 2 * np.pi,
+        'hip_omega': 8 * 2 * np.pi,
+        'j_damping': 1e-4,
         # 'v_mean' : +0.4,
     }
 

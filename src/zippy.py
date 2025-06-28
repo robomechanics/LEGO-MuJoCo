@@ -196,8 +196,8 @@ def main2():
         # 'leg_amp_deg': 0.15,
         'leg_amp_deg': np.rad2deg(2.8),
         # 'leg_amp_deg': 0,
-        # 'hip_omega': 2.75 * 2 * np.pi,
-        'hip_omega': 7 * 2 * np.pi,
+        'hip_omega': 2.75 * 2 * np.pi,
+        # 'hip_omega': 7 * 2 * np.pi,
         'j_damping': 1e-5,
         # 'v_mean' : +0.4,
     }
