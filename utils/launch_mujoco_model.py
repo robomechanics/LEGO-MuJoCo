@@ -10,7 +10,7 @@ import mujoco.viewer
 # file_path = "old/old_robot_files/mugatu_nice_feet_fixed_urdf/robot.urdf"
 # file_path = "old/old_robot_files/robotis_op3/scene.xml"
 
-file_path = "scad_scripts/stick_bot_generated.urdf"
+file_path = "stickbot/stick_bot_generated_mjc.urdf"
 
 # Load your model
 model = mujoco.MjModel.from_xml_path(file_path)
