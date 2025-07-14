@@ -8,30 +8,53 @@ from utils.sim_args import arg_parser
 from utils.recorder import Recorder
 from typing import Callable, Any
 import yaml
+from scipy.spatial.transform import Rotation as R
+
 
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
         """Initialize the Duplo simulation environment."""
         self.configs = config
-        self.scene_path = f"{config['robot_dir']}/duplo_hip_feet_centered_mjcf/scene_hip_feet_centered.xml"
+        self.scene_path = f"{config['robot_dir']}/bigfoot/scene.xml"
         self.camera_params = {
-            # 'tracking': "leg_1",
-            'tracking': "leg_h",
+            'tracking': "motor",
             'distance': 5,
-            'xyaxis': [1, 0, 0, 0, 0, 1],
+            'xyaxis': [0, 0, 0, 0, 0, 1,]
         }
-
         new_scene_path = self.update_xml(self.scene_path, config['design_params'])
+        self.start_quat = config['design_params']['body_quat']['motor']
         super().__init__(new_scene_path, config)
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
+        print(f"Start quat: {self.start_quat}")
         self.step_sim() # Take the first sim step to initialize the data
+        
+         # ─── Electrical + gearbox parameters (AK80-64) ───
+        self.V_supply     = 48        # volts  (rated bus)
+        self.R_phase      = 0.22         # ohms   (phase-phase)
+        self.k_motor      = 0.136        # Nm/A   (bare motor)
+        self.gear_ratio   = 64           # :1
+        self.eta_gear     = 0.85         # 85 % efficient
+
+        # Effective output-shaft constants
+        self.k_eff = self.k_motor * self.gear_ratio * self.eta_gear  # ≈ 7.4 Nm/A
+        self.R_eff = self.R_phase                                    # ≈ 0.22 Ω
+
+        self.I_max = 19.0         # A (datasheet peak current)
+        
+        # Swaying and Fall Parameters
+        self.sway_window = config.get('sway_window', 1.0)
+        self.sway_threshold_deg = config.get('degree_threshold', 0.1)
+        self.sway = False
+        self.wait_time          = config.get('wait_time', 1.0)   # same t_wait you pass into calculate_sine_reference  
+
+
+
 
     def get_hip_idx(self) -> None:
         """Get the joint ID and qpos index for the hip joint."""
         self.ctrl_joint_names = ['hip']
         n_ctrl_joints = self.setup_ctrl_joints()
-        print(f"Number of control joints: {n_ctrl_joints}")
         self.hip_qpos_idx = self.model.jnt_qposadr[self.ctrl_joint_ids[0]] # qpos index for the hip joint
         self.hip_dof_idx = self.ctrl_dof_addrs[0] # dof index for the hip joint (for qfrc)
         self.hip_qvel_idx = self.hip_dof_idx
@@ -41,6 +64,7 @@ class Duplo(MjcSim):
         # Default values
         self.Kp = 0
         self.Kd = 0
+        self.j_damping = 0
         self.leg_amp_deg = 0
         self.hip_omega = None
         # self.pend_len = 0.63 # default from a while back
@@ -55,11 +79,21 @@ class Duplo(MjcSim):
 
     def pendulum_length(self) -> tuple[float, float]:
         """Calculate the length and z offset of the pendulum."""
-        hip_pos = self.data.joint(self.ctrl_joint_names[0]).xanchor        
+        hip_pos = self.data.joint(self.ctrl_joint_names[0]).xanchor
         com_pos = self.mass_center()
-        pedulum_length = np.linalg.norm(hip_pos - com_pos)
+        pendulum_length = np.linalg.norm(hip_pos - com_pos)
         pendulum_z = hip_pos[2] - com_pos[2]
-        return pedulum_length, pendulum_z
+        # print(f"Center of mass: {com_pos}, Hip position: {hip_pos}")
+        return pendulum_length, pendulum_z
+
+    # def calculate_sine_reference(self, waittime: float=1.0, b: float = 1.0) -> None:
+    #     t = self.data.time
+    #     wave = np.sin(self.hip_omega * (t - waittime))
+    #     wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2)) * wave
+
+    #     # Smooth scaling from 0 to 1
+    #     scale = min(1.0, max(0.0, (t / waittime)))  # linear ramp
+    #     self.reference = scale * self.leg_amp_rad * wave_val
 
     def calculate_sine_reference(self, 
                                  t_wait: float=1.0, 
@@ -78,6 +112,30 @@ class Duplo(MjcSim):
                                                       self.data.time, 
                                                       t_wait)
         
+    def tilt_from_start(self) -> float:
+        """Return tilt angle (deg) of body w.r.t starting quaternion q_start."""
+        q_now = self.data.qpos[3:7]      
+        w_delta = abs(np.dot(self.start_quat, q_now))  # same as conjugate
+        phi = 2.0 * np.arccos(np.clip(w_delta, -1.0, 1.0))
+        return np.degrees(phi)
+
+    def check_sway(self) -> bool:
+        """Checks if robot is swaying (tilted beyond threshold). Returns True if swaying, False otherwise."""
+        tilt_deg = self.tilt_from_start()
+        if tilt_deg > self.sway_threshold_deg:
+            # print(f"[SWAY] Tilted {tilt_deg:.2f}° (threshold: {self.sway_threshold_deg}°)")
+            return True
+        return False
+
+    def check_fall(self, threshold_deg: float = 85.0) -> bool:
+        """Check if the robot has fallen based on the tilt angle."""
+        quat = self.data.qpos[3:7]  # [w, x, y, z]
+        r = R.from_quat([quat[1], quat[2], quat[3], quat[0]])
+        roll, pitch, yaw = r.as_euler('xyz', degrees=True)
+        return abs(roll) > threshold_deg or abs(pitch) > threshold_deg
+
+
+
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
         self.data.actuator("hip_joint_act").ctrl = self.action
@@ -88,6 +146,7 @@ class Duplo(MjcSim):
 
     def calculate_pd_ctrl(self, hist_window: int=10) -> None:
         """Calculate the PID control signal for the hip joint."""
+        # self.calculate_sine_reference()
 
         if self.action is None: # Initialize the control signal
             # start a queue 
@@ -115,7 +174,7 @@ class Duplo(MjcSim):
         self.actuator_torque = self.data.qfrc_actuator[self.hip_dof_idx]
         self.applied_torque = self.data.qfrc_applied[self.hip_dof_idx]
         self.actuator_speed = self.data.qvel[self.hip_dof_idx]
-
+    
     def record_contact_points(self) -> None:
         for k,v in self.contact_bodies.items():
             body_id = v['body_id']
@@ -166,18 +225,25 @@ class Duplo(MjcSim):
                                 self.con_dict[k]['mesh'] = file_name
                         self.con_dict[k]['mesh_offset'] = mesh_offset
 
+    def voltage_to_torque(self, V_cmd):
+        V = np.clip(V_cmd, -self.V_supply, self.V_supply)
+        w = self.data.qvel[self.hip_dof_idx]          # rad/s
+        I = (V - self.k_eff * w) / self.R_eff         # amps
+        I = np.clip(I, -self.I_max, self.I_max)
+        tau = self.k_eff * I - self.j_damping * w
+        return tau
+    
 
     def run_sim(self, callbacks: dict[str, Callable]=None) -> None:
         """Run the simulation for the specified time."""
+        print(self.config["ctrl_dict"])
         if self.hip_omega is None:
             self.pend_len = self.pendulum_length()[0]
             self.hip_omega = np.sqrt(9.81 / self.pend_len)
 
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))
-
         quats = []
-
         self.contact_bodies = {
             'leg_v': {
                 'pos': np.array([0.14908, -0.9875, -0.0125974]),    # pos of mesh (rel to body)
@@ -202,37 +268,44 @@ class Duplo(MjcSim):
             'mesh_dir' : '/'.join((self.scene_path.split('/')[:-1])),
             'stretch_factors' : np.array(self.configs['design_params']['mesh_scale']['part_1'])
             }
-        
-        print(self.data.qpos)
-
         for _ in loop:
-            # self.calculate_sine_reference(start_freq_mult=2, 
-            #                               start_amp_mult=1.5)
-            self.calculate_sine_reference(start_freq_mult=1.25, 
-                                          start_amp_mult=1.5)
+            self.calculate_sine_reference(start_freq_mult=1.5, 
+                                          start_amp_mult=1.2)
+            angle_target = self.reference
+            G = self.V_supply / 2
+            self.cmd_voltage = G * angle_target
+            self.cmd_voltage = np.clip(self.cmd_voltage, -self.V_supply, self.V_supply)
+            torque = self.voltage_to_torque(self.cmd_voltage)
+            self.data.actuator("hip_joint_act").ctrl = torque
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
             self.step_sim()
+            t = self.data.time
+            if t <= self.wait_time and self.leg_amp_deg != 0:                
+                if self.check_sway():
+                    self.sway = True
+                    print('[SWAY DETECTED]')
+            else:
+                self.sway = False
+            if _ % 5 == 0:
+                if self.check_fall():   
+                    print("[FALL DETECTED]")
+            if self.leg_amp_deg == 0 and self.check_sway():
+                self.sway = True
             self.data_log()
-
             quats.append(self.data.qpos[3:7].copy())
-            # print(f"quats: {quats[-1]}")
-
-            self.record_contact_points()
-
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
 
         mean_quat = np.mean(quats, axis=0)
         # print(quats)
-        print(f"mean quat: {mean_quat}")
-
-        print(self.data.qpos)
-        # print(f"last quat: {quats[-1]}")
+        if self.sway and self.leg_amp_deg == 0:
+            print(f"SWAY DETECTED! input new mean quat: {mean_quat[0]:.3f}, {mean_quat[1]:.3f}, {mean_quat[2]:.3f}, {mean_quat[3]:.3f}")
         
 def main():
     args = arg_parser("Duplo Sim Args")
+    
 
     # Define the variables and their properties
     plot_attributes = {
@@ -247,41 +320,69 @@ def main():
     plot_structure = [
         ["time", "actuator_actual_pos", "actuator_setpoints"],  # Subplot 1: X = time, Y = angle & setpoint
         ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
-        # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
-        ["actuator_speed", "actuator_torque"],
+        ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
+        # ["actuator_speed", "actuator_torque"],
     ]
 
     # dictionary of control parameters
     args['ctrl_dict'] = {
-        # 'Kp': 15,
         'Kp': 20,
         'Kd': 12,
         'leg_amp_deg': 30,
         # 'leg_amp_deg': 0,
-        'hip_omega': 0.66 * 2 * np.pi,
+        'hip_omega': 0.75 * 2 * np.pi,
     }
+    
+    # Input the x and y offsets for leg positions
+    x = 30 # changes feet gap (+x means a wider gap)
+    y = 30 # changes center of feet location (+y means closer to rod)
+
+    print(f"Using x={x*10e-4}m, y={y*10e-4}m for ballfoot offset")
+
 
     args['design_params'] = {
-        # 'body_pos_offset': {'leg_v' : [-0.04, 0, 0], 
-        #                     'leg_v_2' : [-0.04, 0, 0]},
-        'body_pos_offset': {'leg_v' : [-0.0, 0, 0], 
-                            'leg_v_2' : [-0.0, 0, 0]},
-        # 'body_quat' : {'motor' : [1, 0, 0, 0]},
-        # 'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
-        # 'body_quat' : {'motor' : [9.97807368e-01, 2.87891505e-02, 4.02491563e-05, 2.85128626e-03]},
-        # 'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
-        'body_quat' : {'motor' : [9.97746446e-01, 6.69306849e-02, 1.68114705e-04, 4.66763733e-03]},
-        'geom_pos_offset' : {
-            'leg_v' : [0.265-0.1235, 0, 0],
-            'leg_v_2' : [-0.265+0.1235, 0, 0],
-            'arm' : [0, 0, +0.265-0.82+0.21*1.5],
-            'arm_2' : [0, 0, -0.265+0.82-0.21*1.5],
-            'battery' : [0, 0, +0.265-0.82+0.21*1.5],
-            'battery_2' : [0, 0, -0.265+0.82-0.21*1.5],
-            'hip' : [0.555-(0.7*1.11)/2, 0, 0],
-                             },
-        'mesh_scale' : {'part_1' : [1.2, 1, 1],
-                        'hip' : [0.7, 1, 1]}
+        'body_pos_offset': {
+            # 'foot_group_1': [0.04, 0.1, -0.08], 
+            # 'foot_group_2': [0.04, 0.1, 0.08]
+        },
+        'geom_pos_offset': {
+            # 'ballfoot_1' : [x*10e-4, 0.0, z*10e-4],
+            # 'ballfoot_2' : [x*10e-4, 0.0, -z*10e-4],
+
+            'footstl_scaled_v4_1': [x*10e-4, -y*10e-4, 0],
+            'footstl_scaled_v4_2': [x*10e-4, -y*10e-4, 0],
+            'footstl_scaled_v4_3': [x*10e-4, -y*10e-4, 0],
+            'footstl_scaled_v4_4': [-x*10e-4, -y*10e-4, 0],
+            'footstl_scaled_v4_5': [-x*10e-4, -y*10e-4, 0],
+            'footstl_scaled_v4_6': [-x*10e-4, -y*10e-4, 0],
+
+            'hip_rod_1': [0, 0, 0],
+            #0 'foot_edge_1_1': [0, 0, 0],
+            # 'foot_edge_2_1': [0, 0, 0],
+            # 'middle_foot_part_1': [0, 0, 0],
+            'leg_rod_1': [0.0, 0, 0],
+            'motor_part1_1': [0, 0, 0],
+            'motor_part2_1': [0, 0, 0],
+            'arm_rod_1': [0, 0, 0],
+            'battery_1': [0, 0, 0],
+            'hip_rod_2': [0, 0, 0],
+            'motor_part3_1': [0, 0, 0],
+            # 'foot_edge_1_2': [0, 0, 0],
+            # 'foot_edge_2_2': [0, 0, 0],
+            # 'middle_foot_part_2': [0, 0, 0],
+            'leg_rod_2': [0.0, 0, 0],
+            'arm_rod_2': [0, 0, 0],
+            'battery_2': [0, 0, 0],
+        },
+        'mesh_scale': {
+            'part_1': [1, 1, 1],
+            'hip': [1, 1, 1],
+            'leg_rod': [1, 1, 1.00],
+        },
+
+        'body_quat': { 
+            'motor': [0.995, 0.067, 0.005, 0.079], # [w, x, y, z],
+        }
     }
 
     robot = Duplo(args)
@@ -305,11 +406,7 @@ def main():
         recorder.stack_video_frames(recorder.plot_frames, 
                                     recorder.robot_frames,
                                     output_path=f"{v_dir}/combined.mp4")
-    # Save to file
-
-    with open("contact_dict.pkl", "wb") as f:
-        pkl.dump(robot.con_dict, f)
-
+        
     robot.close()
         
 if __name__ == "__main__":

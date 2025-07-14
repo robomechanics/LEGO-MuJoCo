@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<!-- Generated using onshape-to-robot -->
+<!-- Onshape https://cad.onshape.com/documents/17c5c8d07f4ec308269aab5c/w/49bf5d1c311d43a28f235e29/e/7d823c8ac586efb9e7ca8641 -->
+<mujoco model="ricky_ballfeet">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="ricky_ballfeet">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <!-- Link ak80_outer_assembly -->
+    <body name="ak80_outer_assembly" pos="0 0 0" quat="1 0 0 0" childclass="ricky_ballfeet">
+      <inertial pos="0 0 0" mass="1e-09" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+      <!-- Part t_motor_80_8_part_1 -->
+      <geom type="mesh" class="visual" pos="-0.0213471 0.0567648 0.237112" quat="1 0 0 0" mesh="t_motor_80_8_part_1" material="t_motor_80_8_part_1_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213471 0.0567648 0.237112" quat="1 0 0 0" mesh="t_motor_80_8_part_1" material="t_motor_80_8_part_1_material"/>
+      <!-- Part t_motor_80_8_part_2 -->
+      <geom type="mesh" class="visual" pos="-0.0213471 0.0567648 0.234112" quat="1 0 0 0" mesh="t_motor_80_8_part_2" material="t_motor_80_8_part_2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213471 0.0567648 0.234112" quat="1 0 0 0" mesh="t_motor_80_8_part_2" material="t_motor_80_8_part_2_material"/>
+      <!-- Link t_motor_80_8_part_3 -->
+      <body name="t_motor_80_8_part_3" pos="-0.0213471 0.0567648 0.267612" quat="1 0 0 0">
+        <!-- Joint from ak80_outer_assembly to t_motor_80_8_part_3 -->
+        <joint axis="0 0 1" name="hip" type="hinge"/>
+        <inertial pos="-0.0451003 0.668329 -0.0389697" mass="2.0407" fullinertia="0.344 0.141046 0.269169 0.0298412 0.0170536 -0.111293"/>
+        <!-- Part hip_rod -->
+        <geom type="mesh" class="visual" pos="3.46945e-18 6.93889e-18 0.0034" quat="0.5 0.5 -0.5 -0.5" mesh="hip_rod" material="hip_rod_material"/>
+        <geom type="mesh" class="collision" pos="3.46945e-18 6.93889e-18 0.0034" quat="0.5 0.5 -0.5 -0.5" mesh="hip_rod" material="hip_rod_material"/>
+        <!-- Part t_motor_80_8_part_3 -->
+        <geom type="mesh" class="visual" pos="3.46945e-18 6.93889e-18 -0.0357" quat="1 0 0 0" mesh="t_motor_80_8_part_3" material="t_motor_80_8_part_3_material"/>
+        <geom type="mesh" class="collision" pos="3.46945e-18 6.93889e-18 -0.0357" quat="1 0 0 0" mesh="t_motor_80_8_part_3" material="t_motor_80_8_part_3_material"/>
+        <!-- Part footstl_scaled_v4 -->
+        <geom type="mesh" class="visual" pos="-0.445553 0.853084 -0.564238" quat="0.5 -0.5 -0.5 -0.5" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+        <geom type="mesh" class="collision" pos="-0.445553 0.853084 -0.564238" quat="0.5 -0.5 -0.5 -0.5" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+        <!-- Part leg_rod -->
+        <geom type="mesh" class="visual" pos="-3.35665e-07 0.934012 0.1524" quat="0.5 0.5 -0.5 0.5" mesh="leg_rod" material="leg_rod_material"/>
+        <geom type="mesh" class="collision" pos="-3.35665e-07 0.934012 0.1524" quat="0.5 0.5 -0.5 0.5" mesh="leg_rod" material="leg_rod_material"/>
+        <!-- Part arm_rod -->
+        <geom type="mesh" class="visual" pos="-2.01228e-16 0.4525 -0.311085" quat="0.5 0.5 0.5 -0.5" mesh="arm_rod" material="arm_rod_material"/>
+        <geom type="mesh" class="collision" pos="-2.01228e-16 0.4525 -0.311085" quat="0.5 0.5 0.5 -0.5" mesh="arm_rod" material="arm_rod_material"/>
+        <!-- Part battery -->
+        <geom type="mesh" class="visual" pos="-1.8735e-16 0.479483 -0.343085" quat="0.707107 -0 -1.11022e-16 0.707107" mesh="battery" material="battery_material"/>
+        <geom type="mesh" class="collision" pos="-1.8735e-16 0.479483 -0.343085" quat="0.707107 -0 -1.11022e-16 0.707107" mesh="battery" material="battery_material"/>
+      </body>
+    </body>
+    <!-- Link hip_rod -->
+    <body name="hip_rod" pos="0 0 0" quat="1 0 0 0" childclass="ricky_ballfeet">
+      <freejoint name="hip_rod_freejoint"/>
+      <inertial pos="-0.066447 0.725094 0.258826" mass="2.0407" fullinertia="0.342169 0.139215 0.269169 0.029841 -0.0169011 0.110301"/>
+      <!-- Part hip_rod_2 -->
+      <geom type="mesh" class="visual" pos="-0.0213471 0.0567648 0.218112" quat="0.5 -0.5 0.5 -0.5" mesh="hip_rod" material="hip_rod_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213471 0.0567648 0.218112" quat="0.5 -0.5 0.5 -0.5" mesh="hip_rod" material="hip_rod_material"/>
+      <!-- Part footstl_scaled_v4_2 -->
+      <geom type="mesh" class="visual" pos="0.233459 0.909848 0.78575" quat="0.5 -0.5 0.5 0.5" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+      <geom type="mesh" class="collision" pos="0.233459 0.909848 0.78575" quat="0.5 -0.5 0.5 0.5" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+      <!-- Part leg_rod_2 -->
+      <geom type="mesh" class="visual" pos="-0.0213468 0.990777 0.0691119" quat="0.5 0.5 0.5 -0.5" mesh="leg_rod" material="leg_rod_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213468 0.990777 0.0691119" quat="0.5 0.5 0.5 -0.5" mesh="leg_rod" material="leg_rod_material"/>
+      <!-- Part arm_rod_2 -->
+      <geom type="mesh" class="visual" pos="-0.0213471 0.509265 0.528512" quat="0.5 0.5 -0.5 0.5" mesh="arm_rod" material="arm_rod_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213471 0.509265 0.528512" quat="0.5 0.5 -0.5 0.5" mesh="arm_rod" material="arm_rod_material"/>
+      <!-- Part battery_2 -->
+      <geom type="mesh" class="visual" pos="-0.0213471 0.536248 0.560512" quat="4.38084e-17 -0.707107 -0.707107 4.38084e-17" mesh="battery" material="battery_material"/>
+      <geom type="mesh" class="collision" pos="-0.0213471 0.536248 0.560512" quat="4.38084e-17 -0.707107 -0.707107 4.38084e-17" mesh="battery" material="battery_material"/>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="hip_rod.stl"/>
+    <mesh file="t_motor_80_8_part_3.stl"/>
+    <mesh file="battery.stl"/>
+    <mesh file="arm_rod.stl"/>
+    <mesh file="leg_rod.stl"/>
+    <mesh file="t_motor_80_8_part_1.stl"/>
+    <mesh file="t_motor_80_8_part_2.stl"/>
+    <mesh file="footstl_scaled_v4.stl"/>
+    <material name="t_motor_80_8_part_1_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="t_motor_80_8_part_2_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="hip_rod_material" rgba="0.262745 0.282353 0.301961 1"/>
+    <material name="t_motor_80_8_part_3_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="footstl_scaled_v4_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="leg_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="arm_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="battery_material" rgba="0.615686 0.811765 0.929412 1"/>
+  </asset>
+  <actuator>
+    <position class="ricky_ballfeet" name="hip" joint="hip"/>
+  </actuator>
+  <equality/>
+</mujoco>

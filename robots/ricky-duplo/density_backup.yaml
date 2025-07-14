@@ -1,0 +1,50 @@
+arm_rod:
+  density: 1603.6357050939064
+  mass: 0.327
+  scale: 1
+  volume: 0.0002039116483633366
+battery:
+  density: 1305.56471368408
+  mass: 0.5
+  scale: 1
+  volume: 0.0003829760369281777
+foot_edge_1:
+  density: 205.47356178212544
+  mass: 0.291
+  scale: 1
+  volume: 0.0014162405979439962
+foot_edge_2:
+  density: 205.4980363545641
+  mass: 0.291
+  scale: 1
+  volume: 0.0014160719253682391
+hip_rod:
+  density: 1588.8433084388098
+  mass: 0.047
+  scale: 1
+  volume: 2.958126817815785e-05
+leg_rod:
+  density: 1604.4324743907862
+  mass: 0.202
+  scale: 1
+  volume: 0.00012590121630185825
+middle_foot_part:
+  density: 211.74148133410668
+  mass: 0.383
+  scale: 1
+  volume: 0.0018088094859205442
+motor_part1:
+  density: 2129.3921100411317
+  mass: 0.377
+  scale: 1
+  volume: 0.0001770458330442099
+motor_part2:
+  density: 3119.2592796707722
+  mass: 0.1887
+  scale: 1
+  volume: 6.0495131401810456e-05
+motor_part3:
+  density: 6398.2246321133825
+  mass: 0.2833
+  scale: 1
+  volume: 4.4277907746171744e-05
