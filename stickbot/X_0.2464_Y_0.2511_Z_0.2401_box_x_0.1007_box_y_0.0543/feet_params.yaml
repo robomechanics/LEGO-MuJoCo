@@ -1,0 +1,34 @@
+X: !!python/object/apply:numpy._core.multiarray.scalar
+- &id001 !!python/object/apply:numpy.dtype
+  args:
+  - f8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  0gDeAgmKzz8=
+Y: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  bqMBvAUS0D8=
+Z: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  QYLix5i7zj8=
+box_x: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  Dwu1pnnHuT8=
+box_y: !!python/object/apply:numpy._core.multiarray.scalar
+- *id001
+- !!binary |
+  PnlYqDXNqz8=
+file_id: X_0.2464_Y_0.2511_Z_0.2401_box_x_0.1007_box_y_0.0543

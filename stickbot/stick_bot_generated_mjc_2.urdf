@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="stick_bot">
+  <link name="left_leg">
+    <visual name="left_leg_motor">
+      <origin xyz="0 0.00485 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0198 0.0097 0.0196" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_axel">
+      <origin xyz="0 0.00795 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0159 0.0052" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_arm_axel">
+      <origin xyz="0 -0.0323 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0646 0.0052" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_arm">
+      <origin xyz="0 -0.0646 -0.05035" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0052 0.1007" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_hand_mass">
+      <origin xyz="0 -0.0646 -0.1007" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0204 0.0204 0.0204" />
+      </geometry>
+      <material>
+        <color rgba="0 1 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_link">
+      <origin xyz="0 0.0159 -0.07785" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0052 0.1557" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_mass">
+      <origin xyz="0 0.0159 -0.07785" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0102 0.0102 0.0102" />
+      </geometry>
+      <material>
+        <color rgba="0 1 0 0.5" />
+      </material>
+    </visual>
+    <visual name="left_leg_foot_visual">
+      <origin xyz="0.0142 0.0159 -0.1557" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/sman/Work/CMU/Research/LEGO-mujoco/stickbot/X_0.2414_Y_0.238_Z_0.2511_box_x_0.1042_box_y_0.053/left_foot_geom.obj" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </visual>
+    <collision name="left_leg_foot_collision">
+      <origin xyz="0.0142 0.0159 -0.1557" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/sman/Work/CMU/Research/LEGO-mujoco/stickbot/X_0.2414_Y_0.238_Z_0.2511_box_x_0.1042_box_y_0.053/left_foot_geom.obj" />
+      </geometry>
+      <material>
+        <color rgba="1 0 0 0.5" />
+      </material>
+    </collision>
+  </link>
+  <link name="right_leg">
+    <visual name="right_leg_motor">
+      <origin xyz="0 -0.00485 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0198 0.0097 0.0196" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_axel">
+      <origin xyz="0 -0.00795 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0159 0.0052" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_arm_axel">
+      <origin xyz="0 0.0323 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0646 0.0052" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_arm">
+      <origin xyz="0 0.0646 -0.05035" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0052 0.1007" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_hand_mass">
+      <origin xyz="0 0.0646 -0.1007" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0204 0.0204 0.0204" />
+      </geometry>
+      <material>
+        <color rgba="0 1 0 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_link">
+      <origin xyz="0 -0.0159 -0.07785" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0052 0.0052 0.1557" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_mass">
+      <origin xyz="0 -0.0159 -0.07785" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0102 0.0102 0.0102" />
+      </geometry>
+      <material>
+        <color rgba="0 1 0 0.5" />
+      </material>
+    </visual>
+    <visual name="right_leg_foot_visual">
+      <origin xyz="0.0142 -0.0159 -0.1557" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/sman/Work/CMU/Research/LEGO-mujoco/stickbot/X_0.2414_Y_0.238_Z_0.2511_box_x_0.1042_box_y_0.053/right_foot_geom.obj" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </visual>
+    <collision name="right_leg_foot_collision">
+      <origin xyz="0.0142 -0.0159 -0.1557" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/sman/Work/CMU/Research/LEGO-mujoco/stickbot/X_0.2414_Y_0.238_Z_0.2511_box_x_0.1042_box_y_0.053/right_foot_geom.obj" />
+      </geometry>
+      <material>
+        <color rgba="0 0 1 0.5" />
+      </material>
+    </collision>
+  </link>
+  <link name="left_leg_hand_mass_mass_link">
+    <inertial name="left_leg_hand_mass_inertial">
+      <origin xyz="0 -0.0646 -0.1007" rpy="0 0 0" />
+      <mass value="0.1048" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <link name="left_leg_mass_mass_link">
+    <inertial name="left_leg_mass_inertial">
+      <origin xyz="0 0.0159 -0.07785" rpy="0 0 0" />
+      <mass value="0.0975" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <link name="left_feet_mass_link">
+    <inertial name="left_feet_inertial">
+      <origin xyz="0.0142 0.0159 -0.1557" rpy="0 0 0" />
+      <mass value="0.1031" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <link name="right_leg_hand_mass_mass_link">
+    <inertial name="right_leg_hand_mass_inertial">
+      <origin xyz="0 0.0646 -0.1007" rpy="0 0 0" />
+      <mass value="0.1048" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <link name="right_leg_mass_mass_link">
+    <inertial name="right_leg_mass_inertial">
+      <origin xyz="0 -0.0159 -0.07785" rpy="0 0 0" />
+      <mass value="0.0975" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <link name="right_feet_mass_link">
+    <inertial name="right_feet_inertial">
+      <origin xyz="0.0142 -0.0159 -0.1557" rpy="0 0 0" />
+      <mass value="0.1031" />
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+  <joint name="hip" type="revolute">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="left_leg" />
+    <child link="right_leg" />
+    <axis xyz="0 1 0" />
+    <limit lower="-0.785" upper="0.785" />
+  </joint>
+  <joint name="fixed_left_leg_hand_mass_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="left_leg" />
+    <child link="left_leg_hand_mass_mass_link" />
+  </joint>
+  <joint name="fixed_left_leg_mass_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="left_leg" />
+    <child link="left_leg_mass_mass_link" />
+  </joint>
+  <joint name="fixed_left_feet_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="left_leg" />
+    <child link="left_feet_mass_link" />
+  </joint>
+  <joint name="fixed_right_leg_hand_mass_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="right_leg" />
+    <child link="right_leg_hand_mass_mass_link" />
+  </joint>
+  <joint name="fixed_right_leg_mass_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="right_leg" />
+    <child link="right_leg_mass_mass_link" />
+  </joint>
+  <joint name="fixed_right_feet_mass_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="right_leg" />
+    <child link="right_feet_mass_link" />
+  </joint>
+  <mujoco>
+    <compiler strippath="false" />
+  </mujoco>
+</robot>
