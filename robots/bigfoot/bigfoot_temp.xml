@@ -43,13 +43,13 @@
   </default>
   <worldbody>
     
-    <body name="motor" pos="0 0 1.1" quat="0.995 0.067 0.005 0.079" childclass="bigfoot"> 
+    <body name="motor" pos="0 0 1.1" quat="0.9955809057277297 0.04798899517534769 0.003855513915893647 0.08062785734337882" childclass="bigfoot"> 
     <freejoint />
       <geom name="leg_rod_1" type="mesh" mass="0.202" pos="0.16915 -3.35665e-07 -0.019612" quat="9.0177e-15 -1 -0 -0" mesh="leg_rod" material="leg_rod_material" />
       <geom name="hip_rod_1" type="mesh" mass="0.047" pos="0.02015 3.88825e-19 8.54732e-33" quat="0.5 0.5 0.5 -0.5" mesh="hip_rod" material="hip_rod_material" />
-      <geom name="footstl_scaled_v4_1" type="mesh" mass="0.52063" pos="0.19915 0.0653734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_1" material="footstl_scaled_v4_1_material" />
-      <geom name="footstl_scaled_v4_2" type="mesh" mass="0.3191" pos="0.19915 0.0653734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_2" material="footstl_scaled_v4_2_material" />
-      <geom name="footstl_scaled_v4_3" type="mesh" mass="0.3191" pos="0.19915 0.0653734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_3" material="footstl_scaled_v4_3_material" />
+      <geom name="footstl_scaled_v4_1" type="mesh" mass="0.52063" pos="0.24914999999999998 0.0353734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_1" material="footstl_scaled_v4_1_material" />
+      <geom name="footstl_scaled_v4_2" type="mesh" mass="0.3191" pos="0.24914999999999998 0.0353734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_2" material="footstl_scaled_v4_2_material" />
+      <geom name="footstl_scaled_v4_3" type="mesh" mass="0.3191" pos="0.24914999999999998 0.0353734 -0.945125" quat="9.0177e-15 -1 -1.1565e-16 2.72088e-17" mesh="footstl_scaled_v4_3" material="footstl_scaled_v4_3_material" />
       <geom name="motor1" type="mesh" mass="0.377" pos="-0.01375 0 0" quat="0.707107 -0 0.707107 -0" mesh="motor1" material="motor1_material" />
       <geom name="motor2" type="mesh" mass="0.1887" pos="-0.01675 -1.54074e-33 0" quat="0.707107 3.83661e-18 0.707107 -1.92227e-16" mesh="motor2" material="motor2_material" />
       <geom name="arm_rod_1" type="mesh" mass="0.327" pos="-0.2943 2.40241e-16 -0.4525" quat="1 0 9.30042e-17 7.36249e-17" mesh="arm_rod" material="arm_rod_material" />
@@ -64,11 +64,11 @@
         
         <geom name="battery_2" type="mesh" mass="0.85502162" pos="0.245615 6.55699e-15 -0.479483" quat="0.707107 6.91822e-15 0.707107 2.89486e-15" mesh="battery" material="battery_material" />
         
-        <geom name="footstl_scaled_v4_4" type="mesh" mass="0.3191" pos="-0.21175 0.0653734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_4" material="footstl_scaled_v4_4_material" />
+        <geom name="footstl_scaled_v4_4" type="mesh" mass="0.3191" pos="-0.26175 0.0353734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_4" material="footstl_scaled_v4_4_material" />
         
-        <geom name="footstl_scaled_v4_5" type="mesh" mass="0.52063" pos="-0.21175 0.0653734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_5" material="footstl_scaled_v4_5_material" />
+        <geom name="footstl_scaled_v4_5" type="mesh" mass="0.52063" pos="-0.26175 0.0353734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_5" material="footstl_scaled_v4_5_material" />
         
-        <geom name="footstl_scaled_v4_6" type="mesh" mass="0.3191" pos="-0.21175 0.0653734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_6" material="footstl_scaled_v4_6_material" />
+        <geom name="footstl_scaled_v4_6" type="mesh" mass="0.3191" pos="-0.26175 0.0353734 -0.945124" quat="1 -0 1.11022e-16 -2.77556e-17" mesh="footstl_scaled_v4_6" material="footstl_scaled_v4_6_material" />
         
         <geom name="leg_rod_2" type="mesh" mass="0.202" pos="-0.18175 -3.35665e-07 -0.934012" quat="1 -0 -2.22045e-16 -2.77556e-17" mesh="leg_rod" material="leg_rod_material" />
       </body>

@@ -19,7 +19,7 @@ class Duplo(MjcSim):
         self.camera_params = {
             'tracking': "motor",
             'distance': 5,
-            'xyaxis': [0, 0, 0, 0, 0, 1,]
+            'xyaxis': [1, 0, 0, 0, 0, 1],
         }
         new_scene_path = self.update_xml(self.scene_path, config['design_params'])
         self.start_quat = config['design_params']['body_quat']['motor']
@@ -70,7 +70,7 @@ class Duplo(MjcSim):
         # self.pend_len = 0.63 # default from a while back
         for k,v in ctrl_dict.items(): 
             setattr(self, k, v)
-            print(f"{k} set to {getattr(self, k)}.")
+            # print(f"{k} set to {getattr(self, k)}.")
 
     @property
     def leg_amp_rad(self) -> float:
@@ -123,7 +123,6 @@ class Duplo(MjcSim):
         """Checks if robot is swaying (tilted beyond threshold). Returns True if swaying, False otherwise."""
         tilt_deg = self.tilt_from_start()
         if tilt_deg > self.sway_threshold_deg:
-            # print(f"[SWAY] Tilted {tilt_deg:.2f}° (threshold: {self.sway_threshold_deg}°)")
             return True
         return False
 
@@ -236,12 +235,12 @@ class Duplo(MjcSim):
 
     def run_sim(self, callbacks: dict[str, Callable]=None) -> None:
         """Run the simulation for the specified time."""
-        print(self.config["ctrl_dict"])
+        # print(self.config["ctrl_dict"])
         if self.hip_omega is None:
             self.pend_len = self.pendulum_length()[0]
             self.hip_omega = np.sqrt(9.81 / self.pend_len)
 
-        print(f"hip freq: {self.hip_omega/(2*np.pi)}")
+        # print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))
         quats = []
         self.contact_bodies = {
@@ -284,25 +283,28 @@ class Duplo(MjcSim):
             if t <= self.wait_time and self.leg_amp_deg != 0:                
                 if self.check_sway():
                     self.sway = True
-                    print('[SWAY DETECTED]')
-            else:
-                self.sway = False
+                    # print('[SWAY DETECTED]')
+                else:
+                    self.sway = False
             if _ % 5 == 0:
                 if self.check_fall():   
-                    print("[FALL DETECTED]")
+                    self.fall = True
+                    # print("[FALL DETECTED]")
             if self.leg_amp_deg == 0 and self.check_sway():
                 self.sway = True
+                # print('[SWAY DETECTED]')
             self.data_log()
             quats.append(self.data.qpos[3:7].copy())
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
+        if self.sway: print('[SWAY DETECTED]')
 
-        mean_quat = np.mean(quats, axis=0)
+        self.mean_quat = np.mean(quats, axis=0)
         # print(quats)
         if self.sway and self.leg_amp_deg == 0:
-            print(f"SWAY DETECTED! input new mean quat: {mean_quat[0]:.3f}, {mean_quat[1]:.3f}, {mean_quat[2]:.3f}, {mean_quat[3]:.3f}")
-        
+            print(f"SWAY DETECTED! input new mean quat: {self.mean_quat[0]:.3f}, {self.mean_quat[1]:.3f}, {self.mean_quat[2]:.3f}, {self.mean_quat[3]:.3f}")
+
 def main():
     args = arg_parser("Duplo Sim Args")
     
@@ -328,14 +330,14 @@ def main():
     args['ctrl_dict'] = {
         'Kp': 20,
         'Kd': 12,
-        'leg_amp_deg': 30,
-        # 'leg_amp_deg': 0,
+        # 'leg_amp_deg': 30,
+        'leg_amp_deg': 0,
         'hip_omega': 0.75 * 2 * np.pi,
     }
     
     # Input the x and y offsets for leg positions
-    x = 30 # changes feet gap (+x means a wider gap)
-    y = 30 # changes center of feet location (+y means closer to rod)
+    x = 20 # changes feet gap (+x means a wider gap)
+    y = 40 # changes center of feet location (+y means closer to rod)
 
     print(f"Using x={x*10e-4}m, y={y*10e-4}m for ballfoot offset")
 
@@ -381,7 +383,7 @@ def main():
         },
 
         'body_quat': { 
-            'motor': [0.995, 0.067, 0.005, 0.079], # [w, x, y, z],
+            'motor': [0.995, 0.067, 0.005, 0.079], 
         }
     }
 
