@@ -236,6 +236,7 @@ class Duplo(MjcSim):
     def run_sim(self, callbacks: dict[str, Callable]=None) -> None:
         """Run the simulation for the specified time."""
         # print(self.config["ctrl_dict"])
+        self.mean_quat = self.data.qpos[3:7].copy()
         if self.hip_omega is None:
             self.pend_len = self.pendulum_length()[0]
             self.hip_omega = np.sqrt(9.81 / self.pend_len)
@@ -300,7 +301,11 @@ class Duplo(MjcSim):
                     func(self)  # Call function dynamically
         if self.sway: print('[SWAY DETECTED]')
 
-        self.mean_quat = np.mean(quats, axis=0)
+        if len(quats) > 0:
+            mean_quat = np.mean(quats, axis=0)
+            n = np.linalg.norm(mean_quat)
+            if n > 1e-8:
+                self.mean_quat = (mean_quat / n).copy()
         # print(quats)
         if self.sway and self.leg_amp_deg == 0:
             print(f"SWAY DETECTED! input new mean quat: {self.mean_quat[0]:.3f}, {self.mean_quat[1]:.3f}, {self.mean_quat[2]:.3f}, {self.mean_quat[3]:.3f}")
@@ -330,14 +335,15 @@ def main():
     args['ctrl_dict'] = {
         'Kp': 20,
         'Kd': 12,
-        # 'leg_amp_deg': 30,
-        'leg_amp_deg': 0,
+        # 'leg_amp_deg': 40.6411773,
+        'leg_amp_deg': 30,
+        # 'leg_amp_deg': 0,        
         'hip_omega': 0.75 * 2 * np.pi,
     }
     
     # Input the x and y offsets for leg positions
-    x = 20 # changes feet gap (+x means a wider gap)
-    y = 40 # changes center of feet location (+y means closer to rod)
+    x = 50.25 # changes feet gap (+x means a wider gap)
+    y = 51.06 # changes center of feet location (+y means closer to rod)
 
     print(f"Using x={x*10e-4}m, y={y*10e-4}m for ballfoot offset")
 
@@ -383,7 +389,7 @@ def main():
         },
 
         'body_quat': { 
-            'motor': [0.995, 0.067, 0.005, 0.079], 
+            'motor': [0.965, 0.044, 0.012, 0.259], 
         }
     }
 
