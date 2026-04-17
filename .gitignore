@@ -4,3 +4,6 @@ onshape_mjcf-master/
 /data/videos/**
 MUJOCO_LOG.TXT
 .env
+*.png
+*.pkl
+*.mp4
