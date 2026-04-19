@@ -1,8 +1,12 @@
 from collections import deque
+import copy
 import numpy as np
 import mujoco
 import os
 import pickle as pkl
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from src.sim import MjcSim, ProgressCallback
 from utils.sim_args import arg_parser
 from utils.recorder import Recorder
@@ -46,6 +50,7 @@ class Duplo(MjcSim):
         self.sway_window = config.get('sway_window', 1.0)
         self.sway_threshold_deg = config.get('degree_threshold', 0.1)
         self.sway = False
+        self.fall = False
         self.wait_time          = config.get('wait_time', 1.0)   # same t_wait you pass into calculate_sine_reference  
 
 
@@ -237,6 +242,8 @@ class Duplo(MjcSim):
         """Run the simulation for the specified time."""
         # print(self.config["ctrl_dict"])
         self.mean_quat = self.data.qpos[3:7].copy()
+        self._com_log: list[np.ndarray] = [self.mass_center()]
+        self._body_log: list[np.ndarray] = [self.data.body('motor').xpos.copy()]
         if self.hip_omega is None:
             self.pend_len = self.pendulum_length()[0]
             self.hip_omega = np.sqrt(9.81 / self.pend_len)
@@ -290,11 +297,14 @@ class Duplo(MjcSim):
             if _ % 5 == 0:
                 if self.check_fall():   
                     self.fall = True
-                    # print("[FALL DETECTED]")
+                    print("[FALL DETECTED]")
+                    break
             if self.leg_amp_deg == 0 and self.check_sway():
                 self.sway = True
                 # print('[SWAY DETECTED]')
             self.data_log()
+            self._com_log.append(self.mass_center())
+            self._body_log.append(self.data.body('motor').xpos.copy())
             quats.append(self.data.qpos[3:7].copy())
             if callbacks:
                 for name, func in callbacks.items():
@@ -309,6 +319,172 @@ class Duplo(MjcSim):
         # print(quats)
         if self.sway and self.leg_amp_deg == 0:
             print(f"SWAY DETECTED! input new mean quat: {self.mean_quat[0]:.3f}, {self.mean_quat[1]:.3f}, {self.mean_quat[2]:.3f}, {self.mean_quat[3]:.3f}")
+
+        if self.leg_amp_deg > 0:
+            self.stats = self._compute_stats()
+            self._print_stats()
+
+    def _compute_stats(self) -> dict:
+        com_xyz = np.array(self._com_log)
+        steps = np.diff(com_xyz[:, :2], axis=0)
+        total_distance = float(np.sum(np.linalg.norm(steps, axis=1)))
+        avg_speed = total_distance / self.simtime if self.simtime > 0 else 0.0
+
+        com_xyz = np.array(self._com_log)
+        disp = com_xyz[-1, :2] - com_xyz[0, :2]  # XY displacement start→end
+        if np.linalg.norm(disp) > 1e-6:
+            yaw_deg = float(np.degrees(np.arctan2(disp[0], disp[1])))
+        else:
+            yaw_deg = 0.0
+
+        return {
+            "total_distance_m": total_distance,
+            "avg_speed_m_s": avg_speed,
+            "final_yaw_deg": yaw_deg,
+            "fall": self.fall,
+        }
+
+    def _print_stats(self) -> None:
+        s = self.stats
+        print(
+            f"\n── Run Stats ──────────────────────────\n"
+            f"  Total distance : {s['total_distance_m']:.4f} m\n"
+            f"  Average speed  : {s['avg_speed_m_s']:.4f} m/s\n"
+            f"  Final yaw      : {s['final_yaw_deg']:.2f} deg\n"
+            f"  Fell           : {s['fall']}\n"
+            f"───────────────────────────────────────"
+        )
+
+    def export_com_plot(self, output_dir: str) -> str | None:
+        """Export COM trajectory plots: top-down (XY) and side view (YZ, matching the GUI camera)."""
+        if not hasattr(self, "_com_log") or len(self._com_log) < 2:
+            print("[COM plot] Not enough COM samples to export a trajectory.")
+            return None
+
+        com = np.array(self._com_log)
+        body = np.array(self._body_log) if hasattr(self, "_body_log") else None
+
+        fall_status = "FELL" if self.fall else "Stable"
+        end_marker = "X" if self.fall else "o"
+        end_label = "End (fell)" if self.fall else "End"
+
+        fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+        fig.suptitle(f"Trajectory ({fall_status})", fontsize=13)
+
+        # ── left: top-down XY ──────────────────────────────────────────
+        ax = axes[0]
+        ax.plot(com[:, 0], com[:, 1], linewidth=2.0, color="tab:blue", label="COM")
+        if body is not None:
+            ax.plot(body[:, 0], body[:, 1], linewidth=1.5, color="tab:orange",
+                    linestyle="--", label="Motor body")
+        ax.scatter(com[0, 0], com[0, 1], s=80, color="tab:green", zorder=3)
+        ax.scatter(com[-1, 0], com[-1, 1], s=140 if self.fall else 80,
+                   color="tab:red", marker=end_marker, zorder=4)
+        ax.annotate("Start", (com[0, 0], com[0, 1]), xytext=(6, 6),
+                    textcoords="offset points", color="tab:green", fontsize=9, fontweight="bold")
+        ax.annotate(end_label, (com[-1, 0], com[-1, 1]), xytext=(6, -12),
+                    textcoords="offset points", color="tab:red", fontsize=9, fontweight="bold")
+        ax.set_title("Top-down (X–Y)")
+        ax.set_xlabel("X (m)")
+        ax.set_ylabel("Y / forward (m)")
+        ax.grid(True, alpha=0.3)
+        ax.axis("equal")
+        ax.legend(loc="best", fontsize=8)
+
+        # ── right: side view YZ — matches GUI camera (looking in +Y) ──
+        ax = axes[1]
+        ax.plot(com[:, 1], com[:, 2], linewidth=2.0, color="tab:blue", label="COM")
+        if body is not None:
+            ax.plot(body[:, 1], body[:, 2], linewidth=1.5, color="tab:orange",
+                    linestyle="--", label="Motor body")
+        ax.scatter(com[0, 1], com[0, 2], s=80, color="tab:green", zorder=3)
+        ax.scatter(com[-1, 1], com[-1, 2], s=140 if self.fall else 80,
+                   color="tab:red", marker=end_marker, zorder=4)
+        ax.annotate("Start", (com[0, 1], com[0, 2]), xytext=(6, 6),
+                    textcoords="offset points", color="tab:green", fontsize=9, fontweight="bold")
+        ax.annotate(end_label, (com[-1, 1], com[-1, 2]), xytext=(6, -12),
+                    textcoords="offset points", color="tab:red", fontsize=9, fontweight="bold")
+        ax.set_title("Side view (Y–Z) — matches GUI")
+        ax.set_xlabel("Y / forward (m)")
+        ax.set_ylabel("Z / height (m)")
+        ax.grid(True, alpha=0.3)
+        ax.axis("equal")
+        ax.legend(loc="best", fontsize=8)
+
+        axes[0].text(0.02, 0.98, self._com_plot_metrics_text(),
+                     transform=axes[0].transAxes, ha="left", va="top",
+                     fontsize=8, family="monospace",
+                     bbox={"boxstyle": "round,pad=0.3", "facecolor": "white", "alpha": 0.9})
+
+        if self.fall:
+            for ax in axes:
+                ax.text(0.02, 0.02, "X = fall point", transform=ax.transAxes,
+                        ha="left", va="bottom", color="tab:red", fontsize=10, fontweight="bold",
+                        bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "alpha": 0.9})
+
+        plt.tight_layout()
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, f"{self._com_plot_stem()}.png")
+        plt.savefig(output_path, dpi=300)
+        plt.close(fig)
+        print(f"[COM plot] Saved trajectory to {output_path}")
+        return output_path
+
+    def _com_plot_stem(self) -> str:
+        """Build the COM plot filename stem from this simulation's parameters."""
+        x_offset, y_offset = self._com_offsets()
+        x_scale, y_scale, z_scale = self._com_scales()
+        omega = float(self.hip_omega) if self.hip_omega is not None else 0.0
+        leg_amp_deg = float(self.leg_amp_deg)
+        return (
+            f"x{self._short_num(x_offset)}_y{self._short_num(y_offset)}_"
+            f"sx{self._short_num(x_scale)}_sy{self._short_num(y_scale)}_sz{self._short_num(z_scale)}_"
+            f"w{self._short_num(omega)}_a{self._short_num(leg_amp_deg)}"
+        )
+
+    def _com_plot_metrics_text(self) -> str:
+        """Return the metrics summary text shown on the COM plot."""
+        x_offset, y_offset = self._com_offsets()
+        x_scale, y_scale, z_scale = self._com_scales()
+        omega = float(self.hip_omega) if self.hip_omega is not None else 0.0
+        return "\n".join([
+            f"x_offset    = {self._short_num(x_offset)}",
+            f"y_offset    = {self._short_num(y_offset)}",
+            f"x_scale     = {self._short_num(x_scale)}",
+            f"y_scale     = {self._short_num(y_scale)}",
+            f"z_scale     = {self._short_num(z_scale)}",
+            f"omega       = {self._short_num(omega)}",
+            f"leg_amp_deg = {self._short_num(float(self.leg_amp_deg))}",
+        ])
+
+    def _com_offsets(self) -> tuple[float, float]:
+        """Pick representative x/y foot offsets from the current design params."""
+        geom_offsets = self.configs.get("design_params", {}).get("geom_pos_offset", {})
+        for key in ("RightFoot", "LeftFoot", "ballfoot_1"):
+            if key in geom_offsets:
+                vals = geom_offsets[key]
+                return float(vals[0]), float(vals[1])
+        for vals in geom_offsets.values():
+            if isinstance(vals, (list, tuple)) and len(vals) >= 2:
+                return float(vals[0]), float(vals[1])
+        return 0.0, 0.0
+
+    def _com_scales(self) -> tuple[float, float, float]:
+        """Pick representative foot scale values from the current design params."""
+        mesh_scales = self.configs.get("design_params", {}).get("mesh_scale", {})
+        for key in ("RightFoot", "part_1", "footstl_scaled_v4"):
+            if key in mesh_scales:
+                vals = mesh_scales[key]
+                return float(vals[0]), float(vals[1]), float(vals[2])
+        for vals in mesh_scales.values():
+            if isinstance(vals, (list, tuple)) and len(vals) >= 3:
+                return float(vals[0]), float(vals[1]), float(vals[2])
+        return 1.0, 1.0, 1.0
+
+    @staticmethod
+    def _short_num(value: float) -> str:
+        """Format a value compactly using roughly three significant figures."""
+        return format(value, ".3g").replace("+", "")
 
 def main():
     args = arg_parser("Duplo Sim Args")
@@ -338,12 +514,12 @@ def main():
         # 'leg_amp_deg': 40.6411773,
         'leg_amp_deg': 30,
         # 'leg_amp_deg': 0,        
-        'hip_omega': 0.75 * 2 * np.pi,
+        'hip_omega': 0.7 * 2 * np.pi,
     }
     
     # Input the x and y offsets for leg positions
-    x = 50.25 # changes feet gap (+x means a wider gap)
-    y = 51.06 # changes center of feet location (+y means closer to rod)
+    x = -0.8 # changes feet gap (+x means a wider gap)
+    y = -13.0 # changes center of feet location (+y means feet are more forward)
 
     print(f"Using x={x*10e-4}m, y={y*10e-4}m for ballfoot offset")
 
@@ -354,15 +530,9 @@ def main():
             # 'foot_group_2': [0.04, 0.1, 0.08]
         },
         'geom_pos_offset': {
-            # 'ballfoot_1' : [x*10e-4, 0.0, z*10e-4],
-            # 'ballfoot_2' : [x*10e-4, 0.0, -z*10e-4],
 
-            'footstl_scaled_v4_1': [x*10e-4, -y*10e-4, 0],
-            'footstl_scaled_v4_2': [x*10e-4, -y*10e-4, 0],
-            'footstl_scaled_v4_3': [x*10e-4, -y*10e-4, 0],
-            'footstl_scaled_v4_4': [-x*10e-4, -y*10e-4, 0],
-            'footstl_scaled_v4_5': [-x*10e-4, -y*10e-4, 0],
-            'footstl_scaled_v4_6': [-x*10e-4, -y*10e-4, 0],
+            'LeftFoot': [x*1e-3, -y*1e-3, 0],
+            'RightFoot': [-x*1e-3, -y*1e-3, 0],
 
             'hip_rod_1': [0, 0, 0],
             #0 'foot_edge_1_1': [0, 0, 0],
@@ -389,7 +559,7 @@ def main():
         },
 
         'body_quat': { 
-            'motor': [0.965, 0.044, 0.012, 0.259], 
+            'motor': [  0.967, -0.013, -0.003, 0.256], 
         }
     }
 
@@ -405,6 +575,10 @@ def main():
         callbacks_dict["record_plot_data"] = recorder.record_plot_data
 
     robot.run_sim(callbacks=callbacks_dict)
+
+    if args.get("com", False):
+        com_plot_dir = os.path.join("data", "com_plots")
+        robot.export_com_plot(com_plot_dir)
 
     if args["record"]:
         v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"

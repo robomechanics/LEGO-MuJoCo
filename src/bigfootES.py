@@ -3,15 +3,18 @@
 # Keeps changes local and easy to read.
 
 import copy
-import mujoco
 import numpy as np
 import os
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from src.sim import ProgressCallback
 from src.rduplo import Duplo  # <-- change to actual import path
 
 theta_bounds = {
-    'x_mm': {'low': 0, 'high': 90},
-    'y_mm': {'low': 0,  'high': 90},
+    'x_mm': {'low': -90, 'high': 90},
+    'y_mm': {'low': -90,  'high': 90},
 }
 
 def create_base_theta(args) -> np.ndarray:
@@ -47,6 +50,7 @@ def make_args_base():
             'Kp': 20,
             'Kd': 12,
             'leg_amp_deg': 30,
+            'hip_omega': 0.7 * 2 * np.pi,
         },
         'design_params': {
             'geom_pos_offset': {
@@ -61,12 +65,8 @@ def make_args_base():
                 'leg_rod_2': [0.0, 0, 0],
                 'arm_rod_2': [0, 0, 0],
                 'battery_2': [0, 0, 0],
-                'footstl_scaled_v4_1': [0, 0, 0],
-                'footstl_scaled_v4_2': [0, 0, 0],
-                'footstl_scaled_v4_3': [0, 0, 0],
-                'footstl_scaled_v4_4': [0, 0, 0],
-                'footstl_scaled_v4_5': [0, 0, 0],
-                'footstl_scaled_v4_6': [0, 0, 0],
+                'RightFoot': [0, 0, 0],
+                'LeftFoot': [0, 0, 0],
             },
             'mesh_scale': {
                 'part_1': [1, 1, 1],
@@ -76,7 +76,7 @@ def make_args_base():
             'body_quat': {
                 'motor': [0.995, 0.067, 0.005, 0.079],
             },
-            'meta': {'x_mm': 50, 'y_mm': 50}
+            'meta': {'x_mm': 0, 'y_mm': -13}
         }
     }
     return args
@@ -92,27 +92,21 @@ def update_model(args_dict, theta):
 
     gpo = args_dict['design_params']['geom_pos_offset']
 
-    gpo['ballfoot_1'] = [ +x, -y, 0.0 ]
-    gpo['ballfoot_2'] = [ -x, -y, 0.0 ]
-
-    gpo['footstl_scaled_v4_1'] = [ +x, -y, 0.0 ]
-    gpo['footstl_scaled_v4_2'] = [ +x, -y, 0.0 ]
-    gpo['footstl_scaled_v4_3'] = [ +x, -y, 0.0 ]
-    gpo['footstl_scaled_v4_4'] = [ -x, -y, 0.0 ]
-    gpo['footstl_scaled_v4_5'] = [ -x, -y, 0.0 ]
-    gpo['footstl_scaled_v4_6'] = [ -x, -y, 0.0 ]
+    
+    gpo['LeftFoot'] = [ x, -y, 0.0 ]
+    gpo['RightFoot'] = [ -x, -y, 0.0 ]
 
 
 def evaluate_results(results):
     """Evaluate results dict and return a score."""
     score = 0
     wd = 10 # weight for displacement
-    wfall = 50 # weight for falling
+    wfall = 30 # weight for falling
     score += wd * results['distance_m']
     score -= wfall * results['fell']
     return score
 
-def es_step(pop=8, theta=None, theta_bounds=theta_bounds, scale=0.1):
+def es_step(pop=8, theta=None, theta_bounds=theta_bounds, scale=0.2, alpha=0.1):
     """Perform a single ES optimization step."""
     if theta is None or theta_bounds is None:
         raise ValueError("Both theta and theta_bounds must be provided for ES step.")
@@ -138,23 +132,37 @@ def es_step(pop=8, theta=None, theta_bounds=theta_bounds, scale=0.1):
     theta_minus = np.clip(theta - epsilons, lows, highs)
 
     deltaR = []
+    trials = []
     base_args = make_args_base()
     for i in range(len(theta_plus)):
         results_plus = run_sim(theta_plus[i], base_args)
         results_minus = run_sim(theta_minus[i], base_args)
-        dR = evaluate_results(results_plus) - evaluate_results(results_minus)
+        score_plus = evaluate_results(results_plus)
+        score_minus = evaluate_results(results_minus)
+        dR = score_plus - score_minus
         deltaR.append(dR)
+        trials.append({
+            'x_mm': results_plus['x_mm'],
+            'y_mm': results_plus['y_mm'],
+            'score': score_plus,
+            'sample_type': 'plus',
+        })
+        trials.append({
+            'x_mm': results_minus['x_mm'],
+            'y_mm': results_minus['y_mm'],
+            'score': score_minus,
+            'sample_type': 'minus',
+        })
 
     print(f"Gen ΔR mean={np.mean(deltaR):.3f}, std={np.std(deltaR):.3f}")
     deltaR = np.array(deltaR)           # shape (pop,)
     grad = np.dot(deltaR, epsilons)     # weighted sum over εᵢ
     grad = grad / (2 * len(epsilons))   # divide by 2N
     grad = grad / sigma_vec             # scale back by σ (elementwise)
-    alpha = 0.05   # learning rate (tune later)
     theta_new = theta + alpha * grad
     theta_new = np.clip(theta_new, lows, highs)
 
-    return theta_new, grad, deltaR
+    return theta_new, grad, deltaR, trials
 
     
 
@@ -204,80 +212,224 @@ def run_sim(theta, base_args):
     progress_cb = ProgressCallback(args['sim_time'])
     callbacks = {"progress_bar": progress_cb.update}
 
-    # Capture initial pose and forward direction
-    motor_id = robot.model.body('motor').id
-    p_start = robot.data.xpos[motor_id].copy()
-    q = robot.data.xquat[motor_id].astype(np.float64)
-    R_flat = np.zeros(9, dtype=np.float64)
-    mujoco.mju_quat2Mat(R_flat, q)
-    f_world = R_flat.reshape(3, 3)[:, 0]
-
-    # Run the sim
     robot.run_sim(callbacks=callbacks)
-
-    # Measure displacement along forward axis
-    p_end = robot.data.xpos[motor_id].copy()
-    forward_disp = np.dot(p_end - p_start, f_world)
-
-    fell = bool(robot.check_fall())
     robot.close()
 
     return {
         'x_mm': float(theta[0]),
         'y_mm': float(theta[1]),
-        'distance_m': round(forward_disp, 4),
-        'fell': fell,
+        'distance_m': round(robot.stats['total_distance_m'], 4),
+        'fell': robot.stats['fall'],
     }
 
 
 def main():
     base_args = make_args_base()
     theta = create_base_theta(base_args)
-    theta_opt, rewards = train_es(theta, theta_bounds, max_gens=10)
+    theta_opt, history, all_trials = train_es(theta, theta_bounds, max_gens=10)
 
     print("\nRunning final validation sim...")
     final_results = run_sim(theta_opt, base_args)
     final_score = evaluate_results(final_results)
     print(f"Final optimized reward: {final_score:.3f}")
 
+    plot_trials(all_trials, output_path="data/es_trials.png")
+    plot_reward_history(history, output_path="data/es_history.png")
+
+
+def plot_trials(trials: list, output_path: str = "data/es_trials.png") -> None:
+    """Scatter plot of all ES trials: x/y offsets coloured red→green by reward."""
+    x = np.array([t['x_mm'] for t in trials])
+    y = np.array([t['y_mm'] for t in trials])
+    scores = np.array([t['score'] for t in trials])
+
+    best_idx = int(np.argmax(scores))
+    bx, by, bs = x[best_idx], y[best_idx], scores[best_idx]
+
+    fig, ax = plt.subplots(figsize=(8, 7))
+
+    norm = mcolors.Normalize(vmin=scores.min(), vmax=scores.max())
+    sc = ax.scatter(x, y, c=scores, cmap='RdYlGn', norm=norm,
+                    s=70, edgecolors='k', linewidths=0.5, zorder=2)
+
+    ax.scatter(bx, by, s=250, marker='*', color='gold',
+               edgecolors='k', linewidths=1.0, zorder=3, label='Best')
+
+    # Callout offset away from plot edges
+    offset_x = 15 if bx < 0 else -15
+    offset_y = 15 if by < 0 else -15
+    ax.annotate(
+        f"Best\nx = {bx:.1f} mm\ny = {by:.1f} mm\nR = {bs:.2f}",
+        xy=(bx, by),
+        xytext=(bx + offset_x, by + offset_y),
+        fontsize=9,
+        bbox=dict(boxstyle='round,pad=0.35', facecolor='white',
+                  edgecolor='gold', linewidth=1.5, alpha=0.95),
+        arrowprops=dict(arrowstyle='->', color='goldenrod', lw=1.5),
+    )
+
+    cbar = fig.colorbar(sc, ax=ax)
+    cbar.set_label('Reward', fontsize=11)
+
+    ax.set_xlabel('X offset (mm)', fontsize=11)
+    ax.set_ylabel('Y offset (mm)', fontsize=11)
+    ax.set_title(f'ES Trial Rewards — {len(trials)} evaluations', fontsize=13)
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=9)
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close(fig)
+    print(f"[ES plot] Saved to {output_path}")
+
+
+def plot_reward_history(history: list, output_path: str = "data/es_history.png") -> None:
+    """Plot actual score statistics and ES directional signal over generations."""
+    gens = np.array([h['gen'] for h in history], dtype=int)
+    mean_scores = np.array([h['mean_score'] for h in history], dtype=float)
+    best_scores = np.array([h['best_score'] for h in history], dtype=float)
+    mean_delta_r = np.array([h['mean_deltaR'] for h in history], dtype=float)
+    scales = np.array([h['scale'] for h in history], dtype=float)
+
+    fig, axes = plt.subplots(2, 1, figsize=(9, 8), sharex=True)
+
+    axes[0].plot(gens, mean_scores, marker='o', label='Mean score')
+    axes[0].plot(gens, best_scores, marker='*', markersize=12, label='Best score')
+    axes[0].set_ylabel('Reward')
+    axes[0].set_title('ES Reward History')
+    axes[0].grid(True, alpha=0.3)
+    axes[0].legend()
+
+    axes[1].plot(gens, mean_delta_r, marker='s', label='Mean ΔR')
+    axes[1].plot(gens, scales, marker='^', label='Exploration scale')
+    axes[1].set_xlabel('Generation')
+    axes[1].set_ylabel('Signal / Scale')
+    axes[1].grid(True, alpha=0.3)
+    axes[1].legend()
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close(fig)
+    print(f"[ES history plot] Saved to {output_path}")
+
+
+def plot_trials_by_generation(trials: list, output_path: str = "data/es_trials_by_generation.png") -> None:
+    """Scatter one panel per generation so the search trajectory is easier to read."""
+    if not trials:
+        return
+
+    gens = sorted({int(t['gen']) for t in trials})
+    ncols = min(3, len(gens))
+    nrows = int(np.ceil(len(gens) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4.5 * nrows), squeeze=False)
+
+    scores = np.array([t['score'] for t in trials], dtype=float)
+    norm = mcolors.Normalize(vmin=scores.min(), vmax=scores.max())
+    flat_axes = axes.flatten()
+    sc = None
+
+    for ax, gen in zip(flat_axes, gens):
+        gen_trials = [t for t in trials if int(t['gen']) == gen]
+        x = np.array([t['x_mm'] for t in gen_trials], dtype=float)
+        y = np.array([t['y_mm'] for t in gen_trials], dtype=float)
+        gen_scores = np.array([t['score'] for t in gen_trials], dtype=float)
+
+        sc = ax.scatter(x, y, c=gen_scores, cmap='RdYlGn', norm=norm,
+                        s=70, edgecolors='k', linewidths=0.5)
+
+        best_idx = int(np.argmax(gen_scores))
+        ax.scatter(x[best_idx], y[best_idx], s=220, marker='*', color='gold',
+                   edgecolors='k', linewidths=1.0, zorder=3)
+
+        ax.set_title(f'Generation {gen}')
+        ax.set_xlabel('X offset (mm)')
+        ax.set_ylabel('Y offset (mm)')
+        ax.grid(True, alpha=0.3)
+
+    for ax in flat_axes[len(gens):]:
+        ax.axis('off')
+
+    if sc is not None:
+        cbar = fig.colorbar(sc, ax=flat_axes.tolist(), shrink=0.95)
+        cbar.set_label('Reward')
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close(fig)
+    print(f"[ES generation plot] Saved to {output_path}")
+
 
 def train_es(theta_init, theta_bounds, max_gens=20, tol_theta=0.01, tol_reward=0.1):
-    # """
-    # Run multiple ES steps until convergence or max generations.
-    # """
     theta = np.array(theta_init, dtype=float)
-    args = make_args_base()
-    prev_reward = 0.0
-    reward_history = []
-    order = list(theta_bounds.keys())
+    scale = 0.10
+    scale_decay = 0.95
+    alpha = 0.1
+    history = []
+    all_trials = []
+    best_overall = None
 
     for gen in range(max_gens):
         print(f"\n=== Generation {gen} ===")
-        scale = 0.1
-        # Perform one ES update
-        theta_new, grad, deltaR = es_step(pop=16, theta=theta, theta_bounds=theta_bounds, scale=scale)
-        scale = scale * 0.95  # decay scale over generations
-        # Compute convergence metrics
+        theta_new, grad, deltaR, trials = es_step(pop=32, theta=theta,
+                                                  theta_bounds=theta_bounds,
+                                                  scale=scale,
+                                                  alpha=alpha)
+        for trial in trials:
+            trial['gen'] = gen
+        all_trials.extend(trials)
+
+        scores = np.array([trial['score'] for trial in trials], dtype=float)
+        best_trial = max(trials, key=lambda trial: trial['score'])
+        if best_overall is None or best_trial['score'] > best_overall['score']:
+            best_overall = dict(best_trial)
+
         delta_theta = np.linalg.norm(theta_new - theta)
-        mean_reward = np.mean(deltaR)
-        reward_history.append(mean_reward)
+        mean_score = float(np.mean(scores))
+        best_score = float(np.max(scores))
+        mean_delta_r = float(np.mean(deltaR))
+        history.append({
+            'gen': gen,
+            'scale': scale,
+            'delta_theta': float(delta_theta),
+            'mean_score': mean_score,
+            'best_score': best_score,
+            'mean_deltaR': mean_delta_r,
+            'best_x_mm': float(best_trial['x_mm']),
+            'best_y_mm': float(best_trial['y_mm']),
+        })
 
-        print(f"Δθ = {delta_theta:.4f}, mean ΔR = {mean_reward:.4f}")
+        print(
+            f"scale={scale:.4f}, Δθ={delta_theta:.4f}, "
+            f"mean score={mean_score:.4f}, best score={best_score:.4f}, "
+            f"mean ΔR={mean_delta_r:.4f}"
+        )
 
-        # Check for convergence (after first gen)
-        if gen > 0:
-            delta_reward = abs(mean_reward - prev_reward)
-            if delta_theta < tol_theta or delta_reward < tol_reward:
-                print(f"Converged at generation {gen}")
-                break
+        # if gen > 0:
+        #     prev_mean_score = history[-2]['mean_score']
+        #     delta_reward = abs(mean_score - prev_mean_score)
+        #     if delta_theta < tol_theta or delta_reward < tol_reward:
+        #         print(f"Converged at generation {gen}")
+        #         theta = theta_new
+        #         break
 
-        # Update state for next gen
         theta = theta_new
-        prev_reward = mean_reward
+        scale *= scale_decay
 
     print(f"\nFinal optimized theta: x={theta[0]:.2f}mm, y={theta[1]:.2f}mm")
-    print(f"Reward history: {np.round(reward_history, 3)}")
-    return theta, reward_history
+    if best_overall is not None:
+        print(
+            "Best trial seen: "
+            f"x={best_overall['x_mm']:.2f}mm, "
+            f"y={best_overall['y_mm']:.2f}mm, "
+            f"score={best_overall['score']:.3f}"
+        )
+    print(f"Mean score history: {np.round([h['mean_score'] for h in history], 3)}")
+    print(f"Best score history: {np.round([h['best_score'] for h in history], 3)}")
+    plot_trials_by_generation(all_trials, output_path="data/es_trials_by_generation.png")
+    return theta, history, all_trials
 
 
 

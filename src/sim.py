@@ -83,10 +83,8 @@ class MjcSim:
         return self.renderer.render()
     
     def mass_center(self):
-        """Calculate the center of mass of the robot."""
-        mass = np.expand_dims(self.model.body_mass, axis=1)
-        xpos = self.data.xipos
-        return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:3].copy()
+        """Return the robot's center of mass using MuJoCo's subtree COM (body 0 = world = all bodies)."""
+        return self.data.subtree_com[0].copy()
 
     def step_sim(self):
         """Step the simulation forward by one time step."""

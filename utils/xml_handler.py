@@ -116,14 +116,15 @@ class MJCFHandler:
         
     def update_volume(self) -> None:
         """Update the volume of the geoms in the model."""
-        for mesh in self.meshes:
-            mesh_name = mesh.get('name')
-            if mesh_name is None: mesh_name = mesh.get('file').split('.')[0]
-            mesh_path = f"{self.scene_dir}/{mesh.get('file')}"
-            mesh = trimesh.load_mesh(mesh_path)
-            assert mesh.is_watertight, "Mesh is not watertight"
-            volume = mesh.volume
-            self.mass_dict[mesh_name]["volume"] = float(volume)
+        for mesh_elem in self.meshes:
+            mesh_name = mesh_elem.get('name')
+            if mesh_name is None: mesh_name = mesh_elem.get('file').split('.')[0]
+            mesh_path = f"{self.scene_dir}/{mesh_elem.get('file')}"
+            loaded_mesh = trimesh.load_mesh(mesh_path)
+            if not loaded_mesh.is_watertight:
+                print(f"[WARNING] Mesh '{mesh_name}' is not watertight; keeping existing volume")
+                continue
+            self.mass_dict[mesh_name]["volume"] = float(loaded_mesh.volume)
             
     def scene_to_robot_path(self, scene_path: str) -> tuple[str, str]:
         """Convert the scene path to robot path."""

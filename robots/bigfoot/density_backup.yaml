@@ -8,36 +8,16 @@ battery:
   mass: 0.85502162
   scale: 1
   volume: 0.0003829760369281777
-footstl_scaled_v4_1:
-  density: 190.0178777150801
-  mass: 0.57727
+LeftFoot:
+  density: 207.97394711085463
+  mass: 1.21547
   scale: 1
-  volume: 0.0030379773047753966
-footstl_scaled_v4_2:
-  density: 227.42403953028517
-  mass: 0.3191
+  volume: 0.005844337736983522
+RightFoot:
+  density: 207.97394711085463
+  mass: 1.21547
   scale: 1
-  volume: 0.001403105848700338
-footstl_scaled_v4_3:
-  density: 227.42532464265904
-  mass: 0.3191
-  scale: 1
-  volume: 0.0014030979201695517
-footstl_scaled_v4_4:
-  density: 227.4086189178901
-  mass: 0.3191
-  scale: 1
-  volume: 0.001403200993517386
-footstl_scaled_v4_5:
-  density: 190.0182580728193
-  mass: 0.57727
-  scale: 1
-  volume: 0.0030379712236851316
-footstl_scaled_v4_6:
-  density: 227.38898012053022
-  mass: 0.3191
-  scale: 1
-  volume: 0.0014033221831192403
+  volume: 0.005844337736983522
 hip_rod:
   density: 1588.8433084388098
   mass: 0.047

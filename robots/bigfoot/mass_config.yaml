@@ -1,3 +1,11 @@
+LeftFoot:
+  mass: 1.15883
+  scale: 1
+  volume: 0.005844337736983522
+RightFoot:
+  mass: 1.15883
+  scale: 1
+  volume: 0.005844337736983522
 arm_rod:
   mass: 0.327
   scale: 1
@@ -6,30 +14,6 @@ battery:
   mass: 0.85502162
   scale: 1
   volume: 0.0003829760369281777
-footstl_scaled_v4_1:
-  mass: 0.52063
-  scale: 1
-  volume: 0.0030379773047753966
-footstl_scaled_v4_2:
-  mass: 0.3191
-  scale: 1
-  volume: 0.001403105848700338
-footstl_scaled_v4_3:
-  mass: 0.3191
-  scale: 1
-  volume: 0.0014030979201695517
-footstl_scaled_v4_4:
-  mass: 0.3191
-  scale: 1
-  volume: 0.001403200993517386
-footstl_scaled_v4_5:
-  mass: 0.52063
-  scale: 1
-  volume: 0.0030379712236851316
-footstl_scaled_v4_6:
-  mass: 0.3191
-  scale: 1
-  volume: 0.0014033221831192403
 hip_rod:
   mass: 0.047
   scale: 1
