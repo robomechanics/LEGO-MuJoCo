@@ -1,17 +1,36 @@
 #!/usr/bin/env python3
 """
-Terminal Commands:
-    # Feet Preview Only, no xml:
-    python3 generate_and_inject_feet.py \
-        --scad-dir /path/to/scad \
-        --X 0.24 --Y 0.20 --Z 0.18 --box_x 0.30 --box_y 0.0527 \
+generate_and_inject_feet.py
+
+Pipeline:
+    1. Generate 3-part feet (front/middle/back) via OpenSCAD from ellipsoid +
+       bounding-box parameters.
+    2. (Optional) Preview the 3-part feet standalone in the MuJoCo viewer.
+    3. Inject the generated meshes into an existing robot MJCF, replacing the
+       existing right_foot_1/2/3 (+_col) and left_foot_1/2/3 (+_col) geoms,
+       reusing each foot's existing pos/quat (read from the XML itself, not
+       hardcoded).
+
+Requirements:
+    - OpenSCAD installed (path set below via OPENSCAD_PATH)
+    - mujoco python package: pip install mujoco
+    - feet_generator.scad (patched version with slice_x0/slice_x1 support)
+
+Usage:
+    # Preview only, 3-part feet, no robot XML needed:
+    python3 gen_inject_feet.py \
+        --scad-dir /Users/benmatthews/Downloads \
+        --X 0.78 --Y 0.50 --Z 0.705 --box_x 0.667 --box_y 0.24 \
         --preview-only
 
-    # Generate feet + Preview, Put onto robot in scene:
-    mjpython gen_inject_feet.py \
-    --scad-dir /Users/benmatthews/Downloads \
-    --scene-xml /Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml \
-    --X 0.36 --Y 0.20 --Z 0.18 --box_x 0.30 --box_y 0.0527
+    # Full pipeline: generate + inject into robot XML + view full robot:
+    python3 gen_inject_feet.py \
+        --scad-dir /Users/benmatthews/Downloads \
+        --robot-xml /Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml \
+        --X 0.78 --Y 0.95 --Z 0.3 --box_x 0.667 --box_y 0.24
+# Standard Case: 
+    # If front/back sections look swapped in the preview, flip them:
+    python3 generate_and_inject_feet.py ... --swap-front-back
 """
 
 import argparse
@@ -23,9 +42,96 @@ from typing import Tuple
 import mujoco
 import mujoco.viewer
 
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # <-- adjust as needed
+OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # <-- adjust if needed
 
-MIDDLE_SECTION_LENGTH = 0.25  #250mm, current robot length
+import numpy as np
+
+
+def quat_from_axis_angle(axis, angle_deg: float) -> np.ndarray:
+    """Unit quaternion (w,x,y,z) for a rotation of angle_deg about axis."""
+    angle = np.radians(angle_deg)
+    axis = np.array(axis, dtype=float)
+    axis = axis / np.linalg.norm(axis)
+    w = np.cos(angle / 2)
+    xyz = axis * np.sin(angle / 2)
+    return np.array([w, *xyz])
+
+
+def quat_multiply(q1: np.ndarray, q2: np.ndarray) -> np.ndarray:
+    """Hamilton product q1 * q2, both in (w,x,y,z) order."""
+    w1, x1, y1, z1 = q1
+    w2, x2, y2, z2 = q2
+    return np.array([
+        w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+        w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+        w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+        w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+    ])
+
+
+_AXIS_MAP = {"x": [1, 0, 0], "y": [0, 1, 0], "z": [0, 0, 1]}
+
+
+def parse_correction_string(s: str) -> np.ndarray:
+    """
+    Parses e.g. "z:90" or "z:90;x:180" into a single composed quaternion.
+    Tokens are applied in order, left to right, in the mesh's local frame
+    (i.e. "z:90;x:180" means: first rotate 90deg about local Z, then rotate
+    the result 180deg about local X).
+    """
+    composed = np.array([1.0, 0.0, 0.0, 0.0])  # identity
+    if not s.strip():
+        return composed
+    for token in s.split(";"):
+        axis_letter, deg_str = token.split(":")
+        axis = _AXIS_MAP[axis_letter.strip().lower()]
+        q = quat_from_axis_angle(axis, float(deg_str))
+        composed = quat_multiply(composed, q)
+    return composed
+
+
+def quat_to_rotmat(q: np.ndarray) -> np.ndarray:
+    """Rotation matrix from a (w,x,y,z) unit quaternion."""
+    w, x, y, z = q
+    return np.array([
+        [1 - 2*(y*y + z*z),     2*(x*y - z*w),       2*(x*z + y*w)],
+        [2*(x*y + z*w),         1 - 2*(x*x + z*z),   2*(y*z - x*w)],
+        [2*(x*z - y*w),         2*(y*z + x*w),       1 - 2*(x*x + y*y)],
+    ])
+
+
+def apply_offset(pos: np.ndarray, quat: np.ndarray, offset: np.ndarray, frame: str) -> np.ndarray:
+    """Applies a position offset either in body frame (direct add) or in the
+    mesh's local frame (rotated by quat first)."""
+    if frame == "body":
+        return pos + offset
+    elif frame == "local":
+        return pos + quat_to_rotmat(quat) @ offset
+    else:
+        raise ValueError(f"Unknown frame '{frame}', expected 'body' or 'local'.")
+
+
+MIDDLE_SECTION_LENGTH = 0.25  # 250mm, per spec
+
+
+def validate_ellipsoid_box_fit(X: float, Y: float, Z: float, box_x: float, box_y: float) -> None:
+    """
+    Replicates the z_top math from feet_generator.scad in Python so we can
+    raise a clear error *before* calling OpenSCAD, instead of a cryptic
+    'nan'/'Current top level object is empty' failure from the subprocess.
+    """
+    a, b, c = X / 2, Y / 2, Z / 2
+    hx, hy = box_x / 2, box_y / 2
+
+    ratio = (hx * hx) / (a * a) + (hy * hy) / (b * b)
+    if ratio >= 1:
+        raise ValueError(
+            f"Invalid parameters: the clipping box's corner (hx={hx:.4f}, "
+            f"hy={hy:.4f}) lies outside the ellipsoid (a={a:.4f}, b={b:.4f}).\n"
+            f"  (hx/a)^2 + (hy/b)^2 = {ratio:.4f}, but this must be < 1.\n"
+            f"Fix: increase X and/or Y (the ellipsoid dimensions) relative to "
+            f"box_x/box_y (the footprint), or decrease box_x/box_y."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +227,7 @@ def generate_all_sections(
                     "left":  {...}}
     """
     bounds = compute_section_bounds(box_x, swap_front_back)
+    validate_ellipsoid_box_fit(X, Y, Z, box_x, box_y)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     results = {"right": {}, "left": {}}
@@ -214,17 +321,43 @@ def inject_feet_into_model(
     robot_xml_path: Path,
     sections: dict,
     output_xml_path: Path = None,
+    left_correction: np.ndarray = None,
+    right_correction: np.ndarray = None,
+    left_offset: np.ndarray = None,
+    right_offset: np.ndarray = None,
+    offset_frame: str = "body",
 ) -> "mujoco.MjModel":
     """
     Loads robot_xml_path, replaces the existing right_/left_foot_{1,2,3}
     (+_col) geoms with newly generated section meshes, reusing each geom's
-    original pos/quat. Returns the compiled mjModel.
+    original pos/quat -- with an additional per-side correction rotation
+    and position offset applied.
 
     If output_xml_path is given, also writes the modified spec back out to
     XML for inspection (does not overwrite your original file unless you
     pass the same path).
     """
     spec = mujoco.MjSpec.from_file(str(robot_xml_path))
+
+    identity_quat = np.array([1.0, 0.0, 0.0, 0.0])
+    zero_offset = np.array([0.0, 0.0, 0.0])
+    corrections = {
+        "right": right_correction if right_correction is not None else identity_quat,
+        "left": left_correction if left_correction is not None else identity_quat,
+    }
+    # ========================================================
+    # Manually Set Offsets:
+    # ========================================================
+    #Left: [Down/Up (Pos = Down),Forward/Backward, Right/Left (Actual X)]
+    #Right: [Left/Right (Pos = Left), Backwards/Forwards (Pos = Backwards), Up/Down (actual Z)]
+    left_offset = np.array([0.0, 0.0, 0.113]) #Centered: [0.0, 0.0, 0.113667]
+    right_offset = np.array([0.113, 0.0, 0.0]) #Centered: [0.113667, 0.0, 0.0]
+    
+    
+    offsets = {
+        "right": right_offset if right_offset is not None else zero_offset,
+        "left": left_offset if left_offset is not None else zero_offset,
+    }
 
     for side in ["right", "left"]:
         for suffix, section in SUFFIX_TO_SECTION.items():
@@ -234,6 +367,10 @@ def inject_feet_into_model(
             # Read the existing transform (identical for visual/collision
             # in your XML, so we just use the visual geom's).
             pos, quat = _get_geom_transform(spec, visual_name)
+            corrected_quat = quat_multiply(np.array(quat), corrections[side])
+            corrected_pos = apply_offset(
+                np.array(pos), corrected_quat, offsets[side], offset_frame
+            )
 
             # Find owning body before deleting the geom.
             visual_geom = spec.geom(visual_name)
@@ -259,23 +396,21 @@ def inject_feet_into_model(
             new_mesh_name = f"{side}_{section}_mesh"
             spec.add_mesh(name=new_mesh_name, file=str(new_mesh_path))
 
-            # Add new visual + collision geoms with the original transform.
+            # Add new visual + collision geoms with the original position
+            # and the corrected orientation.
             body.add_geom(
                 name=visual_name,
                 type=mujoco.mjtGeom.mjGEOM_MESH,
                 meshname=new_mesh_name,
-                pos=pos,
-                quat=quat,
-                # class left unset here; if your XML relies on the
-                # "visual"/"collision" defaults class for rendering/contact
-                # params, set classname="visual" / "collision" below instead.
+                pos=list(corrected_pos),
+                quat=list(corrected_quat),
             )
             body.add_geom(
                 name=collision_name,
                 type=mujoco.mjtGeom.mjGEOM_MESH,
                 meshname=new_mesh_name,
-                pos=pos,
-                quat=quat,
+                pos=list(corrected_pos),
+                quat=list(corrected_quat),
             )
 
             print(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
@@ -326,13 +461,30 @@ def main():
     parser.add_argument("--swap-front-back", action="store_true",
                          help="Flip which end is labeled front/back, if the "
                               "preview shows them reversed.")
+    parser.add_argument("--left-correction", type=str, default="z:90",
+                         help="Semicolon-separated axis:degrees corrections "
+                              "applied to the left foot's local frame before "
+                              "the original transform, e.g. 'z:90' or "
+                              "'z:90;x:180'. Starting guess based on "
+                              "described misalignment -- verify visually.")
+    parser.add_argument("--right-correction", type=str, default="z:90;x:180",
+                         help="Same as --left-correction, for the right foot.")
+    parser.add_argument("--left-offset", type=str, default="0 0 0",
+                         help="'dx dy dz' position offset applied to the left foot.")
+    parser.add_argument("--right-offset", type=str, default="0 0 0",
+                         help="'dx dy dz' position offset applied to the right foot.")
+    parser.add_argument("--offset-frame", type=str, default="body",
+                         choices=["body", "local"],
+                         help="Whether dx/dy/dz above are interpreted in the "
+                              "parent body's frame ('body') or rotated into "
+                              "the foot's own local frame first ('local').")
     args = parser.parse_args()
 
     scad_file = Path(args.scad_dir) / "feet_generator.scad"
     if not scad_file.exists():
         sys.exit(f"Could not find {scad_file}")
 
-    out_dir = Path(args.out_dir)
+    out_dir = Path(args.out_dir).resolve()
 
     sections = generate_all_sections(
         scad_file, out_dir,
@@ -351,8 +503,15 @@ def main():
     launch_preview(sections)
 
     output_xml_path = Path(args.output_xml) if args.output_xml else None
+    left_correction = parse_correction_string(args.left_correction)
+    right_correction = parse_correction_string(args.right_correction)
+    left_offset = np.array([float(v) for v in args.left_offset.split()])
+    right_offset = np.array([float(v) for v in args.right_offset.split()])
     model = inject_feet_into_model(
-        Path(entry_xml), sections, output_xml_path
+        Path(entry_xml), sections, output_xml_path,
+        left_correction=left_correction, right_correction=right_correction,
+        left_offset=left_offset, right_offset=right_offset,
+        offset_frame=args.offset_frame,
     )
     data = mujoco.MjData(model)
     print("Launching full robot viewer with new feet... close the window to exit.")

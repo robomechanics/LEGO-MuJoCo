@@ -32,18 +32,18 @@ RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0
 MIN_DISTANCE       = 2.0    # metres — minimum to save a result
-NUM_TRIALS         = 3000   # ← change this to run more or fewer trials
+NUM_TRIALS         = 20000  # ← change this to run more or fewer trials
 
 # ── Randomisation ranges [min, max] ───────────────────────────────────────────
 RANGES = {
     'foot_x':          (-0.07,  0.025), #Free Var
-    'foot_y':          (-0.02,  0.0200), #Free
-    'Kp':              ( 42.0,  45.0 ), #Static (ish)
-    'Kd':              ( 7.0,  8.0 ), #Static (ish)
-    'start_amp_mult':  ( 1.17,   1.23), #static
-    'start_freq_mult': ( 0.9,   1.1 ), #S
-    'amp_deg':         (37.0,  38.0 ), #S
-    'freq_hz':         ( 0.55,   0.60), #S
+    'foot_y':          (-0.02,  0.01), #Free
+    'Kp':              ( 35.0,  45.0 ), #Static (ish)
+    'Kd':              ( 7.5,  9.0 ), #Static (ish)
+    'start_amp_mult':  ( 1.0,   1.5), #static
+    'start_freq_mult': ( 0.7,   1.4), #S
+    'amp_deg':         (33.0,  38.0), #S
+    'freq_hz':         ( 0.5,   0.65), #S
 }
 
 FOOT_GEOM_NAMES = [
@@ -59,6 +59,8 @@ FOOT_GEOM_NAMES = [
 
 model = mujoco.MjModel.from_xml_path("bigfoot/scene.xml")
 data  = mujoco.MjData(model)
+TOTAL_MASS = sum(model.body_mass[i] for i in range(model.nbody))
+GRAVITY    = 9.81
 
 torso_body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, TORSO_BODY_NAME)
 joint_id      = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, JOINT_NAME)
@@ -201,6 +203,7 @@ for trial_idx, params in enumerate(all_params, 1):
     cmd_buffer = [0.0] * CMD_DELAY_STEPS
     fell       = False
     max_steps  = int(ITERATION_DURATION / model.opt.timestep)
+    energy_used = 0.0   # accumulated mechanical work, J
 
     for step in range(max_steps):
         t = data.time
@@ -216,6 +219,8 @@ for trial_idx, params in enumerate(all_params, 1):
         tau       = (params['Kp'] * ramp * (target_pos_rad - current_pos) +
                      params['Kd'] * ramp * (target_vel_rad - current_vel))
         tau       = np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT)
+        energy_used += abs(tau * current_vel) * model.opt.timestep
+
 
         cmd_buffer.append(tau)
         data.ctrl[0] = cmd_buffer.pop(0)
@@ -230,13 +235,14 @@ for trial_idx, params in enumerate(all_params, 1):
     final_x  = data.xpos[torso_body_id][0]
     final_y  = data.xpos[torso_body_id][1]
     distance = float(np.sqrt((final_x - start_x)**2 + (final_y - start_y)**2))
+    cot = (energy_used / (TOTAL_MASS * GRAVITY * distance)) if distance > 1e-6 else float('inf')
     passed   = not fell and distance >= MIN_DISTANCE
 
     print(f"[{trial_idx:>5}/{NUM_TRIALS}] "
           f"freq={params['freq_hz']:.2f}Hz amp={params['amp_deg']:.1f}° "
           f"Kp={params['Kp']:.1f} Kd={params['Kd']:.1f} "
           f"fx={params['foot_x']:.3f} fy={params['foot_y']:.3f} | "
-          f"fell={fell} dist={distance:.2f}m | {'SAVED' if passed else 'skipped'}")
+          f"fell={fell} dist={distance:.2f}m CoT={cot:.3f}| {'SAVED' if passed else 'skipped'}")
 
     if passed or (not passed and distance >= MIN_DISTANCE):
         results.append({
@@ -250,6 +256,7 @@ for trial_idx, params in enumerate(all_params, 1):
             "Frequency_Hz":      round(params['freq_hz'],         3),
             "Fell":              fell,
             "Distance_Traversed": round(distance,                 4),
+            "CoT": round(cot, 4),
         })
 
 print(f"Save rate: {len(results)}/{NUM_TRIALS} = {len(results)/NUM_TRIALS*100:.1f}%")
