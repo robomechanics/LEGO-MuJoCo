@@ -1,0 +1,13 @@
+{
+    "configuration": "default",
+    "documentId": "17c5c8d07f4ec308269aab5c",
+    "documentMicroversion": "3cfadac3622ecfbd1c150390",
+    "elementId": "0774f148d4c48bfe95ddd14f",
+    "fullConfiguration": "default",
+    "id": "MsBxBYGzOQEWsvQ/3",
+    "isStandardContent": false,
+    "name": "Motor <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

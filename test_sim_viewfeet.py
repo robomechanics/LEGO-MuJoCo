@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-generate_and_inject_feet.py
 
 Pipeline:
     1. Generate 3-part feet (front/middle/back) via OpenSCAD from ellipsoid +
@@ -28,9 +27,11 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Tuple
+
 import numpy as np
 import mujoco
 import mujoco.viewer
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS
@@ -39,51 +40,45 @@ import mujoco.viewer
 # ── File paths ────────────────────────────────────────────────────────────
 OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
 SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
-OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
-
-# Point ENTRY_XML at whichever file is the correct load target.
-# Use scene.xml if robot.xml is a bare <worldbody> fragment meant to be
-# pulled in via <include> (i.e. it has no its own <mujoco>/<compiler>/<asset>
-# tags) -- scene.xml supplies that context. Use robot.xml directly only if
-# it's a fully standalone, compilable MJCF on its own.
 ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
-OUTPUT_XML = None   # optional: path to also write the modified model XML to disk
-
-# ── Mode flags ────────────────────────────────────────────────────────────
-PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
-SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
 X     = 0.78
-Y     = 0.83
-Z     = 0.35      #foot thickness scales ~linearly with Z; 
-BOX_X = 0.667      # total foot length
+Y     = 0.85
+Z     = 0.3      #foot thickness scales ~linearly with Z; 
+BOX_X = 0.667    # total foot length
 BOX_Y = 0.24     # total foot width
 FN    = 80       # OpenSCAD sphere facet resolution (higher = smoother, slower)
-MIDDLE_SECTION_LENGTH = 0.25  # 250mm (fixed, this is the length of middle foot part)  
-
-# ── Per-foot rotation corrections ────────────────────────────────────────
-# Semicolon-separated "axis:degrees" tokens, applied (in order, left to
-# right) to the mesh's local frame before the original geom transform.
-# These correct for our generated mesh's axis convention differing from the
-# original CAD mesh's -- values below are what worked for this robot;
-# re-verify visually if you change X/Y/Z/BOX_X/BOX_Y significantly.
-LEFT_CORRECTION  = "z:90"
-RIGHT_CORRECTION = "z:90;x:180"
-
-# ── Per-foot position offsets ────────────────────────────────────────────
-# OFFSET_FRAME = "body":  dx/dy/dz applied directly in the parent body's axes.
-# OFFSET_FRAME = "local": dx/dy/dz applied in the foot's own (rotated) axes.
-OFFSET_FRAME = "body"
 
 # Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
 # Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
-LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])    # centered reference: [0.0, 0.0, 0.113667]
-RIGHT_OFFSET = np.array([0.07, -0.0105 , 0.0])    # centered reference: [0.113667, 0.0, 0.0]
+LEFT_OFFSET  = np.array([0.0, 0.0, 0.113])    # centered reference: [0.0, 0.0, 0.113667]
+RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0.0, 0.0]
 
+# ── Motor / control ───────────────────────────────────────────────────────────
+KP           = 45.5  
+KD           = 6.5
+TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
+
+# ── Trajectory ────────────────────────────────────────────────────────────────
+HIP_OMEGA       = 0.55 * 2 * np.pi #natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 37.0
+T_WAIT          = 3.0
+START_FREQ_MULT = 1.1
+START_AMP_MULT  = 1.25
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ADDITIONAL PARAMETERS (Likely do not change)
+# ═══════════════════════════════════════════════════════════════════════════
+OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
+OUTPUT_XML = None   # optional: path to also write the modified model XML to disk
+
+# ── Mode flags ────────────────────────────────────────────────────────────
+PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
+SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Quaternion / offset utilities
@@ -151,6 +146,9 @@ def apply_offset(pos: np.ndarray, quat: np.ndarray, offset: np.ndarray, frame: s
         return pos + quat_to_rotmat(quat) @ offset
     else:
         raise ValueError(f"Unknown frame '{frame}', expected 'body' or 'local'.")
+
+
+MIDDLE_SECTION_LENGTH = 0.25  # 250mm, per spec
 
 
 def validate_ellipsoid_box_fit(X: float, Y: float, Z: float, box_x: float, box_y: float) -> None:
@@ -310,7 +308,7 @@ def build_preview_mjcf(sections: dict, spacing: float = 0.4) -> str:
                 f'<geom name="{side}_{section}_geom" type="mesh" '
                 f'mesh="{mesh_name}" material="{mat_name}"/>'
             )
-        bodies.append(f'<body name="{side}_foot" pos="{x_off} 0 {Z}">\n'
+        bodies.append(f'<body name="{side}_foot" pos="{x_off} 0 0.3">\n'
                        + "\n".join(geoms) + "\n</body>")
 
     xml = f"""
@@ -377,7 +375,6 @@ def inject_feet_into_model(
     pass the same path).
     """
     spec = mujoco.MjSpec.from_file(str(robot_xml_path))
-    bounds = compute_section_bounds(BOX_X, SWAP_FRONT_BACK)
 
     corrections = {"right": right_correction, "left": left_correction}
     offsets = {"right": right_offset, "left": left_offset}
@@ -420,53 +417,21 @@ def inject_feet_into_model(
             spec.add_mesh(name=new_mesh_name, file=str(new_mesh_path))
 
             # Add new visual + collision geoms with the corrected transform.
-            visual_geom = body.add_geom(
+            body.add_geom(
                 name=visual_name,
                 type=mujoco.mjtGeom.mjGEOM_MESH,
                 meshname=new_mesh_name,
                 pos=list(corrected_pos),
                 quat=list(corrected_quat),
             )
-            sphere_radius = 0.005  # 5mm sphere radius
+            body.add_geom(
+                name=collision_name,
+                type=mujoco.mjtGeom.mjGEOM_MESH,
+                meshname=new_mesh_name,
+                pos=list(corrected_pos),
+                quat=list(corrected_quat),
+            )
 
-            local_vertices = []
-            if new_mesh_path.exists():
-                with open(new_mesh_path, "r") as obj_file:
-                    for line in obj_file:
-                        if line.startswith("v "):  # Vertex line
-                            parts = line.split()
-                            # OpenSCAD local x, y, z coordinates
-                            local_vertices.append([float(parts[1]), float(parts[2]), float(parts[3])])
-            
-            # 2. Downsample and bin vertices to create an even, smooth contact shell.
-            # We round X and Y coordinates to create a grid, keeping only the lowest Z point 
-            # in each grid cell (the bottom sole surface).
-            grid_resolution = 0.008  # Places a sphere roughly every 8mm
-            binned_points = {}
-            
-            for vx, vy, vz in local_vertices:
-                # Group vertices into spatial bins
-                bin_key = (round(vx / grid_resolution), round(vy / grid_resolution))
-                
-                # We want the rolling contact surface (the lowest Z profile)
-                if bin_key not in binned_points or vz < binned_points[bin_key][2]:
-                    binned_points[bin_key] = [vx, vy, vz]
-            
-            # 3. Inject the spheres using the exact coordinates extracted from the mesh
-            s_idx = 0
-            for local_sphere_pos in binned_points.values():
-                
-                # Apply the exact same rotation matrix as the visual mesh
-                global_sphere_pos = corrected_pos + quat_to_rotmat(corrected_quat) @ np.array(local_sphere_pos)
-
-                s_geom = body.add_geom()
-                s_geom.name = f"{collision_name}_sphere_{s_idx}"
-                s_geom.type = mujoco.mjtGeom.mjGEOM_SPHERE
-                s_geom.size = [sphere_radius, 0.0, 0.0]
-                s_geom.pos = list(global_sphere_pos)
-                s_geom.group = 3  # Collision group
-                
-                s_idx += 1
             print(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
 
     model = spec.compile()
@@ -511,7 +476,7 @@ def main():
         Path(ENTRY_XML), sections, output_xml_path,
         left_correction=left_correction, right_correction=right_correction,
         left_offset=LEFT_OFFSET, right_offset=RIGHT_OFFSET,
-        offset_frame=OFFSET_FRAME
+        offset_frame=OFFSET_FRAME,
     )
     data = mujoco.MjData(model)
     print("Launching full robot viewer with new feet... close the window to exit.")

@@ -25,7 +25,16 @@ RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0  # Seconds per test run
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# EXPERIMENT GRID GENERATION
+# ═══════════════════════════════════════════════════════════════════════════════
+frequencies = np.arange(0.35, 0.75 + 0.01, 0.02)       
+amplitudes  = np.arange(5, 38 + 1, 1)                 
+results     = []
+
 # Foot Offsets
+# For right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
+# For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
 foot_position_deltaRight = np.array([0.0, -0.01, 0.0])
 foot_position_deltaLeft  = np.array([0.0, 0.01, 0.0])
 foot_geom_offsets = {
@@ -119,12 +128,6 @@ def check_has_fallen(model, data, body_id, height_threshold=0.3, angle_threshold
 
     return False
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# EXPERIMENT GRID GENERATION
-# ═══════════════════════════════════════════════════════════════════════════════
-frequencies = np.arange(0.35, 0.75 + 0.01, 0.02)       
-amplitudes  = np.arange(5, 38 + 1, 1)                 
-results     = []
 
 print(f"Starting parameter sweep: {len(frequencies)} Frequencies x {len(amplitudes)} Amplitudes = {len(frequencies)*len(amplitudes)} total runs.")
 

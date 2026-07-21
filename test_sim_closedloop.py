@@ -9,31 +9,29 @@ import pickle as pkl
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Motor / control ───────────────────────────────────────────────────────────
-KP           = 30.19   # now acts on radian error, matches motorwave.py
-KD           = 2.28
+KP           = 42.0  
+KD           = 6.7
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.472 * 2 * np.pi #natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 36.91
-T_WAIT          = 10.0
-START_FREQ_MULT = 1.530
-START_AMP_MULT  = 0.946
+HIP_OMEGA       = 0.57 * 2 * np.pi #natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 37.5
+T_WAIT          = 3.0
+START_FREQ_MULT = 0.9
+START_AMP_MULT  = 1.3
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # FOOT OFFSETS
-# ═══════════════════════════════════════════════════════════════════════════════
 #If Right = [a, b, c], then left = [-c, -b, a]
 # for right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
 # For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
 #Notes: Position of Y shift @0.0 reflects the second slot pretty well, but not perfectly 
-foot_position_deltaRight = np.array([-0.035, 0.01, 0.0])
+foot_position_deltaRight = np.array([-0.035, -0.003, 0.0])
 foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], -0.035])
+# ═══════════════════════════════════════════════════════════════════════════════
 
 # True spatial mirroring: invert X (lateral), keep Y (forward) identical, keep Z (vertical) 0
 body_deltaRight = np.array([foot_position_deltaRight[0], foot_position_deltaRight[1], foot_position_deltaRight[2]])
 body_deltaLeft  = np.array([-foot_position_deltaRight[0], foot_position_deltaRight[1], foot_position_deltaRight[2]]) # Symmetrical world shift
-
 
 # ── Gain ramp ─────────────────────────────────────────────────────────────────
 USE_RAMP  = False
@@ -96,6 +94,28 @@ print(f"Total mass:      {sum(model.body_mass[i] for i in range(model.nbody)):.3
 leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 cmd_buffer  = [0.0] * CMD_DELAY_STEPS
 
+
+def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
+    """Vectorized (N,4) quat[w,x,y,z] -> (N,3) [roll, pitch, yaw] in radians."""
+    q = np.atleast_2d(quat_wxyz)
+    w, x, y, z = q[:, 0], q[:, 1], q[:, 2], q[:, 3]
+ 
+    # Roll (x-axis rotation)
+    sinr_cosp = 2.0 * (w * x + y * z)
+    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+    roll = np.arctan2(sinr_cosp, cosr_cosp)
+ 
+    # Pitch (y-axis rotation)
+    sinp = np.clip(2.0 * (w * y - z * x), -1.0, 1.0)
+    pitch = np.arcsin(sinp)
+ 
+    # Yaw (z-axis rotation)
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    yaw = np.arctan2(siny_cosp, cosy_cosp)
+ 
+    return np.column_stack([roll, pitch, yaw])
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # TRAJECTORY — direct port of motorwave.py calculate_sine_reference
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -144,6 +164,7 @@ positionActual_history = []
 velocityActual_history = []
 targetPosition_history = []
 targetVelocity_history = []
+quat_history = []
 
 ##FOOT CONTACT
 
@@ -216,6 +237,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         velocityActual_history.append(current_vel)
         targetPosition_history.append(target_pos_rad)
         targetVelocity_history.append(target_vel_rad)
+        quat_history.append(data.xquat[motor_id].copy())
         #torqueCommand_history.append(data.qfrc_actuator[0])
         if t > T_WAIT:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
@@ -255,6 +277,9 @@ positionActual_history = np.array(positionActual_history)
 velocityActual_history = np.array(velocityActual_history)
 targetPosition_history = np.array(targetPosition_history)
 targetVelocity_history = np.array(targetVelocity_history)
+quat_history = np.array(quat_history)                 # (N,4) [w,x,y,z]
+rpy_history = np.rad2deg(quat_to_rpy(quat_history))    # (N,3) degrees
+roll_history, pitch_history, yaw_history = rpy_history[:, 0], rpy_history[:, 1], rpy_history[:, 2]
 
 # Note: If you add a positionCommand_history later, convert it here too:
 # positionCommand_history = np.array(positionCommand_history)
@@ -296,6 +321,24 @@ ax1.legend(lines, labels, loc='upper right')
 plt.tight_layout()
 plt.savefig('joint_telemetry_plot.png', dpi=300)
 print("Plot successfully saved as 'joint_telemetry_plot.png'")
+
+# ── Roll / Pitch / Yaw plot (motor body), overwritten fresh each run ──────────
+fig2, ax3 = plt.subplots(figsize=(11, 7))
+#Roll and Pitch Swapped to match true orientation in viewer
+ax3.plot(time_history, roll_history,  color='#d62728', linewidth=2, label='Pitch (motor body)')
+ax3.plot(time_history, pitch_history, color='#9467bd', linewidth=2, label='Roll (motor body)')
+ax3.plot(time_history, yaw_history,   color='#17becf', linewidth=2, label='Yaw (motor body)')
+ 
+ax3.set_xlabel('Time (seconds)', fontsize=11, fontweight='bold')
+ax3.set_ylabel('Angle (degrees)', fontsize=11, fontweight='bold')
+ax3.set_title('Motor Body Orientation — Roll / Pitch / Yaw', fontsize=14, fontweight='bold', pad=15)
+ax3.grid(True, linestyle=':', alpha=0.6)
+ax3.legend(loc='upper right')
+ 
+plt.tight_layout()
+plt.savefig('orientation_telemetry_plot.png', dpi=300)
+plt.close(fig2)
+print("Plot successfully saved as 'orientation_telemetry_plot.png'")
 
 #Foot Contact Plotting Save
 for name in con_dict.keys():
