@@ -11,16 +11,13 @@ Pipeline:
        hardcoded) plus a per-side rotation correction and position offset.
 
 Requirements:
-    - OpenSCAD installed (path set below via OPENSCAD_PATH)
-    - mujoco python package: pip install mujoco
-    - feet_generator.scad (patched version with slice_x0/slice_x1 support)
-
+Requirements:
+    - OpenSCAD installed (path set below via OPENSCAD_PATH, make sure version is newest)
+    - mujoco python package
+    - feet_generator.scad
 Usage:
     Edit the USER PARAMETERS block below, then just run:
-        python3 generate_and_inject_feet.py
-    (or, on macOS, run via mjpython instead of python3 -- see notes in the
-    conversation this script came from, re: the interactive viewer requiring
-    the main thread.)
+        python3 test_sim_viewfeet.py
 """
 
 import subprocess
@@ -46,11 +43,11 @@ ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78
-Y     = 0.85
-Z     = 0.3      #foot thickness scales ~linearly with Z; 
-BOX_X = 0.667    # total foot length
-BOX_Y = 0.24     # total foot width
+X     = 0.78       #Current Robot: 0.78
+Y     = 0.936      # Current Robot: 0.936
+Z     = 0.35       # foot thickness scales ~linearly with Z, Use ~.35-.4
+BOX_X = 0.667      # total foot length, Current Robot: 0.667
+BOX_Y = 0.24       # total foot width, Current Robot: 0.24
 FN    = 80       # OpenSCAD sphere facet resolution (higher = smoother, slower)
 
 # Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
@@ -61,7 +58,7 @@ RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0
 # ── Motor / control ───────────────────────────────────────────────────────────
 KP           = 45.5  
 KD           = 6.5
-TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
+TORQUE_LIMIT = 25.0       # Nm — Torque Limit for AK80-8
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
 HIP_OMEGA       = 0.55 * 2 * np.pi #natural freq should be 0.52 Hz
@@ -79,6 +76,12 @@ OUTPUT_XML = None   # optional: path to also write the modified model XML to dis
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
 SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
+
+# CORRECTIONS FOR FEET ORIENTATION
+LEFT_CORRECTION  = "z:90"
+RIGHT_CORRECTION = "z:90;x:180"
+OFFSET_FRAME = "body"
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Quaternion / offset utilities
@@ -341,8 +344,8 @@ def launch_preview(sections: dict) -> None:
 # Injection into the full robot model via mjSpec
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Maps your existing geom-name suffixes to the section labels we generate.
-# Per your description: _1=front, _2=back, _3=middle.
+# Maps existing geom-name suffixes to the section labels generated.
+# Convention Currently: _1=front, _2=back, _3=middle.
 SUFFIX_TO_SECTION = {"1": "front", "2": "back", "3": "middle"}
 
 
@@ -465,7 +468,7 @@ def main():
         launch_preview(sections)
         return
 
-    # Preview first anyway, so you can confirm shape/orientation before
+    # Preview first to confirm shape/orientation before
     # committing to the full-robot injection.
     launch_preview(sections)
 

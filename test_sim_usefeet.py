@@ -9,8 +9,7 @@ Pipeline:
        geoms, reusing each foot's existing pos/quat plus a per-side rotation
        correction and position offset (applied exactly once, here).
     4. Run the sinusoidal hip trajectory simulation directly on the modified
-       (in-memory) model, with live PD control, gain ramp, and simulated
-       CAN latency -- matching motorwave.py for hardware replication.
+       (created locally) model with hardware replication parameters.
     5. Plot joint telemetry and roll/pitch/yaw orientation.
 
 Requirements:
@@ -59,13 +58,28 @@ SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > MIDDLE_SECTION_LENGTH.
-X     = 0.78
-Y     = 0.83
-Z     = 0.35      # foot thickness scales ~linearly with Z
-BOX_X = 0.667      # total foot length
-BOX_Y = 0.24       # total foot width
+X     = 0.78       #Current Robot: 0.78
+Y     = 0.936      # Current Robot: 0.936
+Z     = 0.35       # foot thickness scales ~linearly with Z, Use ~.35-.4
+BOX_X = 0.667      # total foot length, Current Robot: 0.667
+BOX_Y = 0.24       # total foot width, Current Robot: 0.24
 FN    = 80         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm (fixed length of the middle foot part)
+LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])
+RIGHT_OFFSET = np.array([0.07, -0.0105, 0.0])
+
+# ── Motor / control -- match these directly to motorwave.py for hardware
+#    replication ─────────────────────────────────────────────────────────
+KP           = 42.0
+KD           = 6.7
+TORQUE_LIMIT = 25.0       # Nm -- Torque Limit for AK80-8
+
+# ── Trajectory ──────────────────────────────────────────────────────────────
+HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 37.5
+T_WAIT          = 3.0
+START_FREQ_MULT = 0.9
+START_AMP_MULT  = 1.3
 
 # ── Per-foot rotation corrections ────────────────────────────────────────
 # Semicolon-separated "axis:degrees" tokens, applied (in order, left to
@@ -77,21 +91,6 @@ RIGHT_CORRECTION = "z:90;x:180"
 # OFFSET_FRAME = "body":  dx/dy/dz applied directly in the parent body's axes.
 # OFFSET_FRAME = "local": dx/dy/dz applied in the foot's own (rotated) axes.
 OFFSET_FRAME = "body"
-LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])
-RIGHT_OFFSET = np.array([0.07, -0.0105, 0.0])
-
-# ── Motor / control -- match these directly to motorwave.py for hardware
-#    replication ─────────────────────────────────────────────────────────
-KP           = 42.0
-KD           = 6.7
-TORQUE_LIMIT = 25.0       # Nm -- matches MIT_Params T_max and gear in XML
-
-# ── Trajectory ──────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 37.5
-T_WAIT          = 3.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.3
 
 # ── Gain ramp ───────────────────────────────────────────────────────────────
 USE_RAMP  = False
@@ -382,7 +381,7 @@ def launch_preview(sections: dict) -> None:
 # Injection into the full robot model via mjSpec
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Maps your existing geom-name suffixes to the section labels we generate.
+# Maps existing geom-name suffixes to the section labels generated.
 SUFFIX_TO_SECTION = {"1": "front", "2": "back", "3": "middle"}
 
 
@@ -408,13 +407,12 @@ def inject_feet_into_model(
     Loads robot_xml_path, replaces the existing right_/left_foot_{1,2,3}
     (+_col) geoms with newly generated section meshes, reusing each geom's
     original pos/quat -- with an additional per-side correction rotation
-    and position offset applied (this is the single point where the offset
-    is applied; nothing downstream re-offsets the feet).
+    and position offset applied.
 
     Visual geoms use the generated mesh directly. Collision is approximated
     with a grid of small spheres sampled from the mesh's bottom (sole)
-    surface, since MuJoCo's mesh-mesh contact can be less robust/performant
-    than sphere-based contact for this kind of thin, curved geometry.
+    surface due to issues with mesh contact with scene floor.
+    During Trial, press 3 to see the spheres.
     """
     spec = mujoco.MjSpec.from_file(str(robot_xml_path))
 
@@ -554,7 +552,7 @@ def main():
         launch_preview(sections)
         return
 
-    # Preview first anyway, so you can confirm shape/orientation before
+    # Preview first anyway, to confirm shape/orientation before
     # committing to the full-robot injection + simulation.
     launch_preview(sections)
 
