@@ -32,18 +32,18 @@ RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0
 MIN_DISTANCE       = 2.0    # metres — minimum to save a result
-NUM_TRIALS         = 20000  # ← change this to run more or fewer trials
+NUM_TRIALS         = 500  # ← change this to run more or fewer trials
 
 # ── Randomisation ranges [min, max] ───────────────────────────────────────────
 RANGES = {
-    'foot_x':          (-0.07,  0.025), #Free Var
-    'foot_y':          (-0.02,  0.01), #Free
-    'Kp':              ( 35.0,  45.0 ), #Static (ish)
-    'Kd':              ( 7.5,  9.0 ), #Static (ish)
-    'start_amp_mult':  ( 1.0,   1.5), #static
-    'start_freq_mult': ( 0.7,   1.4), #S
-    'amp_deg':         (33.0,  38.0), #S
-    'freq_hz':         ( 0.5,   0.65), #S
+    'foot_x':          (-0.07,  0.025), 
+    'foot_y':          (-0.02,  0.01),
+    'Kp':              ( 20.0,  45.0 ),
+    'Kd':              ( 2.0,  15.0),
+    'start_amp_mult':  ( 0.8,   1.8),
+    'start_freq_mult': ( 0.7,   1.4),
+    'amp_deg':         (20.0,  40.0), 
+    'freq_hz':         ( 0.4,   0.8), 
 }
 
 FOOT_GEOM_NAMES = [
@@ -57,7 +57,7 @@ FOOT_GEOM_NAMES = [
 # INITIALIZE MODEL
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("bigfoot/scene.xml")
+model = mujoco.MjModel.from_xml_path("modified_model.xml")
 data  = mujoco.MjData(model)
 TOTAL_MASS = sum(model.body_mass[i] for i in range(model.nbody))
 GRAVITY    = 9.81

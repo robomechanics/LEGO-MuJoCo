@@ -9,15 +9,16 @@ Pipeline:
        existing right_foot_1/2/3 (+_col) and left_foot_1/2/3 (+_col) geoms,
        reusing each foot's existing pos/quat (read from the XML itself, not
        hardcoded) plus a per-side rotation correction and position offset.
+    4. Optionally save the fully modified robot model to OUTPUT_XML,
+        so the saved file can be loaded from a different script/location.
 
-Requirements:
 Requirements:
     - OpenSCAD installed (path set below via OPENSCAD_PATH, make sure version is newest)
     - mujoco python package
     - feet_generator.scad
 Usage:
     Edit the USER PARAMETERS block below, then just run:
-        python3 test_sim_viewfeet.py
+        python3 gen_new_xml.py
 """
 
 import subprocess
@@ -43,12 +44,12 @@ ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78       #Current Robot: 0.78
+X     = 0.78       # Current Robot: 0.78
 Y     = 0.936      # Current Robot: 0.936
-Z     = 0.35       # foot thickness scales ~linearly with Z, Use ~.35-.4
+Z     = 0.35       # foot thickness scales ~linearly with Z, use ~.35-.4
 BOX_X = 0.667      # total foot length, Current Robot: 0.667
 BOX_Y = 0.24       # total foot width, Current Robot: 0.24
-FN    = 80       # OpenSCAD sphere facet resolution (higher = smoother, slower)
+FN    = 80         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 
 # Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
 # Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
@@ -345,6 +346,25 @@ def _get_geom_transform(spec: "mujoco.MjSpec", geom_name: str) -> Tuple[list, li
     return list(geom.pos), list(geom.quat)
 
 
+def absolutize_all_mesh_paths(spec: "mujoco.MjSpec", xml_dir: Path) -> None:
+    """
+    Rewrites every mesh asset's file path to an absolute path, resolved
+    against the compiler's meshdir setting (itself resolved relative to the
+    directory containing the entry XML this spec was loaded from).
+    """
+    meshdir = spec.compiler.meshdir or ""
+    mesh_base_dir = (xml_dir / meshdir) if meshdir else xml_dir
+
+    for mesh in spec.meshes:
+        if not mesh.file:
+            continue
+        mesh_path = Path(mesh.file)
+        if not mesh_path.is_absolute():
+            mesh_path = (mesh_base_dir / mesh_path).resolve()
+        mesh.file = str(mesh_path)
+    spec.compiler.meshdir = ""
+
+
 def inject_feet_into_model(
     robot_xml_path: Path,
     sections: dict,
@@ -355,17 +375,8 @@ def inject_feet_into_model(
     right_offset: np.ndarray,
     offset_frame: str,
 ) -> "mujoco.MjModel":
-    """
-    Loads robot_xml_path, replaces the existing right_/left_foot_{1,2,3}
-    (+_col) geoms with newly generated section meshes, reusing each geom's
-    original pos/quat -- with an additional per-side correction rotation
-    and position offset applied.
-
-    If output_xml_path is given, also writes the modified spec back out to
-    XML for inspection (does not overwrite your original file unless you
-    pass the same path).
-    """
     spec = mujoco.MjSpec.from_file(str(robot_xml_path))
+    absolutize_all_mesh_paths(spec, robot_xml_path.parent)
 
     corrections = {"right": right_correction, "left": left_correction}
     offsets = {"right": right_offset, "left": left_offset}
@@ -375,55 +386,58 @@ def inject_feet_into_model(
             visual_name = f"{side}_foot_{suffix}"
             collision_name = f"{side}_foot_{suffix}_col"
 
-            # Read the existing transform (identical for visual/collision
-            # in your XML, so we just use the visual geom's).
             pos, quat = _get_geom_transform(spec, visual_name)
             corrected_quat = quat_multiply(np.array(quat), corrections[side])
             corrected_pos = apply_offset(
                 np.array(pos), corrected_quat, offsets[side], offset_frame
             )
 
-            # Find owning body before deleting the geom.
             visual_geom = spec.geom(visual_name)
-            body = visual_geom.parent  # owning body of this geom
+            body = visual_geom.parent
 
             old_mesh_name = visual_geom.meshname
 
-            # Delete old visual + collision geoms.
             spec.delete(visual_geom)
             spec.delete(spec.geom(collision_name))
 
-            # Delete old mesh asset (safe to skip if already removed/shared).
             old_mesh = spec.mesh(old_mesh_name)
             if old_mesh is not None:
                 spec.delete(old_mesh)
 
-            # Add new mesh asset from the generated .obj.
-            # Use an absolute path -- if we pass a relative path here, the
-            # compiler's meshdir (inherited from scene.xml/robot.xml) gets
-            # prepended to it, which breaks the lookup since our generated
-            # files live outside that meshdir.
             new_mesh_path = sections[side][section].resolve()
             new_mesh_name = f"{side}_{section}_mesh"
             spec.add_mesh(name=new_mesh_name, file=str(new_mesh_path))
 
-            # Add new visual + collision geoms with the corrected transform.
-            body.add_geom(
-                name=visual_name,
-                type=mujoco.mjtGeom.mjGEOM_MESH,
-                meshname=new_mesh_name,
-                pos=list(corrected_pos),
-                quat=list(corrected_quat),
-                classname = 'visual',
-            )
-            body.add_geom(
-                name=collision_name,
-                type=mujoco.mjtGeom.mjGEOM_MESH,
-                meshname=new_mesh_name,
-                pos=list(corrected_pos),
-                quat=list(corrected_quat),
-                classname = 'collision'
-            )
+            visual_default = spec.find_default("visual")
+            collision_default = spec.find_default("collision")
+
+            # Pass visual_default positionally to resolve class inheritance at creation time
+            if visual_default is not None:
+                new_visual_geom = body.add_geom(visual_default)
+            else:
+                new_visual_geom = body.add_geom()
+                print(f"Warning: no 'visual' default class found; "
+                      f"{visual_name} will use the body's childclass instead.")
+
+            new_visual_geom.name = visual_name
+            new_visual_geom.type = mujoco.mjtGeom.mjGEOM_MESH
+            new_visual_geom.meshname = new_mesh_name
+            new_visual_geom.pos = list(corrected_pos)
+            new_visual_geom.quat = list(corrected_quat)
+
+            # Pass collision_default positionally to resolve class inheritance at creation time
+            if collision_default is not None:
+                new_collision_geom = body.add_geom(collision_default)
+            else:
+                new_collision_geom = body.add_geom()
+                print(f"Warning: no 'collision' default class found; "
+                      f"{collision_name} will use the body's childclass instead.")
+
+            new_collision_geom.name = collision_name
+            new_collision_geom.type = mujoco.mjtGeom.mjGEOM_MESH
+            new_collision_geom.meshname = new_mesh_name
+            new_collision_geom.pos = list(corrected_pos)
+            new_collision_geom.quat = list(corrected_quat)
 
             print(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
 
@@ -435,6 +449,7 @@ def inject_feet_into_model(
         print(f"Wrote modified model XML to {output_xml_path}")
 
     return model
+
 
 
 # ═══════════════════════════════════════════════════════════════════════════

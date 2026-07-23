@@ -25,8 +25,8 @@ START_AMP_MULT  = 1.3
 # for right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
 # For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
 #Notes: Position of Y shift @0.0 reflects the second slot pretty well, but not perfectly 
-foot_position_deltaRight = np.array([-0.035, -0.003, 0.0])
-foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], -0.035])
+foot_position_deltaRight = np.array([0.0, 0.0, 0.0])
+foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], 0.0])
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # True spatial mirroring: invert X (lateral), keep Y (forward) identical, keep Z (vertical) 0
