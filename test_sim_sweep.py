@@ -1,7 +1,24 @@
 import csv
+import os
 import mujoco
 import numpy as np
 from scipy.stats import qmc
+
+
+def _env_flag(name: str, default: bool = True) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+VERBOSE = _env_flag("TEST_SIM_SWEEP_VERBOSE", True)
+
+
+def vprint(*args, **kwargs) -> None:
+    if VERBOSE:
+        print(*args, **kwargs)
+
 
 def generate_lhs_samples(n_trials):
     """
@@ -31,8 +48,12 @@ USE_RAMP           = False
 RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0
-MIN_DISTANCE       = 2.0    # metres — minimum to save a result
-NUM_TRIALS         = 500  # ← change this to run more or fewer trials
+MIN_DISTANCE       = float(os.environ.get("MIN_DISTANCE", "2.0"))    # metres — minimum to save a result
+NUM_TRIALS         = int(os.environ.get("NUM_TRIALS", "500"))  # ← change this to run more or fewer trials
+MODEL_XML_PATH     = os.environ.get("MODEL_XML_PATH", "modified_model.xml")
+RESULTS_CSV        = os.environ.get("SWEEP_RESULTS_CSV", "sweep_results.csv")
+APPEND_RESULTS     = os.environ.get("SWEEP_APPEND_RESULTS", "0") == "1"
+SAVE_ALL_RESULTS   = os.environ.get("SWEEP_SAVE_ALL_RESULTS", "0") == "1"
 
 # ── Randomisation ranges [min, max] ───────────────────────────────────────────
 RANGES = {
@@ -57,7 +78,7 @@ FOOT_GEOM_NAMES = [
 # INITIALIZE MODEL
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path(MODEL_XML_PATH)
 data  = mujoco.MjData(model)
 TOTAL_MASS = sum(model.body_mass[i] for i in range(model.nbody))
 GRAVITY    = 9.81
@@ -182,7 +203,7 @@ def calculate_sine_reference(t, hip_omega, leg_amp_rad, start_amp_mult, start_fr
 
 results = []
 all_params = generate_lhs_samples(NUM_TRIALS)
-print(f"Starting random sweep: {NUM_TRIALS} trials. Saving results with no fall and >{MIN_DISTANCE}m distance.")
+vprint(f"Starting random sweep: {NUM_TRIALS} trials. Saving results with no fall and >{MIN_DISTANCE}m distance.")
 
 for trial_idx, params in enumerate(all_params, 1):
 
@@ -194,7 +215,7 @@ for trial_idx, params in enumerate(all_params, 1):
     mujoco.mj_forward(model, data)
 
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "right_foot_3_col")
-    print(f"Global Position: {data.geom_xpos[geom_id]}")
+    vprint(f"Global Position: {data.geom_xpos[geom_id]}")
 
     start_x    = data.xpos[torso_body_id][0]
     start_y    = data.xpos[torso_body_id][1]
@@ -228,7 +249,7 @@ for trial_idx, params in enumerate(all_params, 1):
         mujoco.mj_step(model, data)
 
         if t > T_WAIT and check_has_fallen(torso_body_id):
-            print(f"   [DEBUG] Fell at t={data.time:.3f}s. Height={data.xpos[torso_body_id][2]:.2f}m")
+            vprint(f"   [DEBUG] Fell at t={data.time:.3f}s. Height={data.xpos[torso_body_id][2]:.2f}m")
             fell = True
             break
 
@@ -238,13 +259,13 @@ for trial_idx, params in enumerate(all_params, 1):
     cot = (energy_used / (TOTAL_MASS * GRAVITY * distance)) if distance > 1e-6 else float('inf')
     passed   = not fell and distance >= MIN_DISTANCE
 
-    print(f"[{trial_idx:>5}/{NUM_TRIALS}] "
-          f"freq={params['freq_hz']:.2f}Hz amp={params['amp_deg']:.1f}° "
-          f"Kp={params['Kp']:.1f} Kd={params['Kd']:.1f} "
-          f"fx={params['foot_x']:.3f} fy={params['foot_y']:.3f} | "
-          f"fell={fell} dist={distance:.2f}m CoT={cot:.3f}| {'SAVED' if passed else 'skipped'}")
+    vprint(f"[{trial_idx:>5}/{NUM_TRIALS}] "
+           f"freq={params['freq_hz']:.2f}Hz amp={params['amp_deg']:.1f}° "
+           f"Kp={params['Kp']:.1f} Kd={params['Kd']:.1f} "
+           f"fx={params['foot_x']:.3f} fy={params['foot_y']:.3f} | "
+           f"fell={fell} dist={distance:.2f}m CoT={cot:.3f}| {'SAVED' if passed else 'skipped'}")
 
-    if passed or (not passed and distance >= MIN_DISTANCE):
+    if SAVE_ALL_RESULTS or passed or (not passed and distance >= MIN_DISTANCE):
         results.append({
             "Foot_X":            round(params['foot_x'],          4),
             "Foot_Y":            round(params['foot_y'],          4),
@@ -259,7 +280,7 @@ for trial_idx, params in enumerate(all_params, 1):
             "CoT": round(cot, 4),
         })
 
-print(f"Save rate: {len(results)}/{NUM_TRIALS} = {len(results)/NUM_TRIALS*100:.1f}%")
+vprint(f"Save rate: {len(results)}/{NUM_TRIALS} = {len(results)/NUM_TRIALS*100:.1f}%")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -267,12 +288,30 @@ print(f"Save rate: {len(results)}/{NUM_TRIALS} = {len(results)/NUM_TRIALS*100:.1
 # ═══════════════════════════════════════════════════════════════════════════════
 
 if results:
-    csv_file = "sweep_results.csv"
-    with open(csv_file, 'w', newline='') as f:
+    metadata = {
+        "Mesh_X": os.environ.get("SWEEP_MESH_X"),
+        "Mesh_Y": os.environ.get("SWEEP_MESH_Y"),
+        "Mesh_X_Index": os.environ.get("SWEEP_MESH_X_INDEX"),
+        "Mesh_Y_Index": os.environ.get("SWEEP_MESH_Y_INDEX"),
+        "Pair_Index": os.environ.get("SWEEP_PAIR_INDEX"),
+        "Run_Index": os.environ.get("SWEEP_RUN_INDEX"),
+    }
+    metadata = {key: value for key, value in metadata.items() if value is not None}
+    if metadata:
+        results = [{**metadata, **row} for row in results]
+
+    csv_file = RESULTS_CSV
+    write_header = True
+    if APPEND_RESULTS and os.path.exists(csv_file) and os.path.getsize(csv_file) > 0:
+        write_header = False
+
+    mode = 'a' if APPEND_RESULTS else 'w'
+    with open(csv_file, mode, newline='') as f:
         writer = csv.DictWriter(f, fieldnames=results[0].keys())
-        writer.writeheader()
+        if write_header:
+            writer.writeheader()
         writer.writerows(results)
-    print(f"\nSweep complete. {len(results)}/{NUM_TRIALS} trials saved to '{csv_file}'.")
+    vprint(f"\nSweep complete. {len(results)}/{NUM_TRIALS} trials saved to '{csv_file}'.")
 else:
-    print(f"\nSweep complete. No trials met the criteria (no fall + >{MIN_DISTANCE}m).")
-    print("Consider reducing MIN_DISTANCE or increasing NUM_TRIALS.")
+    vprint(f"\nSweep complete. No trials met the criteria (no fall + >{MIN_DISTANCE}m).")
+    vprint("Consider reducing MIN_DISTANCE or increasing NUM_TRIALS.")
