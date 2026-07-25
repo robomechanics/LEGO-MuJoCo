@@ -24,7 +24,7 @@ def generate_lhs_samples(n_trials):
     """
     Latin Hypercube sampler for space coverage.
     """
-    sampler   = qmc.LatinHypercube(d=8, seed=42)
+    sampler   = qmc.LatinHypercube(d=8)
     samples   = sampler.random(n=n_trials)
 
     keys        = sorted(list(RANGES.keys()))

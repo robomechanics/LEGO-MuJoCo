@@ -38,20 +38,20 @@
     <material name="footstl_scaled_v4__2_material" rgba="0.627451 0.627451 0.627451 1"/>
     <material name="footstl_scaled_v4__3_material" rgba="0.627451 0.627451 0.627451 1"/>
     <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
-    <mesh name="simplified_motor___arm_rod" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/simplified_motor___arm_rod.stl"/>
-    <mesh name="battery" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/battery.stl"/>
-    <mesh name="motor" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/motor.stl"/>
-    <mesh name="exo_hip_rod" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/exo_hip_rod.stl"/>
-    <mesh name="arm_rod" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/arm_rod.stl"/>
-    <mesh name="hip_inner_right" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/hip_inner_right.stl"/>
-    <mesh name="cf_rod___leg" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/cf_rod___leg.stl"/>
-    <mesh name="raspberry_pi___battery___motor_cover" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/assets/raspberry_pi___battery___motor_cover.stl"/>
-    <mesh name="right_front_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/right_foot_front.stl"/>
-    <mesh name="right_back_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/right_foot_back.stl"/>
-    <mesh name="right_middle_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/right_foot_middle.stl"/>
-    <mesh name="left_front_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/left_foot_front.stl"/>
-    <mesh name="left_back_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/left_foot_back.stl"/>
-    <mesh name="left_middle_mesh" file="/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/foot_section_out/left_foot_middle.stl"/>
+    <mesh name="simplified_motor___arm_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/simplified_motor___arm_rod.stl"/>
+    <mesh name="battery" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/battery.stl"/>
+    <mesh name="motor" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/motor.stl"/>
+    <mesh name="exo_hip_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/exo_hip_rod.stl"/>
+    <mesh name="arm_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/arm_rod.stl"/>
+    <mesh name="hip_inner_right" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/hip_inner_right.stl"/>
+    <mesh name="cf_rod___leg" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/cf_rod___leg.stl"/>
+    <mesh name="raspberry_pi___battery___motor_cover" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/raspberry_pi___battery___motor_cover.stl"/>
+    <mesh name="right_front_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_front.stl"/>
+    <mesh name="right_back_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_back.stl"/>
+    <mesh name="right_middle_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_middle.stl"/>
+    <mesh name="left_front_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_front.stl"/>
+    <mesh name="left_back_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_back.stl"/>
+    <mesh name="left_middle_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_middle.stl"/>
   </asset>
 
   <worldbody>

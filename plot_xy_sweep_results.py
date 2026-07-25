@@ -26,12 +26,7 @@ def default_input_csv() -> Path:
 
 
 def default_success_min_distance() -> float:
-    try:
-        import xy_sweep_config as config
-
-        return float(config.MIN_DISTANCE)
-    except (ImportError, AttributeError, TypeError, ValueError):
-        return 0.0
+    return 0.0
 
 
 def parse_bool(value: str) -> bool:
@@ -88,12 +83,12 @@ def cell_edges(centers: list[float]) -> np.ndarray:
     return np.concatenate([[first], midpoints, [last]])
 
 
-def load_rows(csv_path: Path) -> list[dict]:
+def load_rows(csv_path: Path, filter_min_distance: float | None = None) -> list[dict]:
     with csv_path.open(newline="") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
-    required = {"Mesh_X", "Mesh_Y", "Fell", "Distance_Traversed", "CoT"}
+    required = {"Mesh_X", "Mesh_Y", "Fell", "Distance_Traversed"}
     missing = required - set(reader.fieldnames or [])
     if missing:
         missing_list = ", ".join(sorted(missing))
@@ -105,6 +100,16 @@ def load_rows(csv_path: Path) -> list[dict]:
     if not rows:
         raise ValueError(f"{csv_path} has no data rows.")
 
+    if filter_min_distance is not None:
+        rows = [
+            row for row in rows
+            if float(row["Distance_Traversed"]) >= filter_min_distance
+        ]
+        if not rows:
+            raise ValueError(
+                f"{csv_path} has no rows with Distance_Traversed >= {filter_min_distance}."
+            )
+
     return rows
 
 
@@ -115,7 +120,10 @@ def finite_mean(values: list[float]) -> float:
     return float(np.mean(finite_values))
 
 
-def build_grid(rows: list[dict], min_distance: float) -> tuple[list[float], list[float], np.ndarray, dict]:
+def build_grid(
+    rows: list[dict],
+    min_distance: float,
+) -> tuple[list[float], list[float], np.ndarray, dict]:
     mesh_x_values = [float(row["Mesh_X"]) for row in rows]
     mesh_y_values = [float(row["Mesh_Y"]) for row in rows]
     base_x = infer_base(mesh_x_values, "BASE_X")
@@ -137,18 +145,19 @@ def build_grid(rows: list[dict], min_distance: float) -> tuple[list[float], list
 
     for (x_pct, y_pct), group_rows in grouped.items():
         distances = [float(row["Distance_Traversed"]) for row in group_rows]
-        cots = [float(row["CoT"]) for row in group_rows]
         successes = [
             (not parse_bool(row["Fell"])) and float(row["Distance_Traversed"]) >= min_distance
             for row in group_rows
         ]
+        success_count = sum(successes)
+        total_count = len(group_rows)
 
         row_idx = y_index[y_pct]
         col_idx = x_index[x_pct]
-        success_grid[row_idx, col_idx] = 100.0 * sum(successes) / len(successes)
+        success_grid[row_idx, col_idx] = 100.0 * success_count / total_count
         labels[(row_idx, col_idx)] = (
             f"d={trunc_sig(finite_mean(distances))}\n"
-            f"CoT={trunc_sig(finite_mean(cots))}"
+            f"pass={success_count}/{total_count}"
         )
 
     return x_centers, y_centers, success_grid, labels
@@ -226,9 +235,15 @@ def main() -> None:
         default=default_success_min_distance(),
         help="Minimum distance for a trial to count as successful.",
     )
+    parser.add_argument(
+        "--filter-min-distance",
+        type=float,
+        default=None,
+        help="Drop CSV rows with Distance_Traversed below this threshold before plotting.",
+    )
     args = parser.parse_args()
 
-    rows = load_rows(args.csv)
+    rows = load_rows(args.csv, args.filter_min_distance)
     x_centers, y_centers, success_grid, labels = build_grid(rows, args.min_distance)
     plot_grid(x_centers, y_centers, success_grid, labels, args.out)
     print(f"Wrote plot to {args.out}")

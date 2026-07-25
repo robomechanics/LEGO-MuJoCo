@@ -47,14 +47,17 @@ def vprint(*args, **kwargs) -> None:
         print(*args, **kwargs)
 
 
+REPO_ROOT = Path(__file__).resolve().parent
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths ────────────────────────────────────────────────────────────
 OPENSCAD_PATH = "/usr/bin/openscad"  # adjust if needed
-SCAD_DIR      = "/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo"          # dir containing feet_generator.scad
-ENTRY_XML  = "/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/bigfoot/scene.xml"
+SCAD_DIR = REPO_ROOT                    # dir containing feet_generator.scad
+ENTRY_XML = REPO_ROOT / "bigfoot" / "scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
@@ -75,8 +78,8 @@ RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0
 # ═══════════════════════════════════════════════════════════════════════════
 # ADDITIONAL PARAMETERS (Likely do not change)
 # ═══════════════════════════════════════════════════════════════════════════
-OUT_DIR       = "./foot_section_out"                     # where generated .stl files go
-OUTPUT_XML = "/home/rml2/Documents/nicholas_chung/LEGO-MuJoCo/modified_model.xml"   # optional: path to also write the modified model XML to disk
+OUT_DIR = "./foot_section_out"                     # where generated .stl files go
+OUTPUT_XML = REPO_ROOT / "modified_model.xml"     # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
