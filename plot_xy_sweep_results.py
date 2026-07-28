@@ -144,19 +144,25 @@ def build_grid(
     labels = {}
 
     for (x_pct, y_pct), group_rows in grouped.items():
-        distances = [float(row["Distance_Traversed"]) for row in group_rows]
         successes = [
             (not parse_bool(row["Fell"])) and float(row["Distance_Traversed"]) >= min_distance
             for row in group_rows
         ]
+        successful_distances = [
+            float(row["Distance_Traversed"])
+            for row, is_success in zip(group_rows, successes)
+            if is_success
+        ]
         success_count = sum(successes)
         total_count = len(group_rows)
+        mean_success_distance = finite_mean(successful_distances)
 
         row_idx = y_index[y_pct]
         col_idx = x_index[x_pct]
-        success_grid[row_idx, col_idx] = 100.0 * success_count / total_count
+        if math.isfinite(mean_success_distance):
+            success_grid[row_idx, col_idx] = 100.0 * success_count / total_count
         labels[(row_idx, col_idx)] = (
-            f"d={trunc_sig(finite_mean(distances))}\n"
+            f"d={trunc_sig(mean_success_distance)}\n"
             f"pass={success_count}/{total_count}"
         )
 
