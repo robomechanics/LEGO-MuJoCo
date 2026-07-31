@@ -4,29 +4,32 @@ import numpy as np
 import time
 import pickle as pkl
 
+from sim_common import calculate_sine_reference, pd_torque
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS — match these directly to motorwave.py for hardware replication
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Motor / control ───────────────────────────────────────────────────────────
-KP           = 42.0  
-KD           = 6.7
+KP           = 44.32
+KD           = 7.15
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi #natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 37.5
+HIP_OMEGA       = 0.421 * 2 * np.pi   # natural freq should be 0.52 Hz
+# LEG_AMP_DEG     = 24.27
+LEG_AMP_DEG     = 0
 T_WAIT          = 3.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.3
+START_FREQ_MULT = 1.123 
+START_AMP_MULT  = 1.717
 
 # FOOT OFFSETS
 #If Right = [a, b, c], then left = [-c, -b, a]
 # for right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
 # For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
 #Notes: Position of Y shift @0.0 reflects the second slot pretty well, but not perfectly 
-foot_position_deltaRight = np.array([0.0, 0.0, 0.0])
-foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], 0.0])
+foot_position_deltaRight = np.array([-0.0599, -0.0192, 0.0])
+foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], foot_position_deltaRight[0]]) # Symmetrical world shift
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # True spatial mirroring: invert X (lateral), keep Y (forward) identical, keep Z (vertical) 0
@@ -44,7 +47,7 @@ CMD_DELAY_STEPS = 1
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("bigfoot/scene.xml")
+model = mujoco.MjModel.from_xml_path("modified_model_y10pct.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
@@ -119,29 +122,6 @@ def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
 # ═══════════════════════════════════════════════════════════════════════════════
 # TRAJECTORY — direct port of motorwave.py calculate_sine_reference
 # ═══════════════════════════════════════════════════════════════════════════════
-
-def calculate_sine_reference(t):
-    w1           = HIP_OMEGA * START_FREQ_MULT
-    w2           = HIP_OMEGA
-    t0           = T_WAIT
-    At           = START_AMP_MULT * leg_amp_rad
-    As           = leg_amp_rad
-    t_transition = t0 + np.pi / w1
-
-    if t <= t0:
-        position, velocity = 0.0, 0.0
-
-    elif t < t_transition:
-        phase    = w1 * (t - t0)
-        position = At * np.sin(phase)
-        velocity = At * w1 * np.cos(phase)      # true derivative
-
-    else:
-        phase    = w2 * (t - t_transition)
-        position = -As * np.sin(phase)
-        velocity = -As * w2 * np.cos(phase)     # true derivative
-
-    return position, velocity
 
 for i in range(model.njnt):
     name = model.joint(i).name
@@ -225,7 +205,9 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         t = data.time
 
         # radians — same units as motorwave.py MIT_controller calls
-        target_pos_rad, target_vel_rad = calculate_sine_reference(t)
+        target_pos_rad, target_vel_rad = calculate_sine_reference(
+            t, HIP_OMEGA, leg_amp_rad, START_AMP_MULT, START_FREQ_MULT, t_wait=T_WAIT
+        )
 
         current_pos = data.qpos[hip_qpos_adr]
         current_vel = data.qvel[hip_qvel_adr]
@@ -243,16 +225,11 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
 
 
-        ramp      = min(1.0, t / RAMP_TIME) if USE_RAMP and RAMP_TIME > 0 else 1.0
-        Kp_ramped = KP * ramp
-        Kd_ramped = KD * ramp
+        ramp = min(1.0, t / RAMP_TIME) if USE_RAMP and RAMP_TIME > 0 else 1.0
 
         # PD in radians — identical to motorwave.py
-        tau = (Kp_ramped * (target_pos_rad - current_pos) +
-               Kd_ramped * (target_vel_rad - current_vel))
-
-        # clamp to motor torque limit
-        tau = np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT)
+        tau = pd_torque(target_pos_rad, target_vel_rad, current_pos, current_vel,
+                         KP, KD, TORQUE_LIMIT, ramp=ramp)
 
         cmd_buffer.append(tau)
         data.ctrl[0] = cmd_buffer.pop(0)

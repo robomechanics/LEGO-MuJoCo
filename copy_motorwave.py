@@ -129,79 +129,79 @@ class MotorController:
 
     def run(self, duration: float, freq: float = 1000.0,
         csv_path: str = None, log_dt: float = 0.01):
-    """Main loop: for `duration` seconds at ~`freq` Hz, update the motor.
-    Also logs position/velocity/torque/motor_speed to CSV every log_dt seconds."""
-    dt = 1.0 / freq
-    if csv_path is None:
-        csv_path = os.path.join('data', 'timeseries.csv')
-    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+        """Main loop: for `duration` seconds at ~`freq` Hz, update the motor.
+        Also logs position/velocity/torque/motor_speed to CSV every log_dt seconds."""
+        dt = 1.0 / freq
+        if csv_path is None:
+            csv_path = os.path.join('data', 'timeseries.csv')
+        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
 
-    x, y, z = [], [], []
-    times, positions, torques = [], [], []
-    error = []
-    velocity = []
+        x, y, z = [], [], []
+        times, positions, torques = [], [], []
+        error = []
+        velocity = []
 
-    next_log_time = 0.0
+        next_log_time = 0.0
 
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            'time_s', 'position_rad', 'velocity_rad_s',
-            'torque_Nm', 'motor_speed_rad_s'
-        ])
+        with open(csv_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                'time_s', 'position_rad', 'velocity_rad_s',
+                'torque_Nm', 'motor_speed_rad_s'
+            ])
 
-        while True:
-            now = time.time()
-            elapsed = now - self.start_time
-            if elapsed >= duration:
-                break
+            while True:
+                now = time.time()
+                elapsed = now - self.start_time
+                if elapsed >= duration:
+                    break
 
-            self.calculate_sine_reference(elapsed)
-            target = self.reference + self.start_position
-            print("Reference = ", target)
-            print("Error = ", target - self.listener.state.position)
+                self.calculate_sine_reference(elapsed)
+                target = self.reference + self.start_position
+                print("Reference = ", target)
+                print("Error = ", target - self.listener.state.position)
 
-            self.helper.MIT_controller(
-                self.motor_id, self.motor_type,
-                position=target, velocity=self.velocity,
-                Kp=self.Kp, Kd=self.Kd, I=0.0
-            )
+                self.helper.MIT_controller(
+                    self.motor_id, self.motor_type,
+                    position=target, velocity=self.velocity,
+                    Kp=self.Kp, Kd=self.Kd, I=0.0
+                )
 
-            x.append(elapsed)
-            y.append(self.listener.state.position)
-            z.append(target)
-            error.append(self.listener.state.position - target)
+                x.append(elapsed)
+                y.append(self.listener.state.position)
+                z.append(target)
+                error.append(self.listener.state.position - target)
 
-            time.sleep(max(0, dt - (time.time() - now)))
+                time.sleep(max(0, dt - (time.time() - now)))
 
-            fb = self.listener.state
-            if fb is None:
-                continue
+                fb = self.listener.state
+                if fb is None:
+                    continue
 
-            tau_motor   = self.kt * fb.current
-            tau_out     = tau_motor * self.gr
-            motor_speed = fb.velocity * self.gr   # rotor-side speed (rad/s); fb.velocity is output-side
+                tau_motor   = self.kt * fb.current
+                tau_out     = tau_motor * self.gr
+                motor_speed = fb.velocity * self.gr
 
-            times.append(elapsed)
-            positions.append(fb.position)
-            torques.append(tau_out)
-            velocity.append(self.velocity)
+                times.append(elapsed)
+                positions.append(fb.position)
+                torques.append(tau_out)
+                velocity.append(self.velocity)
 
-            # --- log at a fixed 0.01s grid (zero-order hold if control loop is slower) ---
-            while elapsed >= next_log_time:
-                writer.writerow([
-                    f"{next_log_time:.3f}",
-                    fb.position, fb.velocity,
-                    tau_out, motor_speed
-                ])
-                next_log_time += log_dt
+                # --- log at a fixed 0.01s grid (zero-order hold if control loop is slower) ---
+                while elapsed >= next_log_time:
+                    writer.writerow([
+                        f"{next_log_time:.3f}",
+                        fb.position, fb.velocity,
+                        tau_out, motor_speed
+                    ])
+                    next_log_time += log_dt
 
-    print(f"[INFO] Time series (position, velocity, torque, motor speed) saved to {csv_path}")
-    print("[INFO] Done running sine trajectory.")
-    self.plot_position_results(x, y, z, error)
-    self.plot_torque_results(times, positions, torques)
-    self.plot_velocity_results(x, velocity)
-    print("[INFO] Start position = ", self.start_position)
+        print(f"[INFO] Time series (position, velocity, torque, motor speed) saved to {csv_path}")
+        print("[INFO] Done running sine trajectory.")
+        self.plot_position_results(x, y, z, error)
+        self.plot_torque_results(times, positions, torques)
+        self.plot_velocity_results(x, velocity)
+        print("[INFO] Start position = ", self.start_position)
 
     def return_to_zero(self, 
                    return_kp: float = 10.0,

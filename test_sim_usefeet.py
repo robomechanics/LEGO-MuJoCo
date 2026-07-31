@@ -38,8 +38,9 @@ import mujoco.viewer
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths (foot generation) ────────────────────────────────────────────
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
-SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
+REPO_DIR      = Path(__file__).resolve().parent
+OPENSCAD_PATH = "openscad-nightly"                      # snap: `sudo snap install openscad-nightly` (needed for .obj export)
+SCAD_DIR      = str(REPO_DIR)                           # dir containing feet_generator.scad
 OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
 
 # Point ENTRY_XML at whichever file is the correct load target.
@@ -47,7 +48,7 @@ OUT_DIR       = "./foot_section_out"                     # where generated .obj 
 # pulled in via <include> (i.e. it has no its own <mujoco>/<compiler>/<asset>
 # tags) -- scene.xml supplies that context. Use robot.xml directly only if
 # it's a fully standalone, compilable MJCF on its own.
-ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
+ENTRY_XML  = str(REPO_DIR / "bigfoot" / "scene.xml")
 OUTPUT_XML = None   # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
@@ -75,11 +76,12 @@ KD           = 6.7
 TORQUE_LIMIT = 25.0       # Nm -- Torque Limit for AK80-8
 
 # ── Trajectory ──────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 37.5
+HIP_OMEGA       = 0.4644 * 2 * np.pi   # natural freq should be 0.52 Hz
+# LEG_AMP_DEG     = 30
+LEG_AMP_DEG     = 0
 T_WAIT          = 3.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.3
+START_FREQ_MULT = 0.8
+START_AMP_MULT  = 0.7
 
 # ── Per-foot rotation corrections ────────────────────────────────────────
 # Semicolon-separated "axis:degrees" tokens, applied (in order, left to

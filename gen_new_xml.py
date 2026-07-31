@@ -36,9 +36,10 @@ import mujoco.viewer
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths ────────────────────────────────────────────────────────────
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
-SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
-ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
+REPO_DIR      = Path(__file__).resolve().parent
+OPENSCAD_PATH = "openscad-nightly"                      # snap: `sudo snap install openscad-nightly` (needed for .obj export)
+SCAD_DIR      = str(REPO_DIR)                           # dir containing feet_generator.scad
+ENTRY_XML  = str(REPO_DIR / "bigfoot" / "scene.xml")
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
@@ -60,7 +61,7 @@ RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0
 # ADDITIONAL PARAMETERS (Likely do not change)
 # ═══════════════════════════════════════════════════════════════════════════
 OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
-OUTPUT_XML = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/modified_model.xml"   # optional: path to also write the modified model XML to disk
+OUTPUT_XML = str(REPO_DIR / "modified_model.xml")   # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
@@ -338,9 +339,27 @@ def launch_preview(sections: dict) -> None:
 SUFFIX_TO_SECTION = {"1": "front", "2": "back", "3": "middle"}
 
 
+def _find_by_name(items, name):
+    """This mujoco version's MjSpec has no .geom(name)/.mesh(name) lookup,
+    only list properties (.geoms/.meshes) -- search by name manually."""
+    for item in items:
+        if item.name == name:
+            return item
+    return None
+
+
+def _find_body_of_geom(spec: "mujoco.MjSpec", geom_name: str):
+    """This mujoco version's MjsGeom has no .parent -- find the owning body
+    by searching each body's own .geoms list."""
+    for body in spec.bodies:
+        if _find_by_name(body.geoms, geom_name) is not None:
+            return body
+    return None
+
+
 def _get_geom_transform(spec: "mujoco.MjSpec", geom_name: str) -> Tuple[list, list]:
     """Read pos/quat off an existing geom in the spec, by name."""
-    geom = spec.geom(geom_name)
+    geom = _find_by_name(spec.geoms, geom_name)
     if geom is None:
         raise ValueError(f"Could not find geom '{geom_name}' in the model.")
     return list(geom.pos), list(geom.quat)
@@ -352,7 +371,7 @@ def absolutize_all_mesh_paths(spec: "mujoco.MjSpec", xml_dir: Path) -> None:
     against the compiler's meshdir setting (itself resolved relative to the
     directory containing the entry XML this spec was loaded from).
     """
-    meshdir = spec.compiler.meshdir or ""
+    meshdir = spec.meshdir or ""
     mesh_base_dir = (xml_dir / meshdir) if meshdir else xml_dir
 
     for mesh in spec.meshes:
@@ -362,7 +381,7 @@ def absolutize_all_mesh_paths(spec: "mujoco.MjSpec", xml_dir: Path) -> None:
         if not mesh_path.is_absolute():
             mesh_path = (mesh_base_dir / mesh_path).resolve()
         mesh.file = str(mesh_path)
-    spec.compiler.meshdir = ""
+    spec.meshdir = ""
 
 
 def inject_feet_into_model(
@@ -392,17 +411,19 @@ def inject_feet_into_model(
                 np.array(pos), corrected_quat, offsets[side], offset_frame
             )
 
-            visual_geom = spec.geom(visual_name)
-            body = visual_geom.parent
+            visual_geom = _find_by_name(spec.geoms, visual_name)
+            body = _find_body_of_geom(spec, visual_name)
 
             old_mesh_name = visual_geom.meshname
 
-            spec.delete(visual_geom)
-            spec.delete(spec.geom(collision_name))
+            visual_geom.delete()
+            collision_geom = _find_by_name(spec.geoms, collision_name)
+            if collision_geom is not None:
+                collision_geom.delete()
 
-            old_mesh = spec.mesh(old_mesh_name)
+            old_mesh = _find_by_name(spec.meshes, old_mesh_name)
             if old_mesh is not None:
-                spec.delete(old_mesh)
+                old_mesh.delete()
 
             new_mesh_path = sections[side][section].resolve()
             new_mesh_name = f"{side}_{section}_mesh"

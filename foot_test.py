@@ -24,7 +24,7 @@ from pathlib import Path
 import mujoco
 import mujoco.viewer
 
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # <-- change this if OpenSCAD is not on your PATH
+OPENSCAD_PATH = "openscad-nightly"  # snap: `sudo snap install openscad-nightly` (needed for .obj export)
 
 def generate_foot_obj(
     scad_file: Path,

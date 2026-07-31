@@ -35,9 +35,10 @@ import mujoco.viewer
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths ────────────────────────────────────────────────────────────
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
-SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
-ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
+REPO_DIR      = Path(__file__).resolve().parent
+OPENSCAD_PATH = "openscad-nightly"                      # snap: `sudo snap install openscad-nightly` (needed for .obj export)
+SCAD_DIR      = str(REPO_DIR)                           # dir containing feet_generator.scad
+ENTRY_XML  = str(REPO_DIR / "bigfoot" / "scene.xml")
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
@@ -59,7 +60,7 @@ RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0
 # ADDITIONAL PARAMETERS (Likely do not change)
 # ═══════════════════════════════════════════════════════════════════════════
 OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
-OUTPUT_XML = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/modified_model.xml"   # optional: path to also write the modified model XML to disk
+OUTPUT_XML = str(REPO_DIR / "modified_model.xml")   # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection

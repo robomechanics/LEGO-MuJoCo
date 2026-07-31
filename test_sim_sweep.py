@@ -57,7 +57,7 @@ FOOT_GEOM_NAMES = [
 # INITIALIZE MODEL
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path("modified_model_y10pct.xml")
 data  = mujoco.MjData(model)
 TOTAL_MASS = sum(model.body_mass[i] for i in range(model.nbody))
 GRAVITY    = 9.81
