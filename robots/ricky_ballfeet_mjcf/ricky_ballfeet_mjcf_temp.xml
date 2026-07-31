@@ -1,0 +1,64 @@
+<mujoco model="ricky_ballfeet">
+  <compiler angle="radian" autolimits="true" />
+  <visual>
+    <global offwidth="1920" offheight="1080" />
+  </visual>
+  <asset>
+    <mesh name="motor_part_2" file="motor_part_2.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="leg_rod" file="leg_rod.stl" inertia="exact" scale="1 1 1.0" />
+    <mesh name="arm_rod" file="arm_rod.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="hip_rod" file="hip_rod.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="battery" file="battery.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="ballfoot" file="ballfoot.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="motor_part_3" file="motor_part_3.stl" inertia="exact" scale="1 1 1" />
+    <mesh name="motor_part_1" file="motor_part_1.stl" inertia="exact" scale="1 1 1" />
+
+    <material name="motor_part_1_material" rgba="0.796078 0.823529 0.937255 1" />
+    <material name="motor_part_2_material" rgba="0.796078 0.823529 0.937255 1" />
+    <material name="hip_rod_material" rgba="0.262745 0.282353 0.301961 1" />
+    <material name="motor_part_3_material" rgba="0.796078 0.823529 0.937255 1" />
+    <material name="ballfoot_material" rgba="0.627451 0.627451 0.627451 1" />
+    <material name="leg_rod_material" rgba="0.615686 0.811765 0.929412 1" />
+    <material name="arm_rod_material" rgba="0.615686 0.811765 0.929412 1" />
+    <material name="battery_material" rgba="0.615686 0.811765 0.929412 1" />
+  </asset>
+  <default>
+    <default class="ricky_ballfeet">
+      
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2" />
+      </default>
+      <default class="collision">
+        <geom group="3" />
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    
+    <body name="motor" pos="0 0 1.3" quat="0.68405627 -0.67817127  0.20009783 -0.17917015" childclass="ricky_ballfeet">
+    
+    <freejoint />
+      <geom name="motor_part_1" type="mesh" mass="0.377" pos="-0.0213471 0.0567648 0.237112" quat="1 0 0 0" mesh="motor_part_1" material="motor_part_1_material" />
+      <geom name="motor_part_2" type="mesh" mass="0.1887" class="visual" pos="-0.0213471 0.0567648 0.234112" quat="1 0 0 0" mesh="motor_part_2" material="motor_part_2_material" />
+      <geom name="leg_rod_1" type="mesh" mass="0.202" pos="-0.0213468 0.990777 0.4200119" quat="0.5 0.5 -0.5 0.5" mesh="leg_rod" material="leg_rod_material" />
+      <geom name="hip_rod_1" type="mesh" mass="0.047" pos="-0.0213471 0.0567648 0.271012" quat="0.5 0.5 -0.5 -0.5" mesh="hip_rod" material="hip_rod_material" />
+      <geom name="ballfoot_1" type="mesh" mass="0.965" pos="-0.38690009999999997 0.9098488 -0.306626" quat="0.5 -0.5 -0.5 -0.5" mesh="ballfoot" material="ballfoot_material" />
+      <geom name="arm_rod_1" type="mesh" mass="0.327" pos="-0.0213471 0.5092648 -0.043473" quat="0.5 0.5 0.5 -0.5" mesh="arm_rod" material="arm_rod_material" />
+      <geom name="battery_1" type="mesh" mass="0.85502162" pos="-0.0213471 0.5362478 -0.075473" quat="0.707107 0 -1.11022e-16 0.707107" mesh="battery" material="battery_material" />
+      <body name="motor_in" pos="-0.0213471 0.0567648 0.231912" quat="1 0 0 0">
+        <joint axis="0 0 1" name="hip" type="hinge" />
+        <geom name="motor_part_3" type="mesh" mass="0.2833" pos="0 0 0" quat="1 0 0 0" mesh="motor_part_3" material="motor_part_3_material" />
+        <geom name="hip_rod_2" type="mesh" mass="0.047" pos="0.0 0.0 -0.0138" quat="0.5 -0.5 0.5 -0.5" mesh="hip_rod" material="hip_rod_material" />
+        <geom name="ballfoot_2" type="mesh" mass="0.965" pos="0.33480622000000004 0.8530832 0.5638380000000001" quat="0.5 -0.5 0.5 0.5" mesh="ballfoot" material="ballfoot_material" />
+        <geom name="leg_rod_2" type="mesh" mass="0.202" pos="3e-07 0.9340122 -0.1628001" quat="0.5 0.5 -0.5 0.5" mesh="leg_rod" material="leg_rod_material" />
+        <geom name="arm_rod_2" type="mesh" mass="0.327" pos="0.0 0.4525002 0.2966" quat="0.5 0.5 0.5 -0.5" mesh="arm_rod" material="arm_rod_material" />
+        <geom name="battery_2" type="mesh" mass="0.85502162" pos="0.0 0.4794832 0.269617" quat="0.707107 0 -1.11022e-16 0.707107" mesh="battery" material="battery_material" />
+      </body>
+      
+    </body>
+  </worldbody>
+  <actuator>
+    <position class="ricky_ballfeet" name="hip_joint_act" joint="hip" forcerange="-25 25" />
+  </actuator>
+  <equality />
+</mujoco>

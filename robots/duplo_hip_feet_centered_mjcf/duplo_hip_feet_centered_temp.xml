@@ -1,0 +1,60 @@
+<mujoco model="onshape">
+    <compiler angle="radian" />
+
+    <asset>
+        <mesh name="hip" file="hip.stl" inertia="exact" scale="0.7 1 1" />
+        <mesh name="ak80-8" file="ak80-8.stl" inertia="exact" />
+        <mesh name="battery" file="battery.stl" inertia="exact" />
+        <mesh name="leg_h" file="leg_h.stl" inertia="exact" />
+        <mesh name="arm" file="arm.stl" inertia="exact" />
+        <mesh name="leg_v" file="leg_v.stl" inertia="exact" />
+        
+        <mesh name="part_1" file="part_3.stl" scale="1.2 1 1" inertia="exact" />
+    </asset>
+
+    <visual>
+        <global offwidth="1920" offheight="1080" />
+    </visual>
+
+    <worldbody>
+        <body name="motor" pos="0 0 1.3" quat="0.997746446 0.0669306849 0.000168114705 0.00466763733">
+        <freejoint />
+            <geom name="hip" mass="0.2" pos="-0.3885 0.0 0.0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="hip" />
+            <geom mass="0.8999999999999999" quat="0.707107 -0.707107 0 0" type="mesh" rgba="0.615686 0.811765 0.929412 1" mesh="ak80-8" />
+            
+            <body name="leg_h" pos="-0.265 0 0" quat="0.5 0.5 0.5 0.5">
+                <joint name="hip" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398" />
+                <geom name="arm" mass="0.2" pos="-0.0125 -0.485 0.5800000000000001" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="arm" />
+                <geom name="leg_h" mass="0.05" pos="0.054 -0.9875 -0.0125" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="leg_h" />
+                <geom name="battery" mass="0.73" pos="-0.05 -0.56 0.615" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="battery" />
+                
+                <body name="leg_v" pos="0.054 0.0 0.0" quat="0.707107 0 -0.707107 0">
+                    <geom name="leg_v" mass="0.2" pos="0.129 -0.9875 0.0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="leg_v" />
+                    <geom name="foot" mass="1.1340000000000001" pos="0.14908 -0.9875 -0.0125974" quat="0 0 -0.707107 0.707107" type="mesh" mesh="part_1" />
+                </body>
+            </body>
+
+            <body name="leg_h_2" pos="0.265 0 0" quat="0.5 0.5 0.5 0.5">
+                <geom name="arm_2" mass="0.2" pos="0.0125 -0.485 -0.5800000000000001" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="arm" />
+                <geom name="leg_h_2" mass="0.05" pos="0.054 -0.9875 -0.0125" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="leg_h" />
+                <geom name="battery_2" mass="0.73" pos="-0.05 -0.56 -0.5150000000000001" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="battery" />
+                
+                <body name="leg_v_2" pos="0.054 0.0 0.0" quat="0.707107 0 -0.707107 0">
+                    <geom name="leg_v_2" mass="0.2" pos="-0.15400000000000003 -0.9875 0.0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="leg_v" />
+                    <geom name="foot_2" mass="1.1340000000000001" pos="-0.14908 -0.9875 -0.0124026" quat="0.707107 0.707107 0 0" type="mesh" mesh="part_1" />
+                </body>
+            </body>
+        </body>
+    </worldbody>
+
+    <contact>
+        <exclude body1="leg_h" body2="leg_h_2" />
+        <exclude body1="leg_h" body2="leg_v_2" />
+        <exclude body1="leg_h_2" body2="leg_v" />
+        <exclude body1="leg_v" body2="leg_v_2" />
+    </contact>
+
+    <actuator>
+        <motor name="hip_joint_act" joint="hip" forcerange="-25 25" />
+    </actuator>
+</mujoco>

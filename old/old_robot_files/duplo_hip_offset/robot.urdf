@@ -1,0 +1,320 @@
+<robot name="onshape">
+    <link name="leg_h">
+        <visual>
+            <origin xyz="-0.55500000000000004885 0.012499999999999768241 -0.4849999999999911604"
+                rpy="0 2.4164358131961974976e-16 -7.3416556831376530863e-25" />
+            <geometry>
+                <mesh filename="package:///arm.stl" />
+            </geometry>
+            <material name="arm_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.55500000000000004885 0.012499999999999768241 -0.4849999999999911604"
+                rpy="0 2.4164358131961974976e-16 -7.3416556831376530863e-25" />
+            <geometry>
+                <mesh filename="package:///arm.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="0.25249999999999994671 0.053999999999998417322 -0.98749999999997117861"
+                rpy="0 6.1232339956852238365e-17 -1.2198561007906815744e-28" />
+            <geometry>
+                <mesh filename="package:///leg_h.stl" />
+            </geometry>
+            <material name="leg_h_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.25249999999999994671 0.053999999999998417322 -0.98749999999997117861"
+                rpy="0 6.1232339956852238365e-17 -1.2198561007906815744e-28" />
+            <geometry>
+                <mesh filename="package:///leg_h.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="-0.49000000000000010214 -0.050000000000000058287 -0.55999999999999117151"
+                rpy="-1.1449174941446916962e-16 -2.41643581313502873e-16 3.141592653589793116" />
+            <geometry>
+                <mesh filename="package:///battery.stl" />
+            </geometry>
+            <material name="battery_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.49000000000000010214 -0.050000000000000058287 -0.55999999999999117151"
+                rpy="-1.1449174941446916962e-16 -2.41643581313502873e-16 3.141592653589793116" />
+            <geometry>
+                <mesh filename="package:///battery.stl" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.36944915254237292723 0.0049190548598205237688 -0.35627838877290435304"
+                rpy="0 0 0" />
+            <mass value="118.00000000000001421" />
+            <inertia ixx="5.7401226191592282788" ixy="-0.36826504208046367816"
+                ixz="-7.1701025740546988629" iyy="18.490705304032605483"
+                iyz="-0.20680124688960094259" izz="12.915077054163470294" />
+        </inertial>
+    </link>
+
+    <link name="ak80-8">
+        <visual>
+            <origin
+                xyz="-7.1052084348781774184e-19 6.6786984126927695623e-29 0.55500000000000004885"
+                rpy="1.570796326794896558 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///hip.stl" />
+            </geometry>
+            <material name="hip_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin
+                xyz="-7.1052084348781774184e-19 6.6786984126927695623e-29 0.55500000000000004885"
+                rpy="1.570796326794896558 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///hip.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin
+                xyz="4.5144697491007751755e-78 3.0003846579110156472e-18 7.7787690973264271339e-62"
+                rpy="1.570796326794896558 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///ak80-8.stl" />
+            </geometry>
+            <material name="ak80-8_material">
+                <color
+                    rgba="0.61568627450980395466 0.81176470588235294379 0.92941176470588238168 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin
+                xyz="4.5144697491007751755e-78 3.0003846579110156472e-18 7.7787690973264271339e-62"
+                rpy="1.570796326794896558 1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///ak80-8.stl" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin
+                xyz="-5.9323009390062326743e-19 -2.7817051350579075682e-20 2.5516383945632162076e-52"
+                rpy="0 0 0" />
+            <mass value="20.600000000000001421" />
+            <inertia ixx="2.0542382000000909414" ixy="5.1981700934761066208e-34"
+                ixz="-4.7107121008111665215e-31" iyy="2.0542382000000909414"
+                iyz="4.124534398656143356e-28" izz="0.0012828000000000001728" />
+        </inertial>
+    </link>
+
+    <link name="leg_h_2">
+        <visual>
+            <origin xyz="-0.050000000000000752176 -0.56000000000000105249 0.85500000000000009326"
+                rpy="-1.570796326794896558 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package:///battery.stl" />
+            </geometry>
+            <material name="battery_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.050000000000000752176 -0.56000000000000105249 0.85500000000000009326"
+                rpy="-1.570796326794896558 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package:///battery.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="0.053999999999999999389 -0.98750000000000004441 -0.012500000000000011102"
+                rpy="-1.570796326794896558 -1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///leg_h.stl" />
+            </geometry>
+            <material name="leg_h_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.053999999999999999389 -0.98750000000000004441 -0.012500000000000011102"
+                rpy="-1.570796326794896558 -1.570796326794896558 0" />
+            <geometry>
+                <mesh filename="package:///leg_h.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="-0.012499999999999997224 -0.48499999999999993117 0.82000000000000006217"
+                rpy="-1.570796326794896558 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package:///arm.stl" />
+            </geometry>
+            <material name="arm_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.012499999999999997224 -0.48499999999999993117 0.82000000000000006217"
+                rpy="-1.570796326794896558 1.570796326794896336 0" />
+            <geometry>
+                <mesh filename="package:///arm.stl" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.0049190548598206738223 -0.35627838877291079234 0.63444915254237299607"
+                rpy="0 0 0" />
+            <mass value="118.00000000000001421" />
+            <inertia ixx="18.490705304032815093" ixy="-0.20680124688961071255"
+                ixz="0.36826504208047433631" iyy="12.915077054163477399" iyz="7.1701025740548312015"
+                izz="5.7401226191594174608" />
+        </inertial>
+    </link>
+
+    <link name="leg_v">
+        <visual>
+            <origin xyz="-0.012500000000000011102 -0.98750000000000004441 0"
+                rpy="-1.570796326794896558 7.9653125125127643867e-67 0" />
+            <geometry>
+                <mesh filename="package:///leg_v.stl" />
+            </geometry>
+            <material name="leg_v_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.012500000000000011102 -0.98750000000000004441 0"
+                rpy="-1.570796326794896558 7.9653125125127643867e-67 0" />
+            <geometry>
+                <mesh filename="package:///leg_v.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="0.14908000000000060092 -0.36250000000000881517 -0.012597431775084398653"
+                rpy="-1.570796326794896558 5.5478683465284832438e-29 3.1415926535897886751" />
+            <geometry>
+                <mesh filename="package:///part_1.stl" />
+            </geometry>
+            <material name="part_1_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.14908000000000060092 -0.36250000000000881517 -0.012597431775084398653"
+                rpy="-1.570796326794896558 5.5478683465284832438e-29 3.1415926535897886751" />
+            <geometry>
+                <mesh filename="package:///part_1.stl" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.0081690045497160371224 -0.87777985035292360738 -0.012570071025552666255"
+                rpy="0 0 0" />
+            <mass value="88" />
+            <inertia ixx="9.6453760071819925059" ixy="0.15284684051663280369"
+                ixz="1.4991426724393512986e-05" iyy="2.5709319265827512702"
+                iyz="-0.00094846599013127515319" izz="7.9695912788475959943" />
+        </inertial>
+    </link>
+
+    <joint name="hip_offset_slider_left" type="prismatic">
+        <origin xyz="0.053999999999999999389 -2.2204460492503130808e-16 0"
+            rpy="-1.1067286689426516789e-44 -1.570796326794896558 0" />
+        <parent link="leg_h_2" />
+        <child link="leg_v" />
+        <axis xyz="0 0 1" />
+        <limit effort="1" velocity="20" />
+        <joint_properties friction="0.0" />
+    </joint>
+
+    <joint name="hip1" type="revolute">
+        <origin xyz="1.6226570088564099969e-17 3.1843391524416690461e-29 0.26500000000000001332"
+            rpy="3.141592653589793116 1.2049514690520681705e-28 -1.570796326794896558" />
+        <parent link="ak80-8" />
+        <child link="leg_h_2" />
+        <axis xyz="0 0 1" />
+        <limit effort="1" velocity="20" lower="-0.785398163397448279" upper="0.785398163397448279" />
+        <joint_properties friction="0.0" />
+    </joint>
+
+    <joint name="hip2" type="revolute">
+        <origin
+            xyz="-3.6153179012711653559e-46 -8.7822405464057954899e-32 2.2137437478411954043e-62"
+            rpy="-3.141592653589793116 1.570796326794896558 0" />
+        <parent link="leg_h" />
+        <child link="ak80-8" />
+        <axis xyz="0 0 1" />
+        <limit effort="1" velocity="20" lower="-0.785398163397448279" upper="0.785398163397448279" />
+        <joint_properties friction="0.0" />
+    </joint>
+
+    <link name="leg_v_2">
+        <visual>
+            <origin xyz="-0.012500000000000011102 -0.98750000000000004441 0"
+                rpy="-1.570796326794896558 -3.3015259086540121115e-45 -4.9093103632638236138e-33" />
+            <geometry>
+                <mesh filename="package:///leg_v.stl" />
+            </geometry>
+            <material name="leg_v_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.012500000000000011102 -0.98750000000000004441 0"
+                rpy="-1.570796326794896558 -3.3015259086540121115e-45 -4.9093103632638236138e-33" />
+            <geometry>
+                <mesh filename="package:///leg_v.stl" />
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="-0.14908000000000276586 -0.362499999999988054 -0.012402568224915602735"
+                rpy="1.570796326794896558 -1.1586484962898143158e-29 4.4408920984996811063e-15" />
+            <geometry>
+                <mesh filename="package:///part_1.stl" />
+            </geometry>
+            <material name="part_1_material">
+                <color
+                    rgba="0.79607843137254896693 0.82352941176470584317 0.9372549019607843146 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-0.14908000000000276586 -0.362499999999988054 -0.012402568224915602735"
+                rpy="1.570796326794896558 -1.1586484962898143158e-29 4.4408920984996811063e-15" />
+            <geometry>
+                <mesh filename="package:///part_1.stl" />
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.0081690045497161811044 -0.87777985035292449556 -0.012429928974447357684"
+                rpy="0 0 0" />
+            <mass value="88" />
+            <inertia ixx="9.6453760071820831001" ixy="-0.15284684051663677273"
+                ixz="1.4991426724407216285e-05" iyy="2.5709319265829209122"
+                iyz="0.00094846599013194681643" izz="7.969591278847639515" />
+        </inertial>
+    </link>
+
+    <joint name="hip_offset_slider_right" type="prismatic">
+        <origin xyz="0.26500000000000001332 0.053999999999998417322 1.1102230246251565404e-16"
+            rpy="1.570796326794896558 6.1232339956865464111e-17 -1.1817651171409210718e-28" />
+        <parent link="leg_h" />
+        <child link="leg_v_2" />
+        <axis xyz="0 0 1" />
+        <limit effort="1" velocity="20" />
+        <joint_properties friction="0.0" />
+    </joint>
+
+
+</robot>

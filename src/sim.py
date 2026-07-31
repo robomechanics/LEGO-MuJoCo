@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import time
 from tqdm import tqdm
+from typing import Any
 from utils.xml_handler import MJCFHandler
 
 class MjcSim:
@@ -14,8 +15,7 @@ class MjcSim:
         self.v_fps = config['video_fps']
         self.config = config
 
-        new_scene_path = self.update_xml(model_path)
-        self.model = mujoco.MjModel.from_xml_path(new_scene_path)
+        self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
         total_mass = np.sum(self.model.body_mass)
         print(f"Total mass: {total_mass} kg")
@@ -23,11 +23,17 @@ class MjcSim:
         if self.config['record'] or self.config['gui']: self.setup_gui()
         self.ctrl_joint_names = None # names of the joints to control
 
-    def update_xml(self, scene_path: str) -> str:
+    def update_xml(self, scene_path: str, design_params: dict[str, Any]={}) -> str:
         self.mjcf_handler = MJCFHandler(scene_path)
         self.mjcf_handler.update_mass()
+        self.mjcf_handler.update_design_params(design_params)
         new_scene_path = self.mjcf_handler.export_xml_scene()
         return new_scene_path
+    
+    def scale_up_xml(self, scale: float, mass_power: float) -> str:
+        """Scale up the model by a factor of scale."""
+        scale_scene_path = self.mjcf_handler.save_scale_up_robot(scale, mass_power)
+        return scale_scene_path
 
     def setup_ctrl_joints(self) -> int:
         """Convert actuator joint names to joint ids and dof addresses."""
@@ -77,10 +83,8 @@ class MjcSim:
         return self.renderer.render()
     
     def mass_center(self):
-        """Calculate the center of mass of the robot."""
-        mass = np.expand_dims(self.model.body_mass, axis=1)
-        xpos = self.data.xipos
-        return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:3].copy()
+        """Return the robot's center of mass using MuJoCo's subtree COM (body 0 = world = all bodies)."""
+        return self.data.subtree_com[0].copy()
 
     def step_sim(self):
         """Step the simulation forward by one time step."""

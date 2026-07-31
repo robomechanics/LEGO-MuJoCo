@@ -15,7 +15,8 @@ class Recorder:
     def __init__(self, 
                  video_fps: float, 
                  plot_attributes: dict[str, dict[str, str]], 
-                 plot_structure: list[list[str]]) -> None:
+                 plot_structure: list[list[str]],
+                 plot_time_range: list[float, float]=None) -> None:
         """
         - plot_attributes: Dict mapping variable names to {title}.
         - plot_structure: List of subplots, each containing [x, y1, y2, ...].
@@ -28,6 +29,8 @@ class Recorder:
         self.robot_frames = []
         self.plt_attr = plot_attributes  # { "varName": {"title": "plotTitle", "color": (G,B,R), "line_style": "--"} }
         self.plt_struc = plot_structure  # [[xvar, yvar1, yvar2], [xvar2, yvar3], ...]
+        self.plot_time_range = plot_time_range
+        assert plot_time_range is None or plot_time_range[1] > plot_time_range[0], "Invalid time range!"
         # Initialize empty lists for each variable in plot_attributes
         for var in self.plt_attr:
             self.plt_data[var] = []
@@ -58,18 +61,55 @@ class Recorder:
             self.robot_frames.append(sim.get_image())
             self.next_vid_output_time += self.output_interval
 
-    def export_clip(self, 
-                    frames: list, 
-                    vid_type: str, 
-                    output_path: str) -> None:
-        """Export video from frames."""
-        clip = ImageSequenceClip(frames, fps=self.video_fps)
-        from proglog import TqdmProgressBarLogger
-        custom_logger = TqdmProgressBarLogger(logged_bars='all', print_messages=False)
-        clip.write_videofile(output_path, 
-                             codec="libx264", 
-                             preset="medium",
-                             logger=custom_logger)
+    # def export_clip(self, 
+    #                 frames: list, 
+    #                 vid_type: str, 
+    #                 output_path: str) -> None:
+    #     """Export video from frames."""
+    #     clip = ImageSequenceClip(frames, fps=self.video_fps)
+    #     from proglog import TqdmProgressBarLogger
+    #     custom_logger = TqdmProgressBarLogger(logged_bars='all', print_messages=False)
+    #     clip.write_videofile(output_path, 
+    #                          codec="libx264", 
+    #                          preset="medium",
+    #                          logger=custom_logger)
+    #     print(f"{vid_type} Video saved to {output_path}")
+
+    def export_clip(self,
+                frames: list,
+                vid_type: str,
+                output_path: str) -> None:
+        """Export video using FFmpeg subprocess for reliable libx264 encoding."""
+        import subprocess
+        import tempfile
+        import cv2
+        import os
+        from tqdm import tqdm
+        
+        # Create a temporary directory for frames
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Save frames as JPG files (much faster than PNG)
+            for i, frame in enumerate(tqdm(frames, desc=f"Saving frames for {vid_type}")):
+                # Ensure BGR format for OpenCV
+                if frame.shape[2] == 3:  # RGB
+                    frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+                else:
+                    frame_bgr = frame
+                # Save frame
+                cv2.imwrite(os.path.join(temp_dir, f"frame_{i:05d}.jpg"), frame_bgr, [cv2.IMWRITE_JPEG_QUALITY, 95])
+            
+            # Direct FFmpeg call for libx264 encoding with reduced verbosity
+            subprocess.run([
+                'ffmpeg', '-y',
+                '-framerate', str(self.video_fps),
+                '-i', os.path.join(temp_dir, 'frame_%05d.jpg'),
+                '-c:v', 'libx264',
+                '-preset', 'medium',  # Can use 'ultrafast' for speed at quality cost
+                '-pix_fmt', 'yuv420p',
+                '-loglevel', 'warning',  # Reduce FFmpeg output verbosity
+                output_path
+            ], check=True)
+            
         print(f"{vid_type} Video saved to {output_path}")
 
 
@@ -122,11 +162,14 @@ class Recorder:
                 curves.append((curve, y))
             self.plots_and_curves.append((plot, curves, x))
 
+    
         for (plot, curves, x) in self.plots_and_curves:
             xmin, xmax = min(self.plt_data[x]), max(self.plt_data[x])
             ymin = min(min(self.plt_data[y]) for _, y in curves)
             ymax = max(max(self.plt_data[y]) for _, y in curves)
             plot.setRange(xRange=(xmin, xmax), yRange=(ymin, ymax))
+            if self.plot_time_range is not None:
+                plot.setRange(xRange=self.plot_time_range)
 
         self.win.resize(plot_w, sum(plot_hs))
         self.win.show()

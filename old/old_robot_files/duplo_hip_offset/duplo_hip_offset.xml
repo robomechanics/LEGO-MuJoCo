@@ -1,0 +1,44 @@
+<mujoco model="onshape">
+  <compiler angle="radian"/>
+
+  <asset>
+    <mesh name="arm" file="arm.stl"/>
+    <mesh name="leg_h" file="leg_h.stl"/>
+    <mesh name="battery" file="battery.stl"/>
+    <mesh name="hip" file="hip.stl"/>
+    <mesh name="ak80-8" file="ak80-8.stl"/>
+    <mesh name="leg_v" file="leg_v.stl"/>
+    <mesh name="part_1" file="part_1.stl"/>
+  </asset>
+
+  <worldbody>
+    <geom pos="-0.555 0.0125 -0.485" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="arm"/>
+    <geom pos="0.2525 0.054 -0.9875" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="leg_h"/>
+    <geom pos="-0.49 -0.05 -0.56" quat="0 0 0 1" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="battery"/>
+    <body name="ak80-8" pos="0 0 0" quat="0 -0.707107 0 0.707107">
+      <inertial pos="0 0 0" mass="20.6" diaginertia="2.05424 2.05424 0.0012828"/>
+      <joint name="hip2" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398" actuatorfrcrange="-1 1"/>
+      <geom pos="0 0 0.555" quat="0.5 0.5 0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hip"/>
+      <geom quat="0.5 0.5 0.5 -0.5" type="mesh" rgba="0.615686 0.811765 0.929412 1" mesh="ak80-8"/>
+      <body name="leg_h_2" pos="0 0 0.265" quat="0 0.707107 -0.707107 0">
+        <inertial pos="0.00491905 -0.356278 0.634449" quat="0.961886 0.27307 -0.0138863 0.00398034" mass="118" diaginertia="18.5013 17.3448 1.29974"/>
+        <joint name="hip1" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398" actuatorfrcrange="-1 1"/>
+        <geom pos="-0.05 -0.56 0.855" quat="0.5 -0.5 0.5 0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="battery"/>
+        <geom pos="0.054 -0.9875 -0.0125" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="leg_h"/>
+        <geom pos="-0.0125 -0.485 0.82" quat="0.5 -0.5 0.5 0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="arm"/>
+        <body name="leg_v" pos="0.054 0 0" quat="0.707107 0 -0.707107 0">
+          <inertial pos="0.008169 -0.87778 -0.0125701" quat="0.707004 0.707128 0.00763562 0.00763197" mass="88" diaginertia="9.64868 7.96959 2.56763"/>
+          <joint name="hip_offset_slider_left" pos="0 0 0" axis="0 0 1" type="slide" actuatorfrcrange="-1 1"/>
+          <geom pos="-0.0125 -0.9875 0" quat="0.707107 -0.707107 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="leg_v"/>
+          <geom pos="0.14908 -0.3625 -0.0125974" quat="0 0 -0.707107 0.707107" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="part_1"/>
+        </body>
+      </body>
+    </body>
+    <body name="leg_v_2" pos="0.265 0.054 0" quat="0.707107 0.707107 0 0">
+      <inertial pos="-0.008169 -0.87778 -0.0124299" quat="0.707128 0.707004 -0.00763197 -0.00763562" mass="88" diaginertia="9.64868 7.96959 2.56763"/>
+      <joint name="hip_offset_slider_right" pos="0 0 0" axis="0 0 1" type="slide" actuatorfrcrange="-1 1"/>
+      <geom pos="-0.0125 -0.9875 0" quat="0.707107 -0.707107 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="leg_v"/>
+      <geom pos="-0.14908 -0.3625 -0.0124026" quat="0.707107 0.707107 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="part_1"/>
+    </body>
+  </worldbody>
+</mujoco>

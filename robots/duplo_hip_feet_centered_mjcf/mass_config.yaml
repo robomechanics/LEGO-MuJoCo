@@ -1,0 +1,28 @@
+ak80-8:
+  mass: 0.6
+  scale: 1.5
+  volume: 0.00033146932134315676
+arm:
+  mass: 0.2
+  scale: 1
+  volume: 0.00036970528420219684
+battery:
+  mass: 0.73
+  scale: 1
+  volume: 0.000984375047497452
+hip:
+  mass: 0.2
+  scale: 1
+  volume: 0.00019590432065505662
+leg_h:
+  mass: 0.05
+  scale: 1
+  volume: 3.715020457646279e-05
+leg_v:
+  mass: 0.2
+  scale: 1
+  volume: 0.0006250000186264516
+part_1:
+  mass: 0.63
+  scale: 1.8
+  volume: 0.019540918834367104

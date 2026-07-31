@@ -1,0 +1,48 @@
+<mujoco model="onshape">
+    <compiler angle="radian" />
+    <option cone="elliptic" />
+
+    <asset>
+        <mesh name="driver_3x" file="driver.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="hip_motor_3x" file="hip_motor.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="hand_weight_3x" file="hand_weight.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="l_arm_3x" file="l_arm.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="battery_3x" file="battery.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="r_leg_3x" file="r_leg3.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="r_arm_3x" file="r_arm.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="mcu_3x" file="mcu.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="l_leg_3x" file="l_leg3.stl" inertia="exact" scale="3 3 3" />
+        <mesh name="weight_3x" file="weight.stl" inertia="exact" scale="3 3 3" />
+    </asset>
+
+    <visual>
+        <global offwidth="1920" offheight="1080" />
+    </visual>
+
+    <worldbody>
+        <body name="r_leg_3x" pos="0.6000000000000001 0.0 0.07489503">
+            <freejoint />
+            <geom mass="0.0351" pos="0.0761529 0.04701810000000001 0.02576733" quat="1 0 0 0" type="mesh" mesh="driver_3x" />
+            <geom mass="0.03807" pos="0.0762816 0.047073000000000004 0.02576733" quat="1 0 0 0" type="mesh" mesh="hip_motor_3x" />
+            <geom mass="0.06696" pos="-0.010839 0.0509115 0.02082942" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh" mesh="hand_weight_3x" />
+            <geom mass="0.00837" pos="0.07598160000000001 0.046623 0.02576733" quat="1 0 0 0" type="mesh" mesh="l_arm_3x" />
+            <geom mass="0.0852255" pos="0.0762816 0.047373 0.02576733" type="mesh" mesh="battery_3x" />
+            <geom name="r_leg_3x" mass="0.12838500000000003" pos="0.0762816 0.047073000000000004 0.02576733" type="mesh" mesh="r_leg_3x" condim="6" />
+            <body name="l_leg_3x" pos="0.017625000000000002 0.0 0.0" quat="0.5 0.5 0.5 0.5">
+                <joint name="hip_3x" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.349066 0.349066" solreflimit="4e-3 1" solimplimit=".95 .99 1e-3" />
+                <geom mass="0.01269" pos="0.047245499999999996 0.02599731 0.06150660000000001" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="r_arm_3x" />
+                <geom mass="0.09693" pos="0.047073000000000004 0.02576733 -0.028124999999999997" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="mcu_3x" />
+                <geom name="l_leg_3x" mass="0.13365" pos="0.047073000000000004 0.02576733 0.0606066" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="l_leg_3x" condim="6" />
+                <geom mass="0.0" pos="0.047073000000000004 0.02576733 0.0606066" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="weight_3x" />
+                <geom mass="0.06696" pos="0.050633399999999995 0.022128389999999998 0.108486" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh" mesh="hand_weight_3x" />
+            </body>
+        </body>
+    </worldbody>
+
+    
+
+    <actuator>
+        
+        <motor name="hip_joint_act_3x" joint="hip_3x" />
+    </actuator>
+</mujoco>

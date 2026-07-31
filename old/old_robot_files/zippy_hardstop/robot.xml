@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+<!-- Generated using onshape-to-robot -->
+<!-- Onshape https://cad.onshape.com/documents/d4162f5f6a620a91d67bd0f0/w/d866279445751daabbe0c95e/e/13afda9ab73add5250d40401 -->
+<mujoco model="zippy_hardstop">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="zippy_hardstop">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <!-- Link left_leg -->
+    <body name="left_leg" pos="0 0 0" quat="1 0 0 0" childclass="zippy_hardstop">
+      <freejoint name="left_leg_freejoint"/>
+      <inertial pos="-0.0137495 0.00180146 -0.0193248" mass="0.00942" fullinertia="1.01386e-06 2.42457e-06 2.15256e-06 -3.89711e-07 -3.47091e-07 -7.10196e-09"/>
+      <!-- Part left_leg -->
+      <geom type="mesh" class="visual" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="left_leg" material="left_leg_material"/>
+      <geom type="mesh" class="collision" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="left_leg" material="left_leg_material"/>
+      <!-- Part r_hand_weight -->
+      <geom type="mesh" class="visual" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_hand_weight" material="r_hand_weight_material"/>
+      <geom type="mesh" class="collision" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_hand_weight" material="r_hand_weight_material"/>
+      <!-- Part left_foot -->
+      <geom type="mesh" class="visual" pos="-0.0304044 -0.012563 0" quat="0 0 0 1" mesh="left_foot" material="left_foot_material"/>
+      <geom type="mesh" class="collision" pos="-0.0304044 -0.012563 0" quat="0 0 0 1" mesh="left_foot" material="left_foot_material"/>
+      <!-- Part r_arm -->
+      <geom type="mesh" class="visual" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_arm" material="r_arm_material"/>
+      <geom type="mesh" class="collision" pos="-1.73472e-18 0.0139 0" quat="1 0 0 0" mesh="r_arm" material="r_arm_material"/>
+      <!-- Link left_hardstop_b -->
+      <body name="left_hardstop_b" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 -0.5 -0.5 0.5">
+        <!-- Joint from left_leg to left_hardstop_b -->
+        <joint axis="0 0 1" name="leftHSb" type="slide"/>
+        <inertial pos="-0.00213371 -0.0014257 -0.0015" mass="0.0033" fullinertia="9.74075e-09 7.56171e-09 1.23525e-08 2.63033e-09 7.99607e-25 -8.05307e-25"/>
+        <!-- Part left_hardstop_b -->
+        <geom type="mesh" class="visual" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_b" material="left_hardstop_b_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_b" material="left_hardstop_b_material"/>
+      </body>
+      <!-- Link left_hardstop_a -->
+      <body name="left_hardstop_a" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 -0.5 -0.5 0.5">
+        <!-- Joint from left_leg to left_hardstop_a -->
+        <joint axis="0 0 1" name="leftHSa" type="slide"/>
+        <inertial pos="0.00213371 -0.0014257 -0.0015" mass="0.0033" fullinertia="9.74075e-09 7.56171e-09 1.23525e-08 -2.63033e-09 7.99607e-25 8.05307e-25"/>
+        <!-- Part left_hardstop_a -->
+        <geom type="mesh" class="visual" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_a" material="left_hardstop_a_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 -0.00858911 -0.0173272" quat="0.5 0.5 0.5 -0.5" mesh="left_hardstop_a" material="left_hardstop_a_material"/>
+      </body>
+      <!-- Link right_foot -->
+      <body name="right_foot" pos="-0.0173272 -0.00179095 -0.00858911" quat="0.5 0.5 0.5 0.5">
+        <!-- Joint from left_leg to right_foot -->
+        <joint axis="0 0 1" name="hip" type="hinge"/>
+        <inertial pos="0.00133823 -0.00950444 0.00806713" mass="0.01009" fullinertia="1.17941e-06 5.58506e-07 1.08095e-06 9.39406e-08 -1.37812e-08 1.83905e-07"/>
+        <!-- Part right_foot -->
+        <geom type="mesh" class="visual" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_foot" material="right_foot_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_foot" material="right_foot_material"/>
+        <!-- Part right_hardstop_cyl -->
+        <geom type="mesh" class="visual" pos="0.015691 0.00858911 0.0173272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop_cyl" material="right_hardstop_cyl_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 0.00858911 0.0173272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop_cyl" material="right_hardstop_cyl_material"/>
+        <!-- Part l_hand_weight -->
+        <geom type="mesh" class="visual" pos="0.0160186 0.00825631 0.0300522" quat="0.4947 -0.505245 -0.4947 -0.505245" mesh="l_hand_weight" material="l_hand_weight_material"/>
+        <geom type="mesh" class="collision" pos="0.0160186 0.00825631 0.0300522" quat="0.4947 -0.505245 -0.4947 -0.505245" mesh="l_hand_weight" material="l_hand_weight_material"/>
+        <!-- Part right_leg -->
+        <geom type="mesh" class="visual" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_leg" material="right_leg_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="right_leg" material="right_leg_material"/>
+        <!-- Part l_arm -->
+        <geom type="mesh" class="visual" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="l_arm" material="l_arm_material"/>
+        <geom type="mesh" class="collision" pos="0.015691 0.00858911 0.0172522" quat="0.5 -0.5 -0.5 -0.5" mesh="l_arm" material="l_arm_material"/>
+        <!-- Link right_hardstop -->
+        <body name="right_hardstop" pos="-4.27176e-17 -0.004545 0.004" quat="1 0 0 0">
+          <!-- Joint from right_foot to right_hardstop -->
+          <joint axis="0 0 1" name="rightHS" type="slide"/>
+          <inertial pos="1.10835e-18 0.00108382 -0.001625" mass="0.00317" fullinertia="3.63296e-09 1.14092e-08 9.46163e-09 0 -1.78452e-24 0"/>
+          <!-- Part right_hardstop -->
+          <geom type="mesh" class="visual" pos="0.015691 0.0131341 0.0133272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop" material="right_hardstop_material"/>
+          <geom type="mesh" class="collision" pos="0.015691 0.0131341 0.0133272" quat="0.5 -0.5 -0.5 -0.5" mesh="right_hardstop" material="right_hardstop_material"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="left_hardstop_a.stl"/>
+    <mesh file="right_foot.stl"/>
+    <mesh file="r_hand_weight.stl"/>
+    <mesh file="left_foot.stl"/>
+    <mesh file="right_leg.stl"/>
+    <mesh file="r_arm.stl"/>
+    <mesh file="right_hardstop_cyl.stl"/>
+    <mesh file="right_hardstop.stl"/>
+    <mesh file="left_leg.stl"/>
+    <mesh file="l_hand_weight.stl"/>
+    <mesh file="left_hardstop_b.stl"/>
+    <mesh file="l_arm.stl"/>
+    <material name="left_leg_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="r_hand_weight_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="left_foot_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="r_arm_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="left_hardstop_b_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="left_hardstop_a_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="right_foot_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="right_hardstop_cyl_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="l_hand_weight_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="right_leg_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="l_arm_material" rgba="0.796078 0.823529 0.937255 1"/>
+    <material name="right_hardstop_material" rgba="0.796078 0.823529 0.937255 1"/>
+  </asset>
+  <actuator>
+    <position class="zippy_hardstop" name="leftHSb" joint="leftHSb"/>
+    <position class="zippy_hardstop" name="leftHSa" joint="leftHSa"/>
+    <position class="zippy_hardstop" name="hip" joint="hip"/>
+    <position class="zippy_hardstop" name="rightHS" joint="rightHS"/>
+  </actuator>
+  <equality/>
+</mujoco>

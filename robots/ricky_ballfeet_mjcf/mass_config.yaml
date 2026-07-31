@@ -1,0 +1,32 @@
+arm_rod:
+  mass: 0.327
+  scale: 1
+  volume: 0.0002039116483633366
+ballfoot:
+  mass: 0.965
+  scale: 1
+  volume: 0.014082589202002324
+battery:
+  mass: 0.85502162
+  scale: 1
+  volume: 0.0003829760369281777
+hip_rod:
+  mass: 0.047
+  scale: 1
+  volume: 2.958126817815785e-05
+leg_rod:
+  mass: 0.202
+  scale: 1
+  volume: 0.00012590121630185825
+motor_part_1:
+  mass: 0.377
+  scale: 1
+  volume: 0.0001770458330442099
+motor_part_2:
+  mass: 0.1887
+  scale: 1
+  volume: 6.0495131401810456e-05
+motor_part_3:
+  mass: 0.2833
+  scale: 1
+  volume: 4.4277907746171744e-05

@@ -15,8 +15,8 @@ class Mugatu(MjcSim):
             'distance': 0.5,
             'xyaxis': [1, 0, 0, 0, 0, 1],
         }
-
-        super().__init__(scene_path, config)
+        new_scene_path = self.update_xml(scene_path)
+        super().__init__(new_scene_path, config)
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data

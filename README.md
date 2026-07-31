@@ -7,13 +7,10 @@ Works in WSL Ubuntu-20.04, Conda environment with Python 3.10.16
 ## Installation
 Clone the repository and install dependencies.
 
-## 🔧 Setting Up the Conda Environment
-
-### **Using Conda (`environment.yml`)**
-Create and activate the Conda environment:
+## 🔧 Installing Requirements
+Create and activate your virtual environment. Then install the required packages using the following command:
 ```bash
-conda env create -f environment.yml
-conda activate my_env  # Replace 'my_env' with the actual environment name
+pip install -r requirements.txt
 ```
 
 ## 🚀 Running the Simulation

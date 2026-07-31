@@ -1,4 +1,9 @@
 **/.vscode/**
 onshape_mjcf-master/
 **/__pycache__/**
+/data/videos/**
 MUJOCO_LOG.TXT
+.env
+*.png
+*.pkl
+*.mp4

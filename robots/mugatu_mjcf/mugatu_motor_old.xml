@@ -1,0 +1,42 @@
+<mujoco model="onshape">
+    <compiler angle="radian" eulerseq="zyx" autolimits="true" />
+
+    <asset>
+        <mesh name="left_arm" file="left_arm.stl" inertia="exact"/>
+        <mesh name="right_foot" file="right_foot.stl" inertia="exact"/>
+        <mesh name="right_leg" file="right_leg.stl" inertia="exact"/>
+        <mesh name="right_battery" file="right_battery.stl" inertia="exact"/>
+        <mesh name="right_arm" file="right_arm.stl" inertia="exact"/>
+        <mesh name="left_foot" file="left_foot.stl" inertia="exact"/>
+        <mesh name="left_leg" file="left_leg.stl" inertia="exact"/>
+    </asset>
+
+    <visual>
+        <global offwidth="1920" offheight="1080"/>
+    </visual>
+
+    <worldbody>
+        <body name="right_leg" pos="0  0  1.69825737e-01" quat="9.99948796e-01 -9.96755215e-03 -1.20243787e-04  1.74311707e-03">
+            <freejoint />
+            <geom mass="0.06219204786445871" pos="-0.0201886 0.106284 -0.214817" quat="1 0 0 0" type="mesh" mesh="left_arm" />
+            <geom mass="0.13" pos="0.00427743 0.00314539 -0.169551" quat="1 0 0 0" type="mesh" mesh="right_foot" />
+            <geom mass="0.0529787507353837" pos="0.0142774 0.00264539 -0.169551"  quat="0.707107 0 0 0.707107" type="mesh" mesh="right_leg" />
+            <geom mass="0.15" pos="-0.0700042 0.062893 -0.0900255" quat="-0.0616284 0.704416 -0.704416 -0.0616284" type="mesh" mesh="right_battery" />
+            <body name="left_leg" pos="-0.0208226 0.0139365 -0.0162078" quat="0.5 -0.5 -0.5 0.5">
+                <joint name="hip" type="hinge" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398"/>
+                <geom mass="0.059112686530484994" pos="0.0924094 0.198961 -0.017434" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="right_arm" />
+                <geom mass="0.15" pos="-0.00788849 0.0842042 -0.0613817" quat="0.704416 -0.704416 0.0616284 -0.0616284" type="mesh" mesh="right_battery" />
+                <geom mass="0.13" pos="-0.0107911 0.153343 0.007" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="left_foot" />
+                <geom mass="0.07376726465798017" pos="-0.0112911 0.153343 0.023" quat="0.707107 0.707107 0 0" type="mesh" mesh="left_leg" />
+            </body>
+        </body>
+    </worldbody>
+
+    <contact>
+        <exclude body1="right_leg" body2="left_leg" />
+    </contact>
+
+    <actuator>
+        <motor name="hip_joint_act" joint="hip" forcerange="-1 1"/>
+    </actuator>
+</mujoco>
