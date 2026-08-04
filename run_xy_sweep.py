@@ -124,7 +124,6 @@ def split_parameter_rows(parameter_rows: list[dict], chunk_count: int) -> list[t
 def run_trial_chunks(
     model_xml_path: Path,
     parameter_rows: list[dict],
-    min_distance: float,
     save_all_results: bool,
     metadata: dict,
     trial_workers: int,
@@ -135,7 +134,6 @@ def run_trial_chunks(
         return sim_sweep.run_parameter_chunk(
             model_xml_path=model_xml_path,
             parameter_rows=chunk_rows,
-            min_distance=min_distance,
             save_all_results=save_all_results,
             metadata=metadata,
             verbose=False,
@@ -151,7 +149,6 @@ def run_trial_chunks(
                 sim_sweep.run_parameter_chunk,
                 model_xml_path,
                 chunk_rows,
-                min_distance,
                 save_all_results,
                 metadata,
                 False,
@@ -166,7 +163,7 @@ def run_trial_chunks(
     return results
 
 
-def process_pair(job: dict, trial_workers: int, num_trials: int, min_distance: float, save_all_results: bool) -> dict:
+def process_pair(job: dict, trial_workers: int, num_trials: int, save_all_results: bool) -> dict:
     pair_index = job["pair_index"]
     x_value = job["x_value"]
     y_value = job["y_value"]
@@ -190,12 +187,14 @@ def process_pair(job: dict, trial_workers: int, num_trials: int, min_distance: f
                 "Mesh_Y_Index": str(y_index),
                 "Pair_Index": str(pair_index),
                 "Run_Index": str(run_index),
+                "Mesh_Generator": mesh_gen.__name__,
+                "Mesh_Generator_Entry_XML": str(mesh_gen.ENTRY_XML),
+                "Mesh_Generator_SCAD": str(Path(mesh_gen.SCAD_DIR) / "feet_generator.scad"),
             }
             rows.extend(
                 run_trial_chunks(
                     model_xml_path=output_xml,
                     parameter_rows=parameter_rows,
-                    min_distance=min_distance,
                     save_all_results=save_all_results,
                     metadata=metadata,
                     trial_workers=trial_workers,
@@ -222,7 +221,6 @@ def main() -> None:
     total_runs = total_pairs * config.RUNS_PER_PAIR
     pair_workers, trial_workers = resolve_worker_plan(total_pairs)
     num_trials = int(config.TEST_SIM_NUM_TRIALS) if config.TEST_SIM_NUM_TRIALS is not None else 500
-    min_distance = float(config.MIN_DISTANCE) if config.MIN_DISTANCE is not None else 2.0
     save_all_results = True
 
     vprint(
@@ -242,7 +240,7 @@ def main() -> None:
 
     with ProcessPoolExecutor(max_workers=pair_workers) as executor:
         future_to_job = {
-            executor.submit(process_pair, job, trial_workers, num_trials, min_distance, save_all_results): job
+            executor.submit(process_pair, job, trial_workers, num_trials, save_all_results): job
             for job in jobs
         }
 

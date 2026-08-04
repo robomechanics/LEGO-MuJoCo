@@ -9,16 +9,16 @@ import pickle as pkl
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Motor / control ───────────────────────────────────────────────────────────
-KP           = 45.0 
-KD           = 7.0
+KP           = 30.53 #45.0 
+KD           = 5.3 # 7.0
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi #natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 35.0
-T_WAIT          = 8.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.2
+HIP_OMEGA       = 0.684 * 2 * np.pi #natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 39.33 #35.0
+T_WAIT          = 3.0 #8.0
+START_FREQ_MULT = 1.043 #0.9
+START_AMP_MULT  = 1.645 #1.2
 
 # FOOT OFFSETS
 #If Right = [a, b, c], then left = [-c, -b, a]
@@ -44,7 +44,7 @@ CMD_DELAY_STEPS = 1
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path("modified_model_v2.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
