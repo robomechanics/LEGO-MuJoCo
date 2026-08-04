@@ -89,7 +89,7 @@ def load_rows(csv_path: Path) -> list[dict]:
         reader = csv.DictReader(f)
         rows = list(reader)
 
-    required = {"Mesh_X", "Mesh_Y", "Fell", "Distance_Traversed"}
+    required = {"Mesh_X", "Mesh_Y", "Gait_Quality_Pass", "Distance_Traversed"}
     missing = required - set(reader.fieldnames or [])
     if missing:
         missing_list = ", ".join(sorted(missing))
@@ -153,7 +153,7 @@ def build_grid(plot_data: PlotData, min_distance: float) -> tuple[np.ndarray, di
 
     for cell in plot_data.cells:
         successes = [
-            (not parse_bool(row["Fell"])) and float(row["Distance_Traversed"]) >= min_distance
+            parse_bool(row["Gait_Quality_Pass"]) and float(row["Distance_Traversed"]) >= min_distance
             for row in cell.rows
         ]
         successful_distances = [

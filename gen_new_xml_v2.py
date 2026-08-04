@@ -610,7 +610,7 @@ def inject_feet_into_model(
 # ═══════════════════════════════════════════════════════════════════════════
 
 def main():
-    scad_file = Path(SCAD_DIR) / "feet_generator.scad"
+    scad_file = Path(SCAD_DIR) / "shell_feet_generator.scad"
     if not scad_file.exists():
         sys.exit(f"Could not find {scad_file}")
 

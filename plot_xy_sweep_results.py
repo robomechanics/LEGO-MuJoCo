@@ -88,7 +88,7 @@ def load_rows(csv_path: Path, filter_min_distance: float | None = None) -> list[
         reader = csv.DictReader(f)
         rows = list(reader)
 
-    required = {"Mesh_X", "Mesh_Y", "Fell", "Distance_Traversed"}
+    required = {"Mesh_X", "Mesh_Y", "Gait_Quality_Pass", "Distance_Traversed"}
     missing = required - set(reader.fieldnames or [])
     if missing:
         missing_list = ", ".join(sorted(missing))
@@ -145,7 +145,7 @@ def build_grid(
 
     for (x_pct, y_pct), group_rows in grouped.items():
         successes = [
-            (not parse_bool(row["Fell"])) and float(row["Distance_Traversed"]) >= min_distance
+            parse_bool(row["Gait_Quality_Pass"]) and float(row["Distance_Traversed"]) >= min_distance
             for row in group_rows
         ]
         successful_distances = [

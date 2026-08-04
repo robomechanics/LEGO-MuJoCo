@@ -34,6 +34,7 @@ CMD_DELAY_STEPS = 1
 ITERATION_DURATION = 20.0
 MIN_SWING_CLEARANCE = 0.02
 MIN_ALTERNATING_STEPS = 1
+ANALYSIS_STRIDE = 2
 
 RANGES = {
     "foot_x": (-0.07, 0.025),
@@ -243,11 +244,33 @@ def collect_active_contact_geom_ids(data: mujoco.MjData) -> set[int]:
     return active_geom_ids
 
 
+def collect_foot_contact_flags(
+    data: mujoco.MjData,
+    right_geom_ids: tuple[int, ...],
+    left_geom_ids: tuple[int, ...],
+) -> tuple[bool, bool]:
+    right_in_contact = False
+    left_in_contact = False
+    for contact_idx in range(data.ncon):
+        contact = data.contact[contact_idx]
+        geom1 = int(contact.geom1)
+        geom2 = int(contact.geom2)
+        if not right_in_contact and (geom1 in right_geom_ids or geom2 in right_geom_ids):
+            right_in_contact = True
+        if not left_in_contact and (geom1 in left_geom_ids or geom2 in left_geom_ids):
+            left_in_contact = True
+        if right_in_contact and left_in_contact:
+            break
+    return right_in_contact, left_in_contact
+
+
 def get_mean_geom_position(data: mujoco.MjData, geom_ids: tuple[int, ...]) -> np.ndarray:
     if not geom_ids:
         return np.zeros(3, dtype=float)
-    geom_positions = np.asarray([data.geom_xpos[geom_id] for geom_id in geom_ids], dtype=float)
-    return geom_positions.mean(axis=0)
+    total = np.zeros(3, dtype=float)
+    for geom_id in geom_ids:
+        total += data.geom_xpos[geom_id]
+    return total / len(geom_ids)
 
 
 def compute_walk_score(
@@ -304,23 +327,72 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True)
     energy_used = 0.0
     path_length = 0.0
     prev_torso_xy = start_torso_xy.copy()
-    initial_contact_ids = collect_active_contact_geom_ids(ctx.data)
+    instantaneous_forward_progress = 0.0
+    instantaneous_forward_absolute = 0.0
+    instantaneous_lateral_progress = 0.0
+    right_geom_ids = ctx.foot_collision_geom_ids["right"]
+    left_geom_ids = ctx.foot_collision_geom_ids["left"]
+    right_in_contact, left_in_contact = collect_foot_contact_flags(ctx.data, right_geom_ids, left_geom_ids)
     foot_metrics = {}
     landing_sequence: list[str] = []
-    for side, geom_ids in ctx.foot_collision_geom_ids.items():
+    for side, geom_ids in (("right", right_geom_ids), ("left", left_geom_ids)):
         foot_center = get_mean_geom_position(ctx.data, geom_ids)
         foot_metrics[side] = {
             "geom_ids": geom_ids,
             "baseline_z": float(foot_center[2]),
             "prev_xy": foot_center[:2].copy(),
-            "prev_contact": any(geom_id in initial_contact_ids for geom_id in geom_ids),
+            "prev_contact": right_in_contact if side == "right" else left_in_contact,
             "current_air_max_clearance": 0.0,
             "max_clearance": 0.0,
             "contact_slip": 0.0,
             "landings": 0,
         }
 
-    for _ in range(max_steps):
+    def update_gait_metrics() -> None:
+        nonlocal path_length
+        nonlocal instantaneous_forward_progress
+        nonlocal instantaneous_forward_absolute
+        nonlocal instantaneous_lateral_progress
+        nonlocal prev_torso_xy
+
+        torso_xy = ctx.data.xpos[ctx.torso_body_id][:2].copy()
+        torso_delta_xy = torso_xy - prev_torso_xy
+        path_length += float(np.linalg.norm(torso_delta_xy))
+        current_forward_xy, current_left_xy = get_heading_axes(ctx.data.xmat[ctx.torso_body_id])
+        instantaneous_forward_step = float(np.dot(torso_delta_xy, current_forward_xy))
+        instantaneous_lateral_step = float(np.dot(torso_delta_xy, current_left_xy))
+        instantaneous_forward_progress += instantaneous_forward_step
+        instantaneous_forward_absolute += abs(instantaneous_forward_step)
+        instantaneous_lateral_progress += abs(instantaneous_lateral_step)
+        prev_torso_xy = torso_xy
+
+        right_contact_now, left_contact_now = collect_foot_contact_flags(ctx.data, right_geom_ids, left_geom_ids)
+        contact_flags = {"right": right_contact_now, "left": left_contact_now}
+
+        for side, metrics in foot_metrics.items():
+            foot_center = get_mean_geom_position(ctx.data, metrics["geom_ids"])
+            current_xy = foot_center[:2]
+            if metrics["prev_contact"]:
+                metrics["contact_slip"] += float(np.linalg.norm(current_xy - metrics["prev_xy"]))
+            metrics["prev_xy"] = current_xy.copy()
+
+            clearance = float(foot_center[2] - metrics["baseline_z"])
+            metrics["max_clearance"] = max(metrics["max_clearance"], clearance)
+
+            in_contact = contact_flags[side]
+            if not in_contact:
+                metrics["current_air_max_clearance"] = max(metrics["current_air_max_clearance"], clearance)
+            elif not metrics["prev_contact"]:
+                if metrics["current_air_max_clearance"] >= MIN_SWING_CLEARANCE:
+                    metrics["landings"] += 1
+                    landing_sequence.append(side)
+                metrics["current_air_max_clearance"] = 0.0
+
+            metrics["prev_contact"] = in_contact
+
+    last_analysis_step = 0
+
+    for step_idx in range(1, max_steps + 1):
         t = ctx.data.time
         target_pos_rad, target_vel_rad = calculate_sine_reference(
             t,
@@ -346,39 +418,24 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True)
 
         mujoco.mj_step(ctx.model, ctx.data)
 
-        torso_xy = ctx.data.xpos[ctx.torso_body_id][:2].copy()
-        path_length += float(np.linalg.norm(torso_xy - prev_torso_xy))
-        prev_torso_xy = torso_xy
-
-        active_contact_ids = collect_active_contact_geom_ids(ctx.data)
-        for side, metrics in foot_metrics.items():
-            foot_center = get_mean_geom_position(ctx.data, metrics["geom_ids"])
-            current_xy = foot_center[:2]
-            if metrics["prev_contact"]:
-                metrics["contact_slip"] += float(np.linalg.norm(current_xy - metrics["prev_xy"]))
-            metrics["prev_xy"] = current_xy.copy()
-
-            clearance = float(foot_center[2] - metrics["baseline_z"])
-            metrics["max_clearance"] = max(metrics["max_clearance"], clearance)
-
-            in_contact = any(geom_id in active_contact_ids for geom_id in metrics["geom_ids"])
-            if not in_contact:
-                metrics["current_air_max_clearance"] = max(metrics["current_air_max_clearance"], clearance)
-            elif not metrics["prev_contact"]:
-                if metrics["current_air_max_clearance"] >= MIN_SWING_CLEARANCE:
-                    metrics["landings"] += 1
-                    landing_sequence.append(side)
-                metrics["current_air_max_clearance"] = 0.0
-
-            metrics["prev_contact"] = in_contact
+        analysis_due = (step_idx % ANALYSIS_STRIDE) == 0
+        if analysis_due:
+            update_gait_metrics()
+            last_analysis_step = step_idx
 
         if check_has_fallen(ctx):
+            if not analysis_due:
+                update_gait_metrics()
+                last_analysis_step = step_idx
             vprint(
                 f"   [DEBUG] Fell at t={ctx.data.time:.3f}s. Height={ctx.data.xpos[ctx.torso_body_id][2]:.2f}m",
                 verbose=verbose,
             )
             fell = True
             break
+
+    if not fell and last_analysis_step != max_steps:
+        update_gait_metrics()
 
     final_torso_xy = ctx.data.xpos[ctx.torso_body_id][:2].copy()
     displacement_xy = final_torso_xy - start_torso_xy
@@ -404,7 +461,7 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True)
     )
     gait_quality_pass = (
         (not fell)
-        and forward_progress > lateral_drift
+        and instantaneous_forward_absolute > instantaneous_lateral_progress
         and alternating_steps >= MIN_ALTERNATING_STEPS
         and min_swing_clearance >= MIN_SWING_CLEARANCE
     )
@@ -433,6 +490,9 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True)
         "Distance_Traversed": distance,
         "Forward_Progress": forward_progress,
         "Lateral_Drift": lateral_drift,
+        "Instantaneous_Forward_Progress": instantaneous_forward_progress,
+        "Instantaneous_Forward_Absolute": instantaneous_forward_absolute,
+        "Instantaneous_Lateral_Progress": instantaneous_lateral_progress,
         "Path_Length": path_length,
         "Forward_Efficiency": forward_efficiency,
         "Heading_Change_Deg": float(np.rad2deg(heading_change_rad)),
@@ -499,6 +559,9 @@ def run_parameter_chunk(
             f"fx={params['foot_x']:.3f} fy={params['foot_y']:.3f} | "
             f"fell={result_row['Fell']} dist={result_row['Distance_Traversed']:.2f}m "
             f"forward={result_row['Forward_Progress']:.2f}m drift={result_row['Lateral_Drift']:.2f}m "
+            f"inst_fwd={result_row['Instantaneous_Forward_Progress']:.2f}m "
+            f"inst_fwd_abs={result_row['Instantaneous_Forward_Absolute']:.2f}m "
+            f"inst_lat={result_row['Instantaneous_Lateral_Progress']:.2f}m "
             f"steps={result_row['Alternating_Steps']} clearance={result_row['Min_Swing_Clearance']:.3f}m "
             f"score={result_row['Walk_Score']:.3f} CoT={result_row['CoT']:.3f}| "
             f"{'SAVED' if passed else 'skipped'}",
