@@ -1,0 +1,1002 @@
+[  1/1000] wait=True freq=0.56Hz amp=34.4deg Kp=30.3 Kd=13.8 fx=-0.030 fy=0.003 | fell=False dist=2.79m CoT=0.554 settle_t=2.380s | SAVED
+[  2/1000] wait=False freq=0.56Hz amp=34.4deg Kp=30.3 Kd=13.8 fx=-0.030 fy=0.003 | fell=True dist=0.53m CoT=0.315 settle_t=0.000s | skipped
+[  3/1000] wait=True freq=0.58Hz amp=30.7deg Kp=21.2 Kd=10.6 fx=0.005 fy=-0.017 | fell=True dist=0.45m CoT=0.668 settle_t=8.190s | skipped
+[  4/1000] wait=False freq=0.58Hz amp=30.7deg Kp=21.2 Kd=10.6 fx=0.005 fy=-0.017 | fell=False dist=0.21m CoT=2.643 settle_t=0.000s | skipped
+[  5/1000] wait=True freq=0.49Hz amp=38.6deg Kp=39.3 Kd=11.2 fx=-0.069 fy=0.008 | fell=True dist=1.21m CoT=0.905 settle_t=1.000s | skipped
+[  6/1000] wait=False freq=0.49Hz amp=38.6deg Kp=39.3 Kd=11.2 fx=-0.069 fy=0.008 | fell=True dist=0.51m CoT=2.868 settle_t=0.000s | skipped
+[  7/1000] wait=True freq=0.62Hz amp=38.2deg Kp=22.4 Kd=12.4 fx=-0.025 fy=-0.008 | fell=True dist=0.32m CoT=1.096 settle_t=5.186s | skipped
+[  8/1000] wait=False freq=0.62Hz amp=38.2deg Kp=22.4 Kd=12.4 fx=-0.025 fy=-0.008 | fell=True dist=0.99m CoT=0.573 settle_t=0.000s | skipped
+[  9/1000] wait=True freq=0.48Hz amp=24.5deg Kp=23.8 Kd=12.6 fx=-0.020 fy=0.002 | fell=False dist=0.29m CoT=1.628 settle_t=2.324s | skipped
+[ 10/1000] wait=False freq=0.48Hz amp=24.5deg Kp=23.8 Kd=12.6 fx=-0.020 fy=0.002 | fell=False dist=0.19m CoT=2.697 settle_t=0.000s | skipped
+[ 11/1000] wait=True freq=0.76Hz amp=28.1deg Kp=41.9 Kd=12.0 fx=0.015 fy=-0.015 | fell=True dist=1.70m CoT=0.347 settle_t=4.854s | skipped
+[ 12/1000] wait=False freq=0.76Hz amp=28.1deg Kp=41.9 Kd=12.0 fx=0.015 fy=-0.015 | fell=True dist=0.93m CoT=0.451 settle_t=0.000s | skipped
+[ 13/1000] wait=True freq=0.60Hz amp=30.3deg Kp=31.9 Kd=9.6 fx=-0.068 fy=-0.011 | fell=False dist=0.20m CoT=9.015 settle_t=5.084s | skipped
+[ 14/1000] wait=False freq=0.60Hz amp=30.3deg Kp=31.9 Kd=9.6 fx=-0.068 fy=-0.011 | fell=True dist=0.62m CoT=1.355 settle_t=0.000s | skipped
+[ 15/1000] wait=True freq=0.70Hz amp=27.0deg Kp=44.1 Kd=13.1 fx=0.017 fy=0.001 | fell=False dist=0.46m CoT=0.766 settle_t=2.326s | skipped
+[ 16/1000] wait=False freq=0.70Hz amp=27.0deg Kp=44.1 Kd=13.1 fx=0.017 fy=0.001 | fell=False dist=0.20m CoT=2.018 settle_t=0.000s | skipped
+[ 17/1000] wait=True freq=0.80Hz amp=26.3deg Kp=39.3 Kd=7.3 fx=0.005 fy=0.000 | fell=False dist=0.22m CoT=1.392 settle_t=3.330s | skipped
+[ 18/1000] wait=False freq=0.80Hz amp=26.3deg Kp=39.3 Kd=7.3 fx=0.005 fy=0.000 | fell=False dist=0.09m CoT=3.014 settle_t=0.000s | skipped
+[ 19/1000] wait=True freq=0.79Hz amp=26.4deg Kp=43.9 Kd=6.6 fx=0.024 fy=-0.011 | fell=False dist=0.23m CoT=2.357 settle_t=4.872s | skipped
+[ 20/1000] wait=False freq=0.79Hz amp=26.4deg Kp=43.9 Kd=6.6 fx=0.024 fy=-0.011 | fell=True dist=1.86m CoT=0.375 settle_t=0.000s | skipped
+[ 21/1000] wait=True freq=0.53Hz amp=39.0deg Kp=32.9 Kd=10.7 fx=-0.061 fy=0.001 | fell=True dist=0.16m CoT=4.340 settle_t=2.206s | skipped
+[ 22/1000] wait=False freq=0.53Hz amp=39.0deg Kp=32.9 Kd=10.7 fx=-0.061 fy=0.001 | fell=True dist=0.39m CoT=0.558 settle_t=0.000s | skipped
+[ 23/1000] wait=True freq=0.44Hz amp=31.8deg Kp=23.7 Kd=10.9 fx=-0.024 fy=-0.011 | fell=False dist=0.54m CoT=1.443 settle_t=4.660s | skipped
+[ 24/1000] wait=False freq=0.44Hz amp=31.8deg Kp=23.7 Kd=10.9 fx=-0.024 fy=-0.011 | fell=False dist=0.25m CoT=3.174 settle_t=0.000s | skipped
+[ 25/1000] wait=True freq=0.44Hz amp=22.4deg Kp=39.8 Kd=4.5 fx=-0.029 fy=-0.019 | fell=False dist=0.24m CoT=3.161 settle_t=10.804s | skipped
+[ 26/1000] wait=False freq=0.44Hz amp=22.4deg Kp=39.8 Kd=4.5 fx=-0.029 fy=-0.019 | fell=False dist=0.32m CoT=2.393 settle_t=0.000s | skipped
+[ 27/1000] wait=True freq=0.53Hz amp=36.9deg Kp=25.9 Kd=7.3 fx=-0.043 fy=-0.016 | fell=True dist=0.60m CoT=0.294 settle_t=4.354s | skipped
+[ 28/1000] wait=False freq=0.53Hz amp=36.9deg Kp=25.9 Kd=7.3 fx=-0.043 fy=-0.016 | fell=True dist=0.52m CoT=0.294 settle_t=0.000s | skipped
+[ 29/1000] wait=True freq=0.46Hz amp=27.6deg Kp=20.6 Kd=4.1 fx=0.018 fy=-0.015 | fell=False dist=0.18m CoT=0.719 settle_t=4.734s | skipped
+[ 30/1000] wait=False freq=0.46Hz amp=27.6deg Kp=20.6 Kd=4.1 fx=0.018 fy=-0.015 | fell=True dist=0.59m CoT=0.192 settle_t=0.000s | skipped
+[ 31/1000] wait=True freq=0.76Hz amp=21.0deg Kp=29.7 Kd=10.7 fx=-0.057 fy=0.009 | fell=False dist=0.12m CoT=8.711 settle_t=1.000s | skipped
+[ 32/1000] wait=False freq=0.76Hz amp=21.0deg Kp=29.7 Kd=10.7 fx=-0.057 fy=0.009 | fell=False dist=0.19m CoT=5.435 settle_t=0.000s | skipped
+[ 33/1000] wait=True freq=0.67Hz amp=31.0deg Kp=24.1 Kd=10.7 fx=-0.047 fy=-0.016 | fell=True dist=0.50m CoT=0.215 settle_t=4.550s | skipped
+[ 34/1000] wait=False freq=0.67Hz amp=31.0deg Kp=24.1 Kd=10.7 fx=-0.047 fy=-0.016 | fell=True dist=0.33m CoT=3.665 settle_t=0.000s | skipped
+[ 35/1000] wait=True freq=0.44Hz amp=39.6deg Kp=38.2 Kd=8.1 fx=-0.059 fy=-0.000 | fell=True dist=0.96m CoT=0.478 settle_t=2.196s | skipped
+[ 36/1000] wait=False freq=0.44Hz amp=39.6deg Kp=38.2 Kd=8.1 fx=-0.059 fy=-0.000 | fell=True dist=0.45m CoT=2.464 settle_t=0.000s | skipped
+[ 37/1000] wait=True freq=0.73Hz amp=33.1deg Kp=42.4 Kd=11.0 fx=-0.012 fy=-0.015 | fell=True dist=1.24m CoT=0.683 settle_t=4.442s | skipped
+[ 38/1000] wait=False freq=0.73Hz amp=33.1deg Kp=42.4 Kd=11.0 fx=-0.012 fy=-0.015 | fell=True dist=1.05m CoT=0.511 settle_t=0.000s | skipped
+[ 39/1000] wait=True freq=0.47Hz amp=33.9deg Kp=41.3 Kd=14.5 fx=-0.063 fy=-0.018 | fell=True dist=0.80m CoT=0.882 settle_t=7.614s | skipped
+[ 40/1000] wait=False freq=0.47Hz amp=33.9deg Kp=41.3 Kd=14.5 fx=-0.063 fy=-0.018 | fell=True dist=0.79m CoT=0.892 settle_t=0.000s | skipped
+[ 41/1000] wait=True freq=0.51Hz amp=37.1deg Kp=33.4 Kd=3.0 fx=-0.017 fy=0.002 | fell=False dist=0.12m CoT=8.133 settle_t=2.364s | skipped
+[ 42/1000] wait=False freq=0.51Hz amp=37.1deg Kp=33.4 Kd=3.0 fx=-0.017 fy=0.002 | fell=False dist=0.23m CoT=3.969 settle_t=0.000s | skipped
+[ 43/1000] wait=True freq=0.80Hz amp=34.3deg Kp=35.2 Kd=13.6 fx=0.004 fy=-0.004 | fell=False dist=0.15m CoT=3.664 settle_t=2.908s | skipped
+[ 44/1000] wait=False freq=0.80Hz amp=34.3deg Kp=35.2 Kd=13.6 fx=0.004 fy=-0.004 | fell=False dist=0.13m CoT=4.474 settle_t=0.000s | skipped
+[ 45/1000] wait=True freq=0.63Hz amp=32.2deg Kp=20.8 Kd=4.0 fx=-0.054 fy=-0.011 | fell=False dist=0.14m CoT=3.411 settle_t=4.920s | skipped
+[ 46/1000] wait=False freq=0.63Hz amp=32.2deg Kp=20.8 Kd=4.0 fx=-0.054 fy=-0.011 | fell=False dist=0.24m CoT=1.962 settle_t=0.000s | skipped
+[ 47/1000] wait=True freq=0.72Hz amp=22.6deg Kp=35.7 Kd=7.0 fx=-0.070 fy=-0.007 | fell=False dist=0.27m CoT=3.737 settle_t=2.676s | skipped
+[ 48/1000] wait=False freq=0.72Hz amp=22.6deg Kp=35.7 Kd=7.0 fx=-0.070 fy=-0.007 | fell=False dist=0.31m CoT=3.525 settle_t=0.000s | skipped
+[ 49/1000] wait=True freq=0.65Hz amp=33.5deg Kp=43.5 Kd=2.8 fx=0.008 fy=0.008 | fell=False dist=0.27m CoT=1.516 settle_t=1.000s | skipped
+[ 50/1000] wait=False freq=0.65Hz amp=33.5deg Kp=43.5 Kd=2.8 fx=0.008 fy=0.008 | fell=False dist=0.31m CoT=1.345 settle_t=0.000s | skipped
+[ 51/1000] wait=True freq=0.73Hz amp=28.3deg Kp=34.6 Kd=6.1 fx=-0.020 fy=0.005 | fell=False dist=0.13m CoT=4.429 settle_t=1.000s | skipped
+[ 52/1000] wait=False freq=0.73Hz amp=28.3deg Kp=34.6 Kd=6.1 fx=-0.020 fy=0.005 | fell=False dist=0.15m CoT=3.390 settle_t=0.000s | skipped
+[ 53/1000] wait=True freq=0.72Hz amp=21.9deg Kp=23.1 Kd=3.7 fx=-0.042 fy=-0.004 | fell=False dist=0.39m CoT=0.599 settle_t=2.784s | skipped
+[ 54/1000] wait=False freq=0.72Hz amp=21.9deg Kp=23.1 Kd=3.7 fx=-0.042 fy=-0.004 | fell=False dist=0.16m CoT=1.403 settle_t=0.000s | skipped
+[ 55/1000] wait=True freq=0.55Hz amp=26.2deg Kp=39.1 Kd=10.0 fx=-0.005 fy=-0.018 | fell=True dist=0.68m CoT=0.314 settle_t=7.930s | skipped
+[ 56/1000] wait=False freq=0.55Hz amp=26.2deg Kp=39.1 Kd=10.0 fx=-0.005 fy=-0.018 | fell=True dist=0.94m CoT=0.215 settle_t=0.000s | skipped
+[ 57/1000] wait=True freq=0.68Hz amp=20.5deg Kp=25.8 Kd=12.1 fx=-0.052 fy=-0.013 | fell=False dist=0.20m CoT=3.707 settle_t=4.638s | skipped
+[ 58/1000] wait=False freq=0.68Hz amp=20.5deg Kp=25.8 Kd=12.1 fx=-0.052 fy=-0.013 | fell=False dist=0.32m CoT=2.430 settle_t=0.000s | skipped
+[ 59/1000] wait=True freq=0.79Hz amp=38.7deg Kp=30.7 Kd=4.9 fx=-0.056 fy=0.008 | fell=True dist=1.42m CoT=1.414 settle_t=1.000s | skipped
+[ 60/1000] wait=False freq=0.79Hz amp=38.7deg Kp=30.7 Kd=4.9 fx=-0.056 fy=0.008 | fell=False dist=0.34m CoT=4.449 settle_t=0.000s | skipped
+[ 61/1000] wait=True freq=0.59Hz amp=26.2deg Kp=43.2 Kd=3.4 fx=-0.060 fy=-0.017 | fell=True dist=0.62m CoT=0.302 settle_t=4.354s | skipped
+[ 62/1000] wait=False freq=0.59Hz amp=26.2deg Kp=43.2 Kd=3.4 fx=-0.060 fy=-0.017 | fell=True dist=0.43m CoT=1.635 settle_t=0.000s | skipped
+[ 63/1000] wait=True freq=0.65Hz amp=32.3deg Kp=24.5 Kd=2.2 fx=-0.046 fy=-0.005 | fell=False dist=0.35m CoT=1.443 settle_t=2.768s | skipped
+[ 64/1000] wait=False freq=0.65Hz amp=32.3deg Kp=24.5 Kd=2.2 fx=-0.046 fy=-0.005 | fell=False dist=0.12m CoT=4.433 settle_t=0.000s | skipped
+[ 65/1000] wait=True freq=0.78Hz amp=22.5deg Kp=42.2 Kd=2.3 fx=-0.066 fy=-0.002 | fell=False dist=0.13m CoT=7.115 settle_t=2.420s | skipped
+[ 66/1000] wait=False freq=0.78Hz amp=22.5deg Kp=42.2 Kd=2.3 fx=-0.066 fy=-0.002 | fell=False dist=0.30m CoT=2.954 settle_t=0.000s | skipped
+[ 67/1000] wait=True freq=0.77Hz amp=37.6deg Kp=23.2 Kd=8.3 fx=-0.039 fy=0.005 | fell=False dist=0.19m CoT=6.908 settle_t=1.000s | skipped
+[ 68/1000] wait=False freq=0.77Hz amp=37.6deg Kp=23.2 Kd=8.3 fx=-0.039 fy=0.005 | fell=False dist=0.19m CoT=6.268 settle_t=0.000s | skipped
+[ 69/1000] wait=True freq=0.54Hz amp=34.7deg Kp=34.4 Kd=6.2 fx=0.019 fy=0.002 | fell=False dist=0.41m CoT=0.904 settle_t=2.324s | skipped
+[ 70/1000] wait=False freq=0.54Hz amp=34.7deg Kp=34.4 Kd=6.2 fx=0.019 fy=0.002 | fell=False dist=0.17m CoT=2.191 settle_t=0.000s | skipped
+[ 71/1000] wait=True freq=0.74Hz amp=28.9deg Kp=22.6 Kd=10.8 fx=0.024 fy=0.002 | fell=False dist=0.19m CoT=1.460 settle_t=2.260s | skipped
+[ 72/1000] wait=False freq=0.74Hz amp=28.9deg Kp=22.6 Kd=10.8 fx=0.024 fy=0.002 | fell=True dist=1.42m CoT=0.341 settle_t=0.000s | skipped
+[ 73/1000] wait=True freq=0.67Hz amp=24.9deg Kp=31.2 Kd=11.2 fx=0.017 fy=-0.011 | fell=True dist=0.46m CoT=0.752 settle_t=4.984s | skipped
+[ 74/1000] wait=False freq=0.67Hz amp=24.9deg Kp=31.2 Kd=11.2 fx=0.017 fy=-0.011 | fell=False dist=0.87m CoT=1.172 settle_t=0.000s | skipped
+[ 75/1000] wait=True freq=0.79Hz amp=28.1deg Kp=36.8 Kd=12.4 fx=0.018 fy=0.003 | fell=False dist=0.02m CoT=19.359 settle_t=2.424s | skipped
+[ 76/1000] wait=False freq=0.79Hz amp=28.1deg Kp=36.8 Kd=12.4 fx=0.018 fy=0.003 | fell=False dist=0.31m CoT=1.196 settle_t=0.000s | skipped
+[ 77/1000] wait=True freq=0.57Hz amp=23.6deg Kp=30.9 Kd=10.2 fx=0.001 fy=-0.009 | fell=False dist=0.18m CoT=1.877 settle_t=4.780s | skipped
+[ 78/1000] wait=False freq=0.57Hz amp=23.6deg Kp=30.9 Kd=10.2 fx=0.001 fy=-0.009 | fell=False dist=0.31m CoT=1.088 settle_t=0.000s | skipped
+[ 79/1000] wait=True freq=0.43Hz amp=38.6deg Kp=43.7 Kd=11.6 fx=-0.019 fy=0.003 | fell=True dist=0.62m CoT=0.302 settle_t=2.404s | skipped
+[ 80/1000] wait=False freq=0.43Hz amp=38.6deg Kp=43.7 Kd=11.6 fx=-0.019 fy=0.003 | fell=True dist=0.32m CoT=0.692 settle_t=0.000s | skipped
+[ 81/1000] wait=True freq=0.60Hz amp=30.4deg Kp=26.4 Kd=15.0 fx=-0.027 fy=-0.013 | fell=False dist=1.93m CoT=0.696 settle_t=4.720s | skipped
+[ 82/1000] wait=False freq=0.60Hz amp=30.4deg Kp=26.4 Kd=15.0 fx=-0.027 fy=-0.013 | fell=True dist=0.79m CoT=0.533 settle_t=0.000s | skipped
+[ 83/1000] wait=True freq=0.72Hz amp=29.0deg Kp=23.8 Kd=10.0 fx=0.003 fy=0.004 | fell=False dist=0.10m CoT=3.880 settle_t=1.000s | skipped
+[ 84/1000] wait=False freq=0.72Hz amp=29.0deg Kp=23.8 Kd=10.0 fx=0.003 fy=0.004 | fell=False dist=0.04m CoT=9.919 settle_t=0.000s | skipped
+[ 85/1000] wait=True freq=0.62Hz amp=31.9deg Kp=34.5 Kd=3.8 fx=0.011 fy=-0.008 | fell=True dist=1.05m CoT=0.437 settle_t=5.050s | skipped
+[ 86/1000] wait=False freq=0.62Hz amp=31.9deg Kp=34.5 Kd=3.8 fx=0.011 fy=-0.008 | fell=True dist=1.40m CoT=0.281 settle_t=0.000s | skipped
+[ 87/1000] wait=True freq=0.44Hz amp=35.9deg Kp=21.4 Kd=6.5 fx=-0.048 fy=-0.001 | fell=False dist=0.80m CoT=1.089 settle_t=2.242s | skipped
+[ 88/1000] wait=False freq=0.44Hz amp=35.9deg Kp=21.4 Kd=6.5 fx=-0.048 fy=-0.001 | fell=False dist=0.15m CoT=4.982 settle_t=0.000s | skipped
+[ 89/1000] wait=True freq=0.50Hz amp=24.6deg Kp=34.3 Kd=5.6 fx=-0.048 fy=-0.003 | fell=True dist=0.68m CoT=0.590 settle_t=2.864s | skipped
+[ 90/1000] wait=False freq=0.50Hz amp=24.6deg Kp=34.3 Kd=5.6 fx=-0.048 fy=-0.003 | fell=False dist=0.50m CoT=1.729 settle_t=0.000s | skipped
+[ 91/1000] wait=True freq=0.69Hz amp=25.3deg Kp=29.9 Kd=6.2 fx=-0.067 fy=-0.018 | fell=False dist=0.28m CoT=2.874 settle_t=4.266s | skipped
+[ 92/1000] wait=False freq=0.69Hz amp=25.3deg Kp=29.9 Kd=6.2 fx=-0.067 fy=-0.018 | fell=False dist=0.17m CoT=5.697 settle_t=0.000s | skipped
+[ 93/1000] wait=True freq=0.41Hz amp=20.2deg Kp=39.2 Kd=10.3 fx=-0.008 fy=-0.001 | fell=False dist=0.17m CoT=1.741 settle_t=2.954s | skipped
+[ 94/1000] wait=False freq=0.41Hz amp=20.2deg Kp=39.2 Kd=10.3 fx=-0.008 fy=-0.001 | fell=False dist=0.22m CoT=1.785 settle_t=0.000s | skipped
+[ 95/1000] wait=True freq=0.71Hz amp=27.2deg Kp=35.6 Kd=8.6 fx=0.012 fy=0.006 | fell=False dist=0.27m CoT=1.169 settle_t=1.000s | skipped
+[ 96/1000] wait=False freq=0.71Hz amp=27.2deg Kp=35.6 Kd=8.6 fx=0.012 fy=0.006 | fell=False dist=0.30m CoT=1.016 settle_t=0.000s | skipped
+[ 97/1000] wait=True freq=0.52Hz amp=27.7deg Kp=35.8 Kd=7.9 fx=-0.004 fy=-0.004 | fell=False dist=0.42m CoT=1.124 settle_t=6.440s | skipped
+[ 98/1000] wait=False freq=0.52Hz amp=27.7deg Kp=35.8 Kd=7.9 fx=-0.004 fy=-0.004 | fell=False dist=0.10m CoT=4.767 settle_t=0.000s | skipped
+[ 99/1000] wait=True freq=0.73Hz amp=31.9deg Kp=35.0 Kd=12.7 fx=-0.044 fy=-0.016 | fell=True dist=0.50m CoT=0.277 settle_t=4.452s | skipped
+[100/1000] wait=False freq=0.73Hz amp=31.9deg Kp=35.0 Kd=12.7 fx=-0.044 fy=-0.016 | fell=True dist=0.75m CoT=0.849 settle_t=0.000s | skipped
+[101/1000] wait=True freq=0.79Hz amp=31.8deg Kp=43.1 Kd=13.3 fx=-0.023 fy=0.002 | fell=False dist=0.20m CoT=5.306 settle_t=2.360s | skipped
+[102/1000] wait=False freq=0.79Hz amp=31.8deg Kp=43.1 Kd=13.3 fx=-0.023 fy=0.002 | fell=False dist=0.18m CoT=5.788 settle_t=0.000s | skipped
+[103/1000] wait=True freq=0.57Hz amp=24.8deg Kp=33.5 Kd=5.9 fx=-0.031 fy=-0.001 | fell=False dist=0.12m CoT=4.324 settle_t=2.566s | skipped
+[104/1000] wait=False freq=0.57Hz amp=24.8deg Kp=33.5 Kd=5.9 fx=-0.031 fy=-0.001 | fell=False dist=0.09m CoT=6.480 settle_t=0.000s | skipped
+[105/1000] wait=True freq=0.52Hz amp=37.2deg Kp=22.0 Kd=6.0 fx=0.002 fy=-0.016 | fell=False dist=0.14m CoT=2.574 settle_t=6.812s | skipped
+[106/1000] wait=False freq=0.52Hz amp=37.2deg Kp=22.0 Kd=6.0 fx=0.002 fy=-0.016 | fell=False dist=0.36m CoT=1.112 settle_t=0.000s | skipped
+[107/1000] wait=True freq=0.69Hz amp=38.2deg Kp=29.2 Kd=11.7 fx=-0.059 fy=-0.001 | fell=True dist=0.36m CoT=1.944 settle_t=2.196s | skipped
+[108/1000] wait=False freq=0.69Hz amp=38.2deg Kp=29.2 Kd=11.7 fx=-0.059 fy=-0.001 | fell=True dist=0.57m CoT=0.658 settle_t=0.000s | skipped
+[109/1000] wait=True freq=0.59Hz amp=32.9deg Kp=27.2 Kd=6.6 fx=-0.016 fy=-0.012 | fell=False dist=0.25m CoT=2.600 settle_t=4.776s | skipped
+[110/1000] wait=False freq=0.59Hz amp=32.9deg Kp=27.2 Kd=6.6 fx=-0.016 fy=-0.012 | fell=False dist=0.12m CoT=5.936 settle_t=0.000s | skipped
+[111/1000] wait=True freq=0.61Hz amp=21.1deg Kp=37.1 Kd=5.7 fx=-0.065 fy=-0.007 | fell=False dist=0.14m CoT=5.131 settle_t=2.694s | skipped
+[112/1000] wait=False freq=0.61Hz amp=21.1deg Kp=37.1 Kd=5.7 fx=-0.065 fy=-0.007 | fell=False dist=0.23m CoT=3.326 settle_t=0.000s | skipped
+[113/1000] wait=True freq=0.77Hz amp=27.9deg Kp=32.2 Kd=7.5 fx=-0.015 fy=0.004 | fell=False dist=0.11m CoT=5.074 settle_t=1.000s | skipped
+[114/1000] wait=False freq=0.77Hz amp=27.9deg Kp=32.2 Kd=7.5 fx=-0.015 fy=0.004 | fell=False dist=0.15m CoT=3.499 settle_t=0.000s | skipped
+[115/1000] wait=True freq=0.55Hz amp=31.2deg Kp=22.3 Kd=6.4 fx=-0.035 fy=-0.012 | fell=False dist=0.18m CoT=2.734 settle_t=4.576s | skipped
+[116/1000] wait=False freq=0.55Hz amp=31.2deg Kp=22.3 Kd=6.4 fx=-0.035 fy=-0.012 | fell=False dist=0.27m CoT=1.817 settle_t=0.000s | skipped
+[117/1000] wait=True freq=0.63Hz amp=20.0deg Kp=24.2 Kd=11.9 fx=-0.002 fy=0.005 | fell=False dist=0.05m CoT=4.398 settle_t=1.000s | skipped
+[118/1000] wait=False freq=0.63Hz amp=20.0deg Kp=24.2 Kd=11.9 fx=-0.002 fy=0.005 | fell=False dist=0.09m CoT=2.266 settle_t=0.000s | skipped
+[119/1000] wait=True freq=0.62Hz amp=32.8deg Kp=28.8 Kd=12.8 fx=-0.066 fy=0.008 | fell=False dist=0.33m CoT=6.655 settle_t=1.000s | skipped
+[120/1000] wait=False freq=0.62Hz amp=32.8deg Kp=28.8 Kd=12.8 fx=-0.066 fy=0.008 | fell=False dist=0.23m CoT=9.656 settle_t=0.000s | skipped
+[121/1000] wait=True freq=0.77Hz amp=34.4deg Kp=38.3 Kd=14.8 fx=-0.024 fy=-0.018 | fell=True dist=0.91m CoT=0.271 settle_t=7.810s | skipped
+[122/1000] wait=False freq=0.77Hz amp=34.4deg Kp=38.3 Kd=14.8 fx=-0.024 fy=-0.018 | fell=True dist=0.33m CoT=0.637 settle_t=0.000s | skipped
+[123/1000] wait=True freq=0.66Hz amp=40.0deg Kp=38.2 Kd=5.5 fx=-0.016 fy=-0.000 | fell=False dist=0.18m CoT=4.963 settle_t=3.232s | skipped
+[124/1000] wait=False freq=0.66Hz amp=40.0deg Kp=38.2 Kd=5.5 fx=-0.016 fy=-0.000 | fell=False dist=0.14m CoT=6.215 settle_t=0.000s | skipped
+[125/1000] wait=True freq=0.76Hz amp=26.8deg Kp=42.1 Kd=2.1 fx=-0.039 fy=-0.005 | fell=False dist=0.22m CoT=3.266 settle_t=2.794s | skipped
+[126/1000] wait=False freq=0.76Hz amp=26.8deg Kp=42.1 Kd=2.1 fx=-0.039 fy=-0.005 | fell=False dist=0.14m CoT=5.309 settle_t=0.000s | skipped
+[127/1000] wait=True freq=0.48Hz amp=21.5deg Kp=38.0 Kd=2.2 fx=-0.028 fy=-0.015 | fell=False dist=0.23m CoT=2.118 settle_t=7.868s | skipped
+[128/1000] wait=False freq=0.48Hz amp=21.5deg Kp=38.0 Kd=2.2 fx=-0.028 fy=-0.015 | fell=False dist=0.38m CoT=1.058 settle_t=0.000s | skipped
+[129/1000] wait=True freq=0.75Hz amp=35.5deg Kp=25.6 Kd=12.3 fx=0.011 fy=-0.010 | fell=True dist=1.17m CoT=0.489 settle_t=5.058s | skipped
+[130/1000] wait=False freq=0.75Hz amp=35.5deg Kp=25.6 Kd=12.3 fx=0.011 fy=-0.010 | fell=True dist=0.63m CoT=0.912 settle_t=0.000s | skipped
+[131/1000] wait=True freq=0.53Hz amp=26.8deg Kp=27.0 Kd=14.3 fx=-0.041 fy=-0.001 | fell=True dist=0.42m CoT=1.277 settle_t=2.262s | skipped
+[132/1000] wait=False freq=0.53Hz amp=26.8deg Kp=27.0 Kd=14.3 fx=-0.041 fy=-0.001 | fell=False dist=0.29m CoT=3.922 settle_t=0.000s | skipped
+[133/1000] wait=True freq=0.69Hz amp=26.9deg Kp=21.4 Kd=9.2 fx=-0.009 fy=-0.016 | fell=True dist=1.46m CoT=0.404 settle_t=4.492s | skipped
+[134/1000] wait=False freq=0.69Hz amp=26.9deg Kp=21.4 Kd=9.2 fx=-0.009 fy=-0.016 | fell=False dist=0.23m CoT=1.939 settle_t=0.000s | skipped
+[135/1000] wait=True freq=0.80Hz amp=34.2deg Kp=28.9 Kd=8.7 fx=-0.056 fy=-0.019 | fell=True dist=0.94m CoT=1.408 settle_t=7.574s | skipped
+[136/1000] wait=False freq=0.80Hz amp=34.2deg Kp=28.9 Kd=8.7 fx=-0.056 fy=-0.019 | fell=True dist=0.58m CoT=0.689 settle_t=0.000s | skipped
+[137/1000] wait=True freq=0.64Hz amp=27.1deg Kp=22.3 Kd=13.6 fx=-0.057 fy=-0.009 | fell=False dist=0.13m CoT=11.488 settle_t=5.018s | skipped
+[138/1000] wait=False freq=0.64Hz amp=27.1deg Kp=22.3 Kd=13.6 fx=-0.057 fy=-0.009 | fell=True dist=0.56m CoT=1.961 settle_t=0.000s | skipped
+[139/1000] wait=True freq=0.56Hz amp=39.7deg Kp=20.8 Kd=14.6 fx=-0.048 fy=-0.009 | fell=True dist=0.46m CoT=3.362 settle_t=5.070s | skipped
+[140/1000] wait=False freq=0.56Hz amp=39.7deg Kp=20.8 Kd=14.6 fx=-0.048 fy=-0.009 | fell=True dist=0.56m CoT=0.655 settle_t=0.000s | skipped
+[141/1000] wait=True freq=0.65Hz amp=27.0deg Kp=38.4 Kd=7.5 fx=-0.028 fy=-0.019 | fell=True dist=0.67m CoT=1.105 settle_t=10.634s | skipped
+[142/1000] wait=False freq=0.65Hz amp=27.0deg Kp=38.4 Kd=7.5 fx=-0.028 fy=-0.019 | fell=True dist=0.77m CoT=0.220 settle_t=0.000s | skipped
+[143/1000] wait=True freq=0.46Hz amp=22.9deg Kp=34.1 Kd=2.8 fx=0.010 fy=-0.012 | fell=False dist=0.22m CoT=0.775 settle_t=4.808s | skipped
+[144/1000] wait=False freq=0.46Hz amp=22.9deg Kp=34.1 Kd=2.8 fx=0.010 fy=-0.012 | fell=False dist=0.32m CoT=0.726 settle_t=0.000s | skipped
+[145/1000] wait=True freq=0.49Hz amp=24.7deg Kp=34.7 Kd=6.9 fx=-0.052 fy=-0.016 | fell=False dist=0.22m CoT=4.274 settle_t=4.468s | skipped
+[146/1000] wait=False freq=0.49Hz amp=24.7deg Kp=34.7 Kd=6.9 fx=-0.052 fy=-0.016 | fell=False dist=0.33m CoT=2.552 settle_t=0.000s | skipped
+[147/1000] wait=True freq=0.53Hz amp=36.3deg Kp=22.9 Kd=6.9 fx=-0.049 fy=-0.006 | fell=False dist=0.09m CoT=11.973 settle_t=2.756s | skipped
+[148/1000] wait=False freq=0.53Hz amp=36.3deg Kp=22.9 Kd=6.9 fx=-0.049 fy=-0.006 | fell=True dist=0.50m CoT=0.288 settle_t=0.000s | skipped
+[149/1000] wait=True freq=0.46Hz amp=37.3deg Kp=28.6 Kd=8.6 fx=-0.018 fy=-0.011 | fell=True dist=0.75m CoT=0.644 settle_t=4.624s | skipped
+[150/1000] wait=False freq=0.46Hz amp=37.3deg Kp=28.6 Kd=8.6 fx=-0.018 fy=-0.011 | fell=True dist=0.91m CoT=0.483 settle_t=0.000s | skipped
+[151/1000] wait=True freq=0.64Hz amp=22.0deg Kp=38.8 Kd=6.5 fx=-0.004 fy=0.002 | fell=False dist=0.09m CoT=2.774 settle_t=2.384s | skipped
+[152/1000] wait=False freq=0.64Hz amp=22.0deg Kp=38.8 Kd=6.5 fx=-0.004 fy=0.002 | fell=False dist=0.04m CoT=4.057 settle_t=0.000s | skipped
+[153/1000] wait=True freq=0.70Hz amp=32.1deg Kp=40.2 Kd=10.1 fx=-0.070 fy=-0.004 | fell=True dist=2.01m CoT=0.327 settle_t=2.804s | skipped
+[154/1000] wait=False freq=0.70Hz amp=32.1deg Kp=40.2 Kd=10.1 fx=-0.070 fy=-0.004 | fell=False dist=0.64m CoT=4.301 settle_t=0.000s | skipped
+[155/1000] wait=True freq=0.76Hz amp=24.0deg Kp=32.9 Kd=11.2 fx=-0.027 fy=-0.010 | fell=True dist=0.43m CoT=1.699 settle_t=4.744s | skipped
+[156/1000] wait=False freq=0.76Hz amp=24.0deg Kp=32.9 Kd=11.2 fx=-0.027 fy=-0.010 | fell=True dist=1.07m CoT=0.517 settle_t=0.000s | skipped
+[157/1000] wait=True freq=0.72Hz amp=26.5deg Kp=43.6 Kd=9.4 fx=-0.068 fy=-0.010 | fell=True dist=0.54m CoT=1.200 settle_t=5.016s | skipped
+[158/1000] wait=False freq=0.72Hz amp=26.5deg Kp=43.6 Kd=9.4 fx=-0.068 fy=-0.010 | fell=True dist=0.54m CoT=0.590 settle_t=0.000s | skipped
+[159/1000] wait=True freq=0.59Hz amp=35.6deg Kp=20.7 Kd=8.4 fx=0.001 fy=-0.012 | fell=False dist=0.26m CoT=1.988 settle_t=4.658s | skipped
+[160/1000] wait=False freq=0.59Hz amp=35.6deg Kp=20.7 Kd=8.4 fx=0.001 fy=-0.012 | fell=True dist=1.36m CoT=0.308 settle_t=0.000s | skipped
+[161/1000] wait=True freq=0.64Hz amp=36.4deg Kp=29.3 Kd=5.5 fx=-0.034 fy=-0.016 | fell=True dist=0.70m CoT=1.173 settle_t=4.324s | skipped
+[162/1000] wait=False freq=0.64Hz amp=36.4deg Kp=29.3 Kd=5.5 fx=-0.034 fy=-0.016 | fell=False dist=0.24m CoT=5.491 settle_t=0.000s | skipped
+[163/1000] wait=True freq=0.41Hz amp=23.7deg Kp=27.5 Kd=12.2 fx=0.008 fy=-0.001 | fell=False dist=0.35m CoT=0.587 settle_t=3.080s | skipped
+[164/1000] wait=False freq=0.41Hz amp=23.7deg Kp=27.5 Kd=12.2 fx=0.008 fy=-0.001 | fell=False dist=0.08m CoT=2.559 settle_t=0.000s | skipped
+[165/1000] wait=True freq=0.74Hz amp=31.7deg Kp=26.3 Kd=6.3 fx=-0.040 fy=-0.017 | fell=False dist=0.11m CoT=8.899 settle_t=7.728s | skipped
+[166/1000] wait=False freq=0.74Hz amp=31.7deg Kp=26.3 Kd=6.3 fx=-0.040 fy=-0.017 | fell=False dist=0.32m CoT=2.715 settle_t=0.000s | skipped
+[167/1000] wait=True freq=0.69Hz amp=39.9deg Kp=43.4 Kd=5.7 fx=-0.039 fy=-0.008 | fell=True dist=0.11m CoT=8.522 settle_t=5.114s | skipped
+[168/1000] wait=False freq=0.69Hz amp=39.9deg Kp=43.4 Kd=5.7 fx=-0.039 fy=-0.008 | fell=True dist=0.94m CoT=1.184 settle_t=0.000s | skipped
+[169/1000] wait=True freq=0.65Hz amp=25.5deg Kp=41.4 Kd=3.1 fx=-0.068 fy=0.009 | fell=False dist=0.23m CoT=6.560 settle_t=1.000s | skipped
+[170/1000] wait=False freq=0.65Hz amp=25.5deg Kp=41.4 Kd=3.1 fx=-0.068 fy=0.009 | fell=False dist=3.33m CoT=0.485 settle_t=0.000s | SAVED
+[171/1000] wait=True freq=0.42Hz amp=24.6deg Kp=26.2 Kd=14.1 fx=-0.014 fy=-0.009 | fell=False dist=0.23m CoT=2.100 settle_t=4.738s | skipped
+[172/1000] wait=False freq=0.42Hz amp=24.6deg Kp=26.2 Kd=14.1 fx=-0.014 fy=-0.009 | fell=False dist=0.35m CoT=1.422 settle_t=0.000s | skipped
+[173/1000] wait=True freq=0.76Hz amp=24.4deg Kp=44.8 Kd=4.6 fx=-0.041 fy=-0.009 | fell=False dist=0.28m CoT=3.292 settle_t=2.674s | skipped
+[174/1000] wait=False freq=0.76Hz amp=24.4deg Kp=44.8 Kd=4.6 fx=-0.041 fy=-0.009 | fell=False dist=0.18m CoT=4.057 settle_t=0.000s | skipped
+[175/1000] wait=True freq=0.76Hz amp=29.9deg Kp=39.5 Kd=14.1 fx=0.008 fy=0.001 | fell=True dist=1.11m CoT=0.424 settle_t=2.592s | skipped
+[176/1000] wait=False freq=0.76Hz amp=29.9deg Kp=39.5 Kd=14.1 fx=0.008 fy=0.001 | fell=False dist=0.14m CoT=3.788 settle_t=0.000s | skipped
+[177/1000] wait=True freq=0.61Hz amp=22.0deg Kp=34.9 Kd=2.3 fx=-0.031 fy=-0.006 | fell=False dist=0.02m CoT=10.576 settle_t=2.768s | skipped
+[178/1000] wait=False freq=0.61Hz amp=22.0deg Kp=34.9 Kd=2.3 fx=-0.031 fy=-0.006 | fell=False dist=0.08m CoT=4.373 settle_t=0.000s | skipped
+[179/1000] wait=True freq=0.55Hz amp=39.2deg Kp=28.4 Kd=11.3 fx=-0.016 fy=0.004 | fell=False dist=1.43m CoT=0.901 settle_t=1.000s | skipped
+[180/1000] wait=False freq=0.55Hz amp=39.2deg Kp=28.4 Kd=11.3 fx=-0.016 fy=0.004 | fell=False dist=0.35m CoT=3.202 settle_t=0.000s | skipped
+[181/1000] wait=True freq=0.65Hz amp=27.7deg Kp=39.5 Kd=10.9 fx=-0.050 fy=-0.006 | fell=False dist=2.36m CoT=0.631 settle_t=2.740s | SAVED
+[182/1000] wait=False freq=0.65Hz amp=27.7deg Kp=39.5 Kd=10.9 fx=-0.050 fy=-0.006 | fell=False dist=2.41m CoT=0.639 settle_t=0.000s | SAVED
+[183/1000] wait=True freq=0.50Hz amp=36.8deg Kp=29.1 Kd=9.8 fx=-0.050 fy=0.006 | fell=True dist=0.55m CoT=0.504 settle_t=1.000s | skipped
+[184/1000] wait=False freq=0.50Hz amp=36.8deg Kp=29.1 Kd=9.8 fx=-0.050 fy=0.006 | fell=True dist=0.37m CoT=0.806 settle_t=0.000s | skipped
+[185/1000] wait=True freq=0.58Hz amp=24.0deg Kp=40.9 Kd=14.7 fx=0.013 fy=-0.010 | fell=True dist=0.83m CoT=0.282 settle_t=5.054s | skipped
+[186/1000] wait=False freq=0.58Hz amp=24.0deg Kp=40.9 Kd=14.7 fx=0.013 fy=-0.010 | fell=True dist=1.09m CoT=0.582 settle_t=0.000s | skipped
+[187/1000] wait=True freq=0.56Hz amp=25.1deg Kp=20.7 Kd=5.3 fx=0.002 fy=-0.000 | fell=False dist=0.15m CoT=0.551 settle_t=3.490s | skipped
+[188/1000] wait=False freq=0.56Hz amp=25.1deg Kp=20.7 Kd=5.3 fx=0.002 fy=-0.000 | fell=False dist=0.09m CoT=1.100 settle_t=0.000s | skipped
+[189/1000] wait=True freq=0.45Hz amp=39.8deg Kp=22.5 Kd=12.1 fx=-0.031 fy=-0.012 | fell=True dist=1.06m CoT=0.935 settle_t=4.662s | skipped
+[190/1000] wait=False freq=0.45Hz amp=39.8deg Kp=22.5 Kd=12.1 fx=-0.031 fy=-0.012 | fell=True dist=0.91m CoT=0.504 settle_t=0.000s | skipped
+[191/1000] wait=True freq=0.72Hz amp=31.2deg Kp=40.7 Kd=9.9 fx=-0.049 fy=0.010 | fell=False dist=0.86m CoT=2.276 settle_t=1.000s | skipped
+[192/1000] wait=False freq=0.72Hz amp=31.2deg Kp=40.7 Kd=9.9 fx=-0.049 fy=0.010 | fell=False dist=0.64m CoT=2.756 settle_t=0.000s | skipped
+[193/1000] wait=True freq=0.61Hz amp=27.8deg Kp=29.1 Kd=8.7 fx=0.014 fy=-0.014 | fell=False dist=1.59m CoT=0.641 settle_t=4.704s | skipped
+[194/1000] wait=False freq=0.61Hz amp=27.8deg Kp=29.1 Kd=8.7 fx=0.014 fy=-0.014 | fell=False dist=0.45m CoT=0.887 settle_t=0.000s | skipped
+[195/1000] wait=True freq=0.78Hz amp=32.8deg Kp=42.3 Kd=12.8 fx=-0.031 fy=-0.015 | fell=True dist=0.79m CoT=0.328 settle_t=7.970s | skipped
+[196/1000] wait=False freq=0.78Hz amp=32.8deg Kp=42.3 Kd=12.8 fx=-0.031 fy=-0.015 | fell=True dist=1.27m CoT=0.488 settle_t=0.000s | skipped
+[197/1000] wait=True freq=0.52Hz amp=23.8deg Kp=41.4 Kd=3.3 fx=0.023 fy=0.009 | fell=False dist=0.12m CoT=1.827 settle_t=1.000s | skipped
+[198/1000] wait=False freq=0.52Hz amp=23.8deg Kp=41.4 Kd=3.3 fx=0.023 fy=0.009 | fell=False dist=0.01m CoT=22.592 settle_t=0.000s | skipped
+[199/1000] wait=True freq=0.44Hz amp=25.8deg Kp=28.5 Kd=6.9 fx=-0.013 fy=-0.002 | fell=False dist=0.14m CoT=1.963 settle_t=2.934s | skipped
+[200/1000] wait=False freq=0.44Hz amp=25.8deg Kp=28.5 Kd=6.9 fx=-0.013 fy=-0.002 | fell=False dist=0.08m CoT=3.588 settle_t=0.000s | skipped
+[201/1000] wait=True freq=0.54Hz amp=23.1deg Kp=43.5 Kd=5.2 fx=-0.037 fy=-0.000 | fell=True dist=0.73m CoT=0.219 settle_t=2.258s | skipped
+[202/1000] wait=False freq=0.54Hz amp=23.1deg Kp=43.5 Kd=5.2 fx=-0.037 fy=-0.000 | fell=False dist=3.68m CoT=0.247 settle_t=0.000s | SAVED
+[203/1000] wait=True freq=0.52Hz amp=37.0deg Kp=25.5 Kd=10.7 fx=-0.025 fy=-0.008 | fell=True dist=0.30m CoT=2.536 settle_t=2.722s | skipped
+[204/1000] wait=False freq=0.52Hz amp=37.0deg Kp=25.5 Kd=10.7 fx=-0.025 fy=-0.008 | fell=True dist=1.32m CoT=0.610 settle_t=0.000s | skipped
+[205/1000] wait=True freq=0.47Hz amp=28.8deg Kp=25.4 Kd=4.9 fx=-0.030 fy=-0.014 | fell=False dist=0.13m CoT=2.986 settle_t=8.138s | skipped
+[206/1000] wait=False freq=0.47Hz amp=28.8deg Kp=25.4 Kd=4.9 fx=-0.030 fy=-0.014 | fell=False dist=0.25m CoT=1.641 settle_t=0.000s | skipped
+[207/1000] wait=True freq=0.45Hz amp=25.7deg Kp=26.2 Kd=4.8 fx=-0.016 fy=-0.009 | fell=False dist=0.11m CoT=2.082 settle_t=4.736s | skipped
+[208/1000] wait=False freq=0.45Hz amp=25.7deg Kp=26.2 Kd=4.8 fx=-0.016 fy=-0.009 | fell=False dist=0.28m CoT=0.462 settle_t=0.000s | skipped
+[209/1000] wait=True freq=0.56Hz amp=39.6deg Kp=39.6 Kd=13.8 fx=0.019 fy=-0.008 | fell=True dist=0.84m CoT=0.294 settle_t=5.128s | skipped
+[210/1000] wait=False freq=0.56Hz amp=39.6deg Kp=39.6 Kd=13.8 fx=0.019 fy=-0.008 | fell=True dist=1.08m CoT=0.301 settle_t=0.000s | skipped
+[211/1000] wait=True freq=0.59Hz amp=21.2deg Kp=30.8 Kd=10.8 fx=-0.007 fy=-0.018 | fell=False dist=0.11m CoT=2.645 settle_t=7.956s | skipped
+[212/1000] wait=False freq=0.59Hz amp=21.2deg Kp=30.8 Kd=10.8 fx=-0.007 fy=-0.018 | fell=False dist=0.31m CoT=1.188 settle_t=0.000s | skipped
+[213/1000] wait=True freq=0.69Hz amp=32.6deg Kp=40.0 Kd=6.7 fx=-0.042 fy=-0.011 | fell=False dist=0.91m CoT=2.532 settle_t=4.954s | skipped
+[214/1000] wait=False freq=0.69Hz amp=32.6deg Kp=40.0 Kd=6.7 fx=-0.042 fy=-0.011 | fell=False dist=2.39m CoT=1.251 settle_t=0.000s | SAVED
+[215/1000] wait=True freq=0.67Hz amp=22.8deg Kp=42.6 Kd=2.4 fx=0.012 fy=-0.015 | fell=True dist=0.72m CoT=0.799 settle_t=4.798s | skipped
+[216/1000] wait=False freq=0.67Hz amp=22.8deg Kp=42.6 Kd=2.4 fx=0.012 fy=-0.015 | fell=True dist=1.52m CoT=0.573 settle_t=0.000s | skipped
+[217/1000] wait=True freq=0.80Hz amp=35.1deg Kp=32.7 Kd=13.3 fx=-0.050 fy=0.001 | fell=False dist=0.21m CoT=8.829 settle_t=2.248s | skipped
+[218/1000] wait=False freq=0.80Hz amp=35.1deg Kp=32.7 Kd=13.3 fx=-0.050 fy=0.001 | fell=False dist=0.36m CoT=5.324 settle_t=0.000s | skipped
+[219/1000] wait=True freq=0.72Hz amp=27.0deg Kp=44.4 Kd=10.2 fx=-0.021 fy=-0.015 | fell=True dist=0.63m CoT=0.321 settle_t=7.958s | skipped
+[220/1000] wait=False freq=0.72Hz amp=27.0deg Kp=44.4 Kd=10.2 fx=-0.021 fy=-0.015 | fell=True dist=0.89m CoT=0.716 settle_t=0.000s | skipped
+[221/1000] wait=True freq=0.41Hz amp=23.1deg Kp=26.1 Kd=11.1 fx=0.016 fy=0.001 | fell=False dist=0.16m CoT=0.848 settle_t=2.374s | skipped
+[222/1000] wait=False freq=0.41Hz amp=23.1deg Kp=26.1 Kd=11.1 fx=0.016 fy=0.001 | fell=False dist=0.06m CoT=2.165 settle_t=0.000s | skipped
+[223/1000] wait=True freq=0.77Hz amp=25.1deg Kp=33.6 Kd=14.6 fx=-0.022 fy=-0.005 | fell=False dist=0.34m CoT=2.732 settle_t=2.772s | skipped
+[224/1000] wait=False freq=0.77Hz amp=25.1deg Kp=33.6 Kd=14.6 fx=-0.022 fy=-0.005 | fell=True dist=1.38m CoT=0.309 settle_t=0.000s | skipped
+[225/1000] wait=True freq=0.69Hz amp=33.4deg Kp=27.7 Kd=7.9 fx=-0.061 fy=-0.012 | fell=True dist=0.52m CoT=0.303 settle_t=4.764s | skipped
+[226/1000] wait=False freq=0.69Hz amp=33.4deg Kp=27.7 Kd=7.9 fx=-0.061 fy=-0.012 | fell=True dist=0.41m CoT=3.913 settle_t=0.000s | skipped
+[227/1000] wait=True freq=0.74Hz amp=26.0deg Kp=24.6 Kd=6.6 fx=0.022 fy=0.006 | fell=False dist=0.17m CoT=0.879 settle_t=1.000s | skipped
+[228/1000] wait=False freq=0.74Hz amp=26.0deg Kp=24.6 Kd=6.6 fx=0.022 fy=0.006 | fell=False dist=0.26m CoT=0.535 settle_t=0.000s | skipped
+[229/1000] wait=True freq=0.44Hz amp=33.4deg Kp=26.7 Kd=13.0 fx=-0.026 fy=-0.008 | fell=False dist=0.10m CoT=10.939 settle_t=2.708s | skipped
+[230/1000] wait=False freq=0.44Hz amp=33.4deg Kp=26.7 Kd=13.0 fx=-0.026 fy=-0.008 | fell=True dist=0.61m CoT=0.542 settle_t=0.000s | skipped
+[231/1000] wait=True freq=0.58Hz amp=30.1deg Kp=38.4 Kd=4.6 fx=-0.017 fy=0.008 | fell=False dist=0.21m CoT=3.671 settle_t=1.000s | skipped
+[232/1000] wait=False freq=0.58Hz amp=30.1deg Kp=38.4 Kd=4.6 fx=-0.017 fy=0.008 | fell=False dist=0.25m CoT=3.137 settle_t=0.000s | skipped
+[233/1000] wait=True freq=0.68Hz amp=25.2deg Kp=25.2 Kd=12.9 fx=-0.023 fy=-0.004 | fell=False dist=0.06m CoT=14.276 settle_t=2.826s | skipped
+[234/1000] wait=False freq=0.68Hz amp=25.2deg Kp=25.2 Kd=12.9 fx=-0.023 fy=-0.004 | fell=False dist=0.18m CoT=4.387 settle_t=0.000s | skipped
+[235/1000] wait=True freq=0.50Hz amp=36.4deg Kp=34.3 Kd=7.0 fx=-0.015 fy=-0.004 | fell=True dist=1.07m CoT=0.896 settle_t=2.806s | skipped
+[236/1000] wait=False freq=0.50Hz amp=36.4deg Kp=34.3 Kd=7.0 fx=-0.015 fy=-0.004 | fell=False dist=0.07m CoT=14.503 settle_t=0.000s | skipped
+[237/1000] wait=True freq=0.58Hz amp=23.1deg Kp=36.4 Kd=5.5 fx=-0.068 fy=-0.003 | fell=False dist=0.18m CoT=5.671 settle_t=2.734s | skipped
+[238/1000] wait=False freq=0.58Hz amp=23.1deg Kp=36.4 Kd=5.5 fx=-0.068 fy=-0.003 | fell=False dist=0.16m CoT=6.958 settle_t=0.000s | skipped
+[239/1000] wait=True freq=0.53Hz amp=36.6deg Kp=35.4 Kd=6.3 fx=-0.009 fy=-0.007 | fell=False dist=0.18m CoT=4.888 settle_t=2.760s | skipped
+[240/1000] wait=False freq=0.53Hz amp=36.6deg Kp=35.4 Kd=6.3 fx=-0.009 fy=-0.007 | fell=True dist=0.82m CoT=0.300 settle_t=0.000s | skipped
+[241/1000] wait=True freq=0.42Hz amp=23.2deg Kp=35.3 Kd=13.9 fx=-0.007 fy=0.008 | fell=False dist=0.12m CoT=4.000 settle_t=1.000s | skipped
+[242/1000] wait=False freq=0.42Hz amp=23.2deg Kp=35.3 Kd=13.9 fx=-0.007 fy=0.008 | fell=False dist=0.05m CoT=10.443 settle_t=0.000s | skipped
+[243/1000] wait=True freq=0.44Hz amp=38.1deg Kp=41.9 Kd=9.4 fx=0.009 fy=-0.008 | fell=True dist=0.89m CoT=0.256 settle_t=5.026s | skipped
+[244/1000] wait=False freq=0.44Hz amp=38.1deg Kp=41.9 Kd=9.4 fx=0.009 fy=-0.008 | fell=True dist=0.88m CoT=0.268 settle_t=0.000s | skipped
+[245/1000] wait=True freq=0.66Hz amp=37.0deg Kp=32.1 Kd=13.0 fx=-0.047 fy=0.002 | fell=True dist=0.16m CoT=8.773 settle_t=2.274s | skipped
+[246/1000] wait=False freq=0.66Hz amp=37.0deg Kp=32.1 Kd=13.0 fx=-0.047 fy=0.002 | fell=False dist=3.00m CoT=0.809 settle_t=0.000s | SAVED
+[247/1000] wait=True freq=0.79Hz amp=20.5deg Kp=32.6 Kd=13.5 fx=-0.020 fy=0.000 | fell=False dist=0.05m CoT=11.764 settle_t=2.304s | skipped
+[248/1000] wait=False freq=0.79Hz amp=20.5deg Kp=32.6 Kd=13.5 fx=-0.020 fy=0.000 | fell=False dist=0.13m CoT=5.006 settle_t=0.000s | skipped
+[249/1000] wait=True freq=0.66Hz amp=37.1deg Kp=29.4 Kd=4.2 fx=0.002 fy=-0.014 | fell=True dist=1.00m CoT=0.600 settle_t=4.552s | skipped
+[250/1000] wait=False freq=0.66Hz amp=37.1deg Kp=29.4 Kd=4.2 fx=0.002 fy=-0.014 | fell=True dist=0.79m CoT=0.593 settle_t=0.000s | skipped
+[251/1000] wait=True freq=0.61Hz amp=25.7deg Kp=31.4 Kd=8.6 fx=-0.015 fy=-0.019 | fell=False dist=0.07m CoT=8.822 settle_t=11.814s | skipped
+[252/1000] wait=False freq=0.61Hz amp=25.7deg Kp=31.4 Kd=8.6 fx=-0.015 fy=-0.019 | fell=True dist=0.59m CoT=0.326 settle_t=0.000s | skipped
+[253/1000] wait=True freq=0.78Hz amp=20.9deg Kp=31.2 Kd=7.9 fx=-0.008 fy=-0.004 | fell=False dist=0.18m CoT=1.053 settle_t=2.838s | skipped
+[254/1000] wait=False freq=0.78Hz amp=20.9deg Kp=31.2 Kd=7.9 fx=-0.008 fy=-0.004 | fell=False dist=0.22m CoT=0.662 settle_t=0.000s | skipped
+[255/1000] wait=True freq=0.51Hz amp=39.2deg Kp=44.0 Kd=10.1 fx=-0.005 fy=-0.007 | fell=True dist=3.96m CoT=0.352 settle_t=7.618s | skipped
+[256/1000] wait=False freq=0.51Hz amp=39.2deg Kp=44.0 Kd=10.1 fx=-0.005 fy=-0.007 | fell=True dist=0.60m CoT=0.422 settle_t=0.000s | skipped
+[257/1000] wait=True freq=0.74Hz amp=26.9deg Kp=32.3 Kd=4.1 fx=-0.034 fy=0.007 | fell=False dist=0.23m CoT=2.368 settle_t=1.000s | skipped
+[258/1000] wait=False freq=0.74Hz amp=26.9deg Kp=32.3 Kd=4.1 fx=-0.034 fy=0.007 | fell=False dist=0.14m CoT=3.741 settle_t=0.000s | skipped
+[259/1000] wait=True freq=0.43Hz amp=29.3deg Kp=33.9 Kd=3.9 fx=-0.003 fy=-0.006 | fell=False dist=0.22m CoT=1.119 settle_t=2.788s | skipped
+[260/1000] wait=False freq=0.43Hz amp=29.3deg Kp=33.9 Kd=3.9 fx=-0.003 fy=-0.006 | fell=False dist=0.24m CoT=1.474 settle_t=0.000s | skipped
+[261/1000] wait=True freq=0.57Hz amp=27.6deg Kp=40.7 Kd=4.1 fx=0.013 fy=0.007 | fell=False dist=0.05m CoT=5.836 settle_t=1.000s | skipped
+[262/1000] wait=False freq=0.57Hz amp=27.6deg Kp=40.7 Kd=4.1 fx=0.013 fy=0.007 | fell=False dist=0.16m CoT=1.799 settle_t=0.000s | skipped
+[263/1000] wait=True freq=0.40Hz amp=32.6deg Kp=40.5 Kd=5.8 fx=-0.051 fy=-0.020 | fell=True dist=0.51m CoT=0.738 settle_t=7.524s | skipped
+[264/1000] wait=False freq=0.40Hz amp=32.6deg Kp=40.5 Kd=5.8 fx=-0.051 fy=-0.020 | fell=True dist=1.10m CoT=0.603 settle_t=0.000s | skipped
+[265/1000] wait=True freq=0.41Hz amp=27.5deg Kp=37.8 Kd=5.1 fx=-0.011 fy=0.001 | fell=False dist=0.12m CoT=4.731 settle_t=2.404s | skipped
+[266/1000] wait=False freq=0.41Hz amp=27.5deg Kp=37.8 Kd=5.1 fx=-0.011 fy=0.001 | fell=False dist=0.30m CoT=1.894 settle_t=0.000s | skipped
+[267/1000] wait=True freq=0.50Hz amp=39.1deg Kp=37.1 Kd=6.2 fx=-0.010 fy=0.006 | fell=True dist=0.32m CoT=0.635 settle_t=1.000s | skipped
+[268/1000] wait=False freq=0.50Hz amp=39.1deg Kp=37.1 Kd=6.2 fx=-0.010 fy=0.006 | fell=True dist=0.38m CoT=0.524 settle_t=0.000s | skipped
+[269/1000] wait=True freq=0.55Hz amp=23.5deg Kp=39.9 Kd=5.4 fx=0.016 fy=-0.010 | fell=False dist=0.25m CoT=0.723 settle_t=4.922s | skipped
+[270/1000] wait=False freq=0.55Hz amp=23.5deg Kp=39.9 Kd=5.4 fx=0.016 fy=-0.010 | fell=False dist=0.28m CoT=0.696 settle_t=0.000s | skipped
+[271/1000] wait=True freq=0.56Hz amp=36.7deg Kp=26.9 Kd=11.0 fx=-0.004 fy=0.004 | fell=False dist=0.22m CoT=3.160 settle_t=1.000s | skipped
+[272/1000] wait=False freq=0.56Hz amp=36.7deg Kp=26.9 Kd=11.0 fx=-0.004 fy=0.004 | fell=False dist=0.12m CoT=6.154 settle_t=0.000s | skipped
+[273/1000] wait=True freq=0.51Hz amp=22.9deg Kp=33.4 Kd=3.9 fx=-0.053 fy=0.004 | fell=False dist=0.40m CoT=1.615 settle_t=1.000s | skipped
+[274/1000] wait=False freq=0.51Hz amp=22.9deg Kp=33.4 Kd=3.9 fx=-0.053 fy=0.004 | fell=False dist=0.12m CoT=5.268 settle_t=0.000s | skipped
+[275/1000] wait=True freq=0.62Hz amp=23.0deg Kp=34.0 Kd=9.0 fx=0.021 fy=-0.004 | fell=False dist=0.02m CoT=7.631 settle_t=4.390s | skipped
+[276/1000] wait=False freq=0.62Hz amp=23.0deg Kp=34.0 Kd=9.0 fx=0.021 fy=-0.004 | fell=False dist=0.26m CoT=0.691 settle_t=0.000s | skipped
+[277/1000] wait=True freq=0.52Hz amp=36.4deg Kp=21.6 Kd=5.0 fx=0.007 fy=-0.014 | fell=False dist=0.21m CoT=1.118 settle_t=4.622s | skipped
+[278/1000] wait=False freq=0.52Hz amp=36.4deg Kp=21.6 Kd=5.0 fx=0.007 fy=-0.014 | fell=False dist=0.25m CoT=1.382 settle_t=0.000s | skipped
+[279/1000] wait=True freq=0.66Hz amp=21.4deg Kp=40.4 Kd=12.2 fx=-0.062 fy=0.004 | fell=False dist=0.22m CoT=6.589 settle_t=1.000s | skipped
+[280/1000] wait=False freq=0.66Hz amp=21.4deg Kp=40.4 Kd=12.2 fx=-0.062 fy=0.004 | fell=False dist=0.16m CoT=8.769 settle_t=0.000s | skipped
+[281/1000] wait=True freq=0.70Hz amp=22.0deg Kp=33.7 Kd=11.9 fx=-0.004 fy=-0.019 | fell=True dist=1.05m CoT=0.451 settle_t=7.942s | skipped
+[282/1000] wait=False freq=0.70Hz amp=22.0deg Kp=33.7 Kd=11.9 fx=-0.004 fy=-0.019 | fell=True dist=0.93m CoT=0.455 settle_t=0.000s | skipped
+[283/1000] wait=True freq=0.59Hz amp=33.9deg Kp=36.3 Kd=4.3 fx=-0.035 fy=-0.017 | fell=True dist=0.33m CoT=0.759 settle_t=4.310s | skipped
+[284/1000] wait=False freq=0.59Hz amp=33.9deg Kp=36.3 Kd=4.3 fx=-0.035 fy=-0.017 | fell=True dist=0.68m CoT=0.340 settle_t=0.000s | skipped
+[285/1000] wait=True freq=0.80Hz amp=24.4deg Kp=21.0 Kd=5.7 fx=0.017 fy=-0.018 | fell=False dist=0.23m CoT=0.536 settle_t=4.526s | skipped
+[286/1000] wait=False freq=0.80Hz amp=24.4deg Kp=21.0 Kd=5.7 fx=0.017 fy=-0.018 | fell=True dist=0.86m CoT=0.138 settle_t=0.000s | skipped
+[287/1000] wait=True freq=0.42Hz amp=29.5deg Kp=40.6 Kd=14.2 fx=-0.021 fy=0.010 | fell=False dist=0.64m CoT=1.750 settle_t=1.000s | skipped
+[288/1000] wait=False freq=0.42Hz amp=29.5deg Kp=40.6 Kd=14.2 fx=-0.021 fy=0.010 | fell=False dist=0.52m CoT=2.372 settle_t=0.000s | skipped
+[289/1000] wait=True freq=0.64Hz amp=38.4deg Kp=20.5 Kd=5.1 fx=-0.025 fy=0.004 | fell=False dist=0.11m CoT=4.903 settle_t=1.000s | skipped
+[290/1000] wait=False freq=0.64Hz amp=38.4deg Kp=20.5 Kd=5.1 fx=-0.025 fy=0.004 | fell=False dist=0.12m CoT=4.781 settle_t=0.000s | skipped
+[291/1000] wait=True freq=0.75Hz amp=32.8deg Kp=30.2 Kd=10.5 fx=-0.046 fy=-0.018 | fell=True dist=0.51m CoT=0.667 settle_t=7.628s | skipped
+[292/1000] wait=False freq=0.75Hz amp=32.8deg Kp=30.2 Kd=10.5 fx=-0.046 fy=-0.018 | fell=True dist=1.37m CoT=0.468 settle_t=0.000s | skipped
+[293/1000] wait=True freq=0.58Hz amp=38.0deg Kp=21.2 Kd=5.8 fx=-0.042 fy=-0.006 | fell=False dist=0.05m CoT=16.353 settle_t=2.784s | skipped
+[294/1000] wait=False freq=0.58Hz amp=38.0deg Kp=21.2 Kd=5.8 fx=-0.042 fy=-0.006 | fell=False dist=0.24m CoT=3.601 settle_t=0.000s | skipped
+[295/1000] wait=True freq=0.58Hz amp=36.0deg Kp=37.8 Kd=4.0 fx=-0.005 fy=-0.015 | fell=True dist=0.73m CoT=0.834 settle_t=4.496s | skipped
+[296/1000] wait=False freq=0.58Hz amp=36.0deg Kp=37.8 Kd=4.0 fx=-0.005 fy=-0.015 | fell=True dist=0.68m CoT=0.552 settle_t=0.000s | skipped
+[297/1000] wait=True freq=0.60Hz amp=31.5deg Kp=43.1 Kd=14.8 fx=-0.054 fy=0.004 | fell=True dist=2.13m CoT=0.609 settle_t=1.000s | skipped
+[298/1000] wait=False freq=0.60Hz amp=31.5deg Kp=43.1 Kd=14.8 fx=-0.054 fy=0.004 | fell=True dist=2.32m CoT=0.466 settle_t=0.000s | skipped
+[299/1000] wait=True freq=0.54Hz amp=21.8deg Kp=43.7 Kd=7.4 fx=0.007 fy=-0.018 | fell=False dist=0.04m CoT=10.894 settle_t=13.470s | skipped
+[300/1000] wait=False freq=0.54Hz amp=21.8deg Kp=43.7 Kd=7.4 fx=0.007 fy=-0.018 | fell=True dist=0.64m CoT=0.889 settle_t=0.000s | skipped
+[301/1000] wait=True freq=0.57Hz amp=35.8deg Kp=21.8 Kd=5.0 fx=-0.033 fy=-0.001 | fell=False dist=0.10m CoT=4.497 settle_t=2.894s | skipped
+[302/1000] wait=False freq=0.57Hz amp=35.8deg Kp=21.8 Kd=5.0 fx=-0.033 fy=-0.001 | fell=False dist=0.11m CoT=5.326 settle_t=0.000s | skipped
+[303/1000] wait=True freq=0.72Hz amp=22.6deg Kp=25.6 Kd=2.8 fx=-0.006 fy=-0.005 | fell=False dist=0.06m CoT=1.245 settle_t=6.424s | skipped
+[304/1000] wait=False freq=0.72Hz amp=22.6deg Kp=25.6 Kd=2.8 fx=-0.006 fy=-0.005 | fell=False dist=0.13m CoT=0.707 settle_t=0.000s | skipped
+[305/1000] wait=True freq=0.64Hz amp=24.2deg Kp=41.6 Kd=10.5 fx=-0.047 fy=-0.003 | fell=False dist=0.19m CoT=6.762 settle_t=2.854s | skipped
+[306/1000] wait=False freq=0.64Hz amp=24.2deg Kp=41.6 Kd=10.5 fx=-0.047 fy=-0.003 | fell=False dist=0.20m CoT=6.891 settle_t=0.000s | skipped
+[307/1000] wait=True freq=0.75Hz amp=25.5deg Kp=27.8 Kd=11.0 fx=0.015 fy=-0.008 | fell=True dist=0.94m CoT=0.364 settle_t=4.998s | skipped
+[308/1000] wait=False freq=0.75Hz amp=25.5deg Kp=27.8 Kd=11.0 fx=0.015 fy=-0.008 | fell=True dist=0.87m CoT=0.351 settle_t=0.000s | skipped
+[309/1000] wait=True freq=0.45Hz amp=31.0deg Kp=37.3 Kd=7.8 fx=0.004 fy=0.009 | fell=False dist=0.37m CoT=1.601 settle_t=1.000s | skipped
+[310/1000] wait=False freq=0.45Hz amp=31.0deg Kp=37.3 Kd=7.8 fx=0.004 fy=0.009 | fell=False dist=0.55m CoT=1.119 settle_t=0.000s | skipped
+[311/1000] wait=True freq=0.47Hz amp=34.3deg Kp=28.6 Kd=13.1 fx=-0.001 fy=-0.013 | fell=True dist=1.08m CoT=0.412 settle_t=4.540s | skipped
+[312/1000] wait=False freq=0.47Hz amp=34.3deg Kp=28.6 Kd=13.1 fx=-0.001 fy=-0.013 | fell=True dist=0.50m CoT=1.265 settle_t=0.000s | skipped
+[313/1000] wait=True freq=0.69Hz amp=37.2deg Kp=25.5 Kd=5.6 fx=-0.063 fy=0.007 | fell=False dist=0.23m CoT=6.436 settle_t=1.000s | skipped
+[314/1000] wait=False freq=0.69Hz amp=37.2deg Kp=25.5 Kd=5.6 fx=-0.063 fy=0.007 | fell=False dist=0.32m CoT=4.568 settle_t=0.000s | skipped
+[315/1000] wait=True freq=0.75Hz amp=37.3deg Kp=20.9 Kd=13.4 fx=-0.040 fy=-0.002 | fell=False dist=0.17m CoT=9.703 settle_t=3.030s | skipped
+[316/1000] wait=False freq=0.75Hz amp=37.3deg Kp=20.9 Kd=13.4 fx=-0.040 fy=-0.002 | fell=True dist=0.67m CoT=1.089 settle_t=0.000s | skipped
+[317/1000] wait=True freq=0.77Hz amp=38.7deg Kp=29.6 Kd=4.4 fx=0.007 fy=-0.016 | fell=True dist=0.60m CoT=1.083 settle_t=8.452s | skipped
+[318/1000] wait=False freq=0.77Hz amp=38.7deg Kp=29.6 Kd=4.4 fx=0.007 fy=-0.016 | fell=True dist=1.25m CoT=0.679 settle_t=0.000s | skipped
+[319/1000] wait=True freq=0.48Hz amp=27.3deg Kp=24.0 Kd=9.5 fx=0.010 fy=0.005 | fell=False dist=0.06m CoT=3.648 settle_t=1.000s | skipped
+[320/1000] wait=False freq=0.48Hz amp=27.3deg Kp=24.0 Kd=9.5 fx=0.010 fy=0.005 | fell=False dist=0.28m CoT=0.818 settle_t=0.000s | skipped
+[321/1000] wait=True freq=0.67Hz amp=38.9deg Kp=28.7 Kd=14.7 fx=-0.046 fy=0.007 | fell=True dist=0.12m CoT=3.415 settle_t=1.000s | skipped
+[322/1000] wait=False freq=0.67Hz amp=38.9deg Kp=28.7 Kd=14.7 fx=-0.046 fy=0.007 | fell=True dist=2.66m CoT=0.685 settle_t=0.000s | skipped
+[323/1000] wait=True freq=0.44Hz amp=23.7deg Kp=22.4 Kd=14.3 fx=0.018 fy=0.000 | fell=False dist=0.28m CoT=0.617 settle_t=2.306s | skipped
+[324/1000] wait=False freq=0.44Hz amp=23.7deg Kp=22.4 Kd=14.3 fx=0.018 fy=0.000 | fell=False dist=0.11m CoT=1.573 settle_t=0.000s | skipped
+[325/1000] wait=True freq=0.43Hz amp=37.8deg Kp=23.9 Kd=2.7 fx=-0.033 fy=0.010 | fell=False dist=0.17m CoT=4.407 settle_t=1.000s | skipped
+[326/1000] wait=False freq=0.43Hz amp=37.8deg Kp=23.9 Kd=2.7 fx=-0.033 fy=0.010 | fell=False dist=0.07m CoT=9.477 settle_t=0.000s | skipped
+[327/1000] wait=True freq=0.46Hz amp=26.4deg Kp=24.8 Kd=9.8 fx=0.019 fy=-0.009 | fell=False dist=0.21m CoT=1.097 settle_t=4.910s | skipped
+[328/1000] wait=False freq=0.46Hz amp=26.4deg Kp=24.8 Kd=9.8 fx=0.019 fy=-0.009 | fell=False dist=0.26m CoT=0.888 settle_t=0.000s | skipped
+[329/1000] wait=True freq=0.46Hz amp=34.1deg Kp=20.6 Kd=4.2 fx=-0.062 fy=-0.013 | fell=False dist=0.27m CoT=2.263 settle_t=4.696s | skipped
+[330/1000] wait=False freq=0.46Hz amp=34.1deg Kp=20.6 Kd=4.2 fx=-0.062 fy=-0.013 | fell=False dist=0.29m CoT=2.405 settle_t=0.000s | skipped
+[331/1000] wait=True freq=0.74Hz amp=29.4deg Kp=35.9 Kd=7.4 fx=-0.041 fy=0.007 | fell=False dist=0.33m CoT=3.667 settle_t=1.000s | skipped
+[332/1000] wait=False freq=0.74Hz amp=29.4deg Kp=35.9 Kd=7.4 fx=-0.041 fy=0.007 | fell=False dist=0.21m CoT=5.673 settle_t=0.000s | skipped
+[333/1000] wait=True freq=0.49Hz amp=21.3deg Kp=43.9 Kd=3.3 fx=-0.003 fy=-0.013 | fell=False dist=0.22m CoT=1.044 settle_t=4.560s | skipped
+[334/1000] wait=False freq=0.49Hz amp=21.3deg Kp=43.9 Kd=3.3 fx=-0.003 fy=-0.013 | fell=False dist=0.50m CoT=0.799 settle_t=0.000s | skipped
+[335/1000] wait=True freq=0.51Hz amp=36.5deg Kp=36.0 Kd=8.0 fx=-0.004 fy=-0.004 | fell=False dist=0.08m CoT=10.390 settle_t=2.842s | skipped
+[336/1000] wait=False freq=0.51Hz amp=36.5deg Kp=36.0 Kd=8.0 fx=-0.004 fy=-0.004 | fell=True dist=1.54m CoT=0.263 settle_t=0.000s | skipped
+[337/1000] wait=True freq=0.58Hz amp=35.5deg Kp=43.6 Kd=10.2 fx=0.011 fy=-0.002 | fell=False dist=0.78m CoT=0.928 settle_t=3.132s | skipped
+[338/1000] wait=False freq=0.58Hz amp=35.5deg Kp=43.6 Kd=10.2 fx=0.011 fy=-0.002 | fell=False dist=0.23m CoT=2.598 settle_t=0.000s | skipped
+[339/1000] wait=True freq=0.63Hz amp=37.4deg Kp=23.4 Kd=12.7 fx=0.016 fy=0.010 | fell=False dist=0.08m CoT=6.704 settle_t=1.000s | skipped
+[340/1000] wait=False freq=0.63Hz amp=37.4deg Kp=23.4 Kd=12.7 fx=0.016 fy=0.010 | fell=False dist=0.28m CoT=1.931 settle_t=0.000s | skipped
+[341/1000] wait=True freq=0.46Hz amp=35.0deg Kp=20.4 Kd=6.7 fx=0.013 fy=-0.013 | fell=False dist=0.18m CoT=1.337 settle_t=4.648s | skipped
+[342/1000] wait=False freq=0.46Hz amp=35.0deg Kp=20.4 Kd=6.7 fx=0.013 fy=-0.013 | fell=True dist=0.70m CoT=0.255 settle_t=0.000s | skipped
+[343/1000] wait=True freq=0.75Hz amp=25.2deg Kp=43.0 Kd=11.8 fx=-0.055 fy=-0.010 | fell=True dist=0.63m CoT=1.239 settle_t=5.064s | skipped
+[344/1000] wait=False freq=0.75Hz amp=25.2deg Kp=43.0 Kd=11.8 fx=-0.055 fy=-0.010 | fell=False dist=2.29m CoT=0.900 settle_t=0.000s | SAVED
+[345/1000] wait=True freq=0.75Hz amp=36.1deg Kp=30.6 Kd=6.7 fx=0.023 fy=0.005 | fell=False dist=0.23m CoT=1.438 settle_t=1.000s | skipped
+[346/1000] wait=False freq=0.75Hz amp=36.1deg Kp=30.6 Kd=6.7 fx=0.023 fy=0.005 | fell=False dist=0.03m CoT=12.030 settle_t=0.000s | skipped
+[347/1000] wait=True freq=0.71Hz amp=35.1deg Kp=29.7 Kd=13.5 fx=-0.025 fy=-0.008 | fell=True dist=1.00m CoT=0.849 settle_t=2.714s | skipped
+[348/1000] wait=False freq=0.71Hz amp=35.1deg Kp=29.7 Kd=13.5 fx=-0.025 fy=-0.008 | fell=True dist=0.70m CoT=0.484 settle_t=0.000s | skipped
+[349/1000] wait=True freq=0.59Hz amp=20.2deg Kp=41.2 Kd=3.4 fx=-0.009 fy=0.002 | fell=False dist=0.08m CoT=2.877 settle_t=2.392s | skipped
+[350/1000] wait=False freq=0.59Hz amp=20.2deg Kp=41.2 Kd=3.4 fx=-0.009 fy=0.002 | fell=False dist=0.05m CoT=4.810 settle_t=0.000s | skipped
+[351/1000] wait=True freq=0.68Hz amp=39.2deg Kp=40.6 Kd=9.9 fx=0.009 fy=0.002 | fell=False dist=0.12m CoT=4.299 settle_t=2.428s | skipped
+[352/1000] wait=False freq=0.68Hz amp=39.2deg Kp=40.6 Kd=9.9 fx=0.009 fy=0.002 | fell=False dist=0.06m CoT=9.570 settle_t=0.000s | skipped
+[353/1000] wait=True freq=0.79Hz amp=31.5deg Kp=39.7 Kd=13.2 fx=-0.065 fy=-0.016 | fell=True dist=0.53m CoT=0.652 settle_t=4.318s | skipped
+[354/1000] wait=False freq=0.79Hz amp=31.5deg Kp=39.7 Kd=13.2 fx=-0.065 fy=-0.016 | fell=True dist=0.53m CoT=0.490 settle_t=0.000s | skipped
+[355/1000] wait=True freq=0.68Hz amp=31.6deg Kp=27.9 Kd=6.8 fx=-0.036 fy=-0.005 | fell=False dist=0.11m CoT=7.115 settle_t=2.814s | skipped
+[356/1000] wait=False freq=0.68Hz amp=31.6deg Kp=27.9 Kd=6.8 fx=-0.036 fy=-0.005 | fell=False dist=0.13m CoT=6.940 settle_t=0.000s | skipped
+[357/1000] wait=True freq=0.76Hz amp=31.6deg Kp=33.1 Kd=8.5 fx=0.011 fy=0.004 | fell=False dist=0.18m CoT=1.950 settle_t=1.000s | skipped
+[358/1000] wait=False freq=0.76Hz amp=31.6deg Kp=33.1 Kd=8.5 fx=0.011 fy=0.004 | fell=False dist=0.11m CoT=3.468 settle_t=0.000s | skipped
+[359/1000] wait=True freq=0.72Hz amp=25.6deg Kp=38.1 Kd=4.4 fx=0.001 fy=-0.003 | fell=False dist=0.17m CoT=1.093 settle_t=2.954s | skipped
+[360/1000] wait=False freq=0.72Hz amp=25.6deg Kp=38.1 Kd=4.4 fx=0.001 fy=-0.003 | fell=False dist=0.08m CoT=3.265 settle_t=0.000s | skipped
+[361/1000] wait=True freq=0.60Hz amp=30.5deg Kp=25.0 Kd=14.4 fx=0.014 fy=-0.020 | fell=True dist=1.14m CoT=0.148 settle_t=8.176s | skipped
+[362/1000] wait=False freq=0.60Hz amp=30.5deg Kp=25.0 Kd=14.4 fx=0.014 fy=-0.020 | fell=False dist=1.01m CoT=1.127 settle_t=0.000s | skipped
+[363/1000] wait=True freq=0.41Hz amp=29.8deg Kp=21.3 Kd=8.2 fx=-0.045 fy=0.003 | fell=False dist=0.60m CoT=0.924 settle_t=1.000s | skipped
+[364/1000] wait=False freq=0.41Hz amp=29.8deg Kp=21.3 Kd=8.2 fx=-0.045 fy=0.003 | fell=False dist=0.75m CoT=0.795 settle_t=0.000s | skipped
+[365/1000] wait=True freq=0.47Hz amp=28.9deg Kp=42.9 Kd=7.0 fx=-0.042 fy=-0.016 | fell=False dist=0.36m CoT=4.750 settle_t=4.480s | skipped
+[366/1000] wait=False freq=0.47Hz amp=28.9deg Kp=42.9 Kd=7.0 fx=-0.042 fy=-0.016 | fell=True dist=0.52m CoT=2.995 settle_t=0.000s | skipped
+[367/1000] wait=True freq=0.41Hz amp=36.1deg Kp=23.5 Kd=7.2 fx=-0.063 fy=-0.014 | fell=False dist=1.06m CoT=1.224 settle_t=4.670s | skipped
+[368/1000] wait=False freq=0.41Hz amp=36.1deg Kp=23.5 Kd=7.2 fx=-0.063 fy=-0.014 | fell=True dist=0.84m CoT=0.183 settle_t=0.000s | skipped
+[369/1000] wait=True freq=0.51Hz amp=34.3deg Kp=32.0 Kd=4.5 fx=0.023 fy=-0.014 | fell=True dist=2.54m CoT=0.320 settle_t=4.680s | skipped
+[370/1000] wait=False freq=0.51Hz amp=34.3deg Kp=32.0 Kd=4.5 fx=0.023 fy=-0.014 | fell=True dist=1.37m CoT=0.281 settle_t=0.000s | skipped
+[371/1000] wait=True freq=0.49Hz amp=28.4deg Kp=22.7 Kd=12.2 fx=-0.062 fy=0.006 | fell=False dist=0.26m CoT=3.795 settle_t=1.000s | skipped
+[372/1000] wait=False freq=0.49Hz amp=28.4deg Kp=22.7 Kd=12.2 fx=-0.062 fy=0.006 | fell=False dist=0.34m CoT=3.165 settle_t=0.000s | skipped
+[373/1000] wait=True freq=0.56Hz amp=22.3deg Kp=37.5 Kd=7.2 fx=0.017 fy=0.007 | fell=False dist=0.29m CoT=0.836 settle_t=1.000s | skipped
+[374/1000] wait=False freq=0.56Hz amp=22.3deg Kp=37.5 Kd=7.2 fx=0.017 fy=0.007 | fell=False dist=0.13m CoT=1.497 settle_t=0.000s | skipped
+[375/1000] wait=True freq=0.50Hz amp=20.8deg Kp=38.0 Kd=7.1 fx=0.021 fy=-0.014 | fell=True dist=1.11m CoT=0.177 settle_t=4.832s | skipped
+[376/1000] wait=False freq=0.50Hz amp=20.8deg Kp=38.0 Kd=7.1 fx=0.021 fy=-0.014 | fell=False dist=0.30m CoT=0.636 settle_t=0.000s | skipped
+[377/1000] wait=True freq=0.68Hz amp=24.9deg Kp=22.2 Kd=6.6 fx=-0.068 fy=-0.010 | fell=False dist=0.25m CoT=2.629 settle_t=5.068s | skipped
+[378/1000] wait=False freq=0.68Hz amp=24.9deg Kp=22.2 Kd=6.6 fx=-0.068 fy=-0.010 | fell=False dist=0.17m CoT=3.689 settle_t=0.000s | skipped
+[379/1000] wait=True freq=0.60Hz amp=39.8deg Kp=38.1 Kd=8.0 fx=-0.061 fy=-0.011 | fell=True dist=0.73m CoT=0.297 settle_t=2.638s | skipped
+[380/1000] wait=False freq=0.60Hz amp=39.8deg Kp=38.1 Kd=8.0 fx=-0.061 fy=-0.011 | fell=True dist=0.37m CoT=0.667 settle_t=0.000s | skipped
+[381/1000] wait=True freq=0.70Hz amp=25.6deg Kp=40.8 Kd=8.5 fx=0.006 fy=0.003 | fell=False dist=0.30m CoT=1.105 settle_t=2.446s | skipped
+[382/1000] wait=False freq=0.70Hz amp=25.6deg Kp=40.8 Kd=8.5 fx=0.006 fy=0.003 | fell=False dist=0.08m CoT=4.559 settle_t=0.000s | skipped
+[383/1000] wait=True freq=0.64Hz amp=22.1deg Kp=33.1 Kd=11.5 fx=-0.056 fy=-0.015 | fell=False dist=0.17m CoT=6.617 settle_t=4.334s | skipped
+[384/1000] wait=False freq=0.64Hz amp=22.1deg Kp=33.1 Kd=11.5 fx=-0.056 fy=-0.015 | fell=False dist=0.29m CoT=3.672 settle_t=0.000s | skipped
+[385/1000] wait=True freq=0.66Hz amp=28.5deg Kp=21.5 Kd=4.7 fx=-0.033 fy=-0.018 | fell=False dist=0.11m CoT=2.549 settle_t=7.970s | skipped
+[386/1000] wait=False freq=0.66Hz amp=28.5deg Kp=21.5 Kd=4.7 fx=-0.033 fy=-0.018 | fell=False dist=0.30m CoT=0.966 settle_t=0.000s | skipped
+[387/1000] wait=True freq=0.78Hz amp=21.8deg Kp=23.6 Kd=7.7 fx=0.004 fy=0.003 | fell=False dist=0.05m CoT=2.920 settle_t=1.000s | skipped
+[388/1000] wait=False freq=0.78Hz amp=21.8deg Kp=23.6 Kd=7.7 fx=0.004 fy=0.003 | fell=False dist=0.12m CoT=1.214 settle_t=0.000s | skipped
+[389/1000] wait=True freq=0.71Hz amp=30.0deg Kp=41.5 Kd=11.3 fx=0.022 fy=0.001 | fell=False dist=0.09m CoT=7.474 settle_t=2.202s | skipped
+[390/1000] wait=False freq=0.71Hz amp=30.0deg Kp=41.5 Kd=11.3 fx=0.022 fy=0.001 | fell=False dist=0.39m CoT=1.073 settle_t=0.000s | skipped
+[391/1000] wait=True freq=0.70Hz amp=31.4deg Kp=39.0 Kd=11.1 fx=-0.008 fy=0.003 | fell=False dist=0.16m CoT=4.422 settle_t=1.000s | skipped
+[392/1000] wait=False freq=0.70Hz amp=31.4deg Kp=39.0 Kd=11.1 fx=-0.008 fy=0.003 | fell=False dist=0.13m CoT=6.370 settle_t=0.000s | skipped
+[393/1000] wait=True freq=0.50Hz amp=27.7deg Kp=26.0 Kd=13.4 fx=-0.064 fy=-0.016 | fell=False dist=0.29m CoT=4.648 settle_t=4.312s | skipped
+[394/1000] wait=False freq=0.50Hz amp=27.7deg Kp=26.0 Kd=13.4 fx=-0.064 fy=-0.016 | fell=False dist=0.42m CoT=3.548 settle_t=0.000s | skipped
+[395/1000] wait=True freq=0.73Hz amp=27.9deg Kp=24.5 Kd=9.7 fx=-0.065 fy=-0.008 | fell=False dist=0.29m CoT=4.974 settle_t=2.670s | skipped
+[396/1000] wait=False freq=0.73Hz amp=27.9deg Kp=24.5 Kd=9.7 fx=-0.065 fy=-0.008 | fell=False dist=0.34m CoT=4.219 settle_t=0.000s | skipped
+[397/1000] wait=True freq=0.78Hz amp=33.1deg Kp=44.2 Kd=3.8 fx=-0.058 fy=-0.005 | fell=True dist=0.49m CoT=1.480 settle_t=2.720s | skipped
+[398/1000] wait=False freq=0.78Hz amp=33.1deg Kp=44.2 Kd=3.8 fx=-0.058 fy=-0.005 | fell=True dist=0.57m CoT=3.242 settle_t=0.000s | skipped
+[399/1000] wait=True freq=0.57Hz amp=33.4deg Kp=37.7 Kd=9.4 fx=-0.031 fy=-0.000 | fell=True dist=1.07m CoT=0.868 settle_t=2.270s | skipped
+[400/1000] wait=False freq=0.57Hz amp=33.4deg Kp=37.7 Kd=9.4 fx=-0.031 fy=-0.000 | fell=True dist=1.87m CoT=0.536 settle_t=0.000s | skipped
+[401/1000] wait=True freq=0.71Hz amp=30.1deg Kp=37.6 Kd=3.6 fx=-0.056 fy=0.003 | fell=False dist=0.24m CoT=5.795 settle_t=1.000s | skipped
+[402/1000] wait=False freq=0.71Hz amp=30.1deg Kp=37.6 Kd=3.6 fx=-0.056 fy=0.003 | fell=False dist=0.16m CoT=8.409 settle_t=0.000s | skipped
+[403/1000] wait=True freq=0.59Hz amp=22.7deg Kp=20.2 Kd=10.8 fx=0.005 fy=-0.011 | fell=False dist=0.21m CoT=1.040 settle_t=5.006s | skipped
+[404/1000] wait=False freq=0.59Hz amp=22.7deg Kp=20.2 Kd=10.8 fx=0.005 fy=-0.011 | fell=False dist=0.26m CoT=0.815 settle_t=0.000s | skipped
+[405/1000] wait=True freq=0.62Hz amp=37.3deg Kp=26.5 Kd=12.9 fx=-0.022 fy=0.003 | fell=False dist=0.02m CoT=78.596 settle_t=2.400s | skipped
+[406/1000] wait=False freq=0.62Hz amp=37.3deg Kp=26.5 Kd=12.9 fx=-0.022 fy=0.003 | fell=False dist=0.17m CoT=7.840 settle_t=0.000s | skipped
+[407/1000] wait=True freq=0.56Hz amp=20.9deg Kp=24.4 Kd=12.7 fx=-0.036 fy=-0.018 | fell=False dist=0.17m CoT=3.761 settle_t=7.802s | skipped
+[408/1000] wait=False freq=0.56Hz amp=20.9deg Kp=24.4 Kd=12.7 fx=-0.036 fy=-0.018 | fell=False dist=0.34m CoT=2.138 settle_t=0.000s | skipped
+[409/1000] wait=True freq=0.61Hz amp=27.3deg Kp=29.8 Kd=8.5 fx=-0.034 fy=-0.008 | fell=False dist=0.28m CoT=2.733 settle_t=5.132s | skipped
+[410/1000] wait=False freq=0.61Hz amp=27.3deg Kp=29.8 Kd=8.5 fx=-0.034 fy=-0.008 | fell=False dist=0.15m CoT=5.151 settle_t=0.000s | skipped
+[411/1000] wait=True freq=0.47Hz amp=26.3deg Kp=42.5 Kd=12.5 fx=-0.001 fy=-0.001 | fell=False dist=0.22m CoT=2.956 settle_t=3.024s | skipped
+[412/1000] wait=False freq=0.47Hz amp=26.3deg Kp=42.5 Kd=12.5 fx=-0.001 fy=-0.001 | fell=False dist=0.09m CoT=6.746 settle_t=0.000s | skipped
+[413/1000] wait=True freq=0.64Hz amp=32.9deg Kp=27.4 Kd=2.3 fx=-0.034 fy=0.003 | fell=False dist=0.07m CoT=8.549 settle_t=2.374s | skipped
+[414/1000] wait=False freq=0.64Hz amp=32.9deg Kp=27.4 Kd=2.3 fx=-0.034 fy=0.003 | fell=False dist=0.10m CoT=4.385 settle_t=0.000s | skipped
+[415/1000] wait=True freq=0.62Hz amp=38.3deg Kp=24.7 Kd=6.0 fx=-0.005 fy=-0.001 | fell=False dist=0.13m CoT=3.428 settle_t=3.010s | skipped
+[416/1000] wait=False freq=0.62Hz amp=38.3deg Kp=24.7 Kd=6.0 fx=-0.005 fy=-0.001 | fell=False dist=0.10m CoT=3.910 settle_t=0.000s | skipped
+[417/1000] wait=True freq=0.47Hz amp=23.4deg Kp=23.5 Kd=2.3 fx=-0.050 fy=0.010 | fell=False dist=0.31m CoT=1.049 settle_t=1.000s | skipped
+[418/1000] wait=False freq=0.47Hz amp=23.4deg Kp=23.5 Kd=2.3 fx=-0.050 fy=0.010 | fell=False dist=0.16m CoT=2.039 settle_t=0.000s | skipped
+[419/1000] wait=True freq=0.74Hz amp=33.2deg Kp=35.0 Kd=8.7 fx=-0.038 fy=-0.013 | fell=True dist=2.02m CoT=0.812 settle_t=4.596s | skipped
+[420/1000] wait=False freq=0.74Hz amp=33.2deg Kp=35.0 Kd=8.7 fx=-0.038 fy=-0.013 | fell=True dist=0.79m CoT=0.873 settle_t=0.000s | skipped
+[421/1000] wait=True freq=0.60Hz amp=21.4deg Kp=36.6 Kd=2.6 fx=-0.048 fy=-0.019 | fell=False dist=0.15m CoT=4.377 settle_t=7.574s | skipped
+[422/1000] wait=False freq=0.60Hz amp=21.4deg Kp=36.6 Kd=2.6 fx=-0.048 fy=-0.019 | fell=False dist=0.35m CoT=1.927 settle_t=0.000s | skipped
+[423/1000] wait=True freq=0.47Hz amp=36.8deg Kp=33.5 Kd=2.4 fx=-0.045 fy=-0.010 | fell=True dist=0.95m CoT=0.343 settle_t=2.674s | skipped
+[424/1000] wait=False freq=0.47Hz amp=36.8deg Kp=33.5 Kd=2.4 fx=-0.045 fy=-0.010 | fell=True dist=0.76m CoT=0.329 settle_t=0.000s | skipped
+[425/1000] wait=True freq=0.64Hz amp=30.0deg Kp=22.0 Kd=10.7 fx=0.025 fy=0.009 | fell=False dist=0.39m CoT=0.797 settle_t=1.000s | skipped
+[426/1000] wait=False freq=0.64Hz amp=30.0deg Kp=22.0 Kd=10.7 fx=0.025 fy=0.009 | fell=True dist=1.08m CoT=0.791 settle_t=0.000s | skipped
+[427/1000] wait=True freq=0.73Hz amp=34.5deg Kp=27.1 Kd=13.5 fx=-0.056 fy=0.009 | fell=True dist=0.47m CoT=1.685 settle_t=1.000s | skipped
+[428/1000] wait=False freq=0.73Hz amp=34.5deg Kp=27.1 Kd=13.5 fx=-0.056 fy=0.009 | fell=False dist=0.41m CoT=5.021 settle_t=0.000s | skipped
+[429/1000] wait=True freq=0.45Hz amp=22.1deg Kp=28.2 Kd=11.3 fx=-0.038 fy=-0.012 | fell=False dist=0.16m CoT=2.736 settle_t=4.640s | skipped
+[430/1000] wait=False freq=0.45Hz amp=22.1deg Kp=28.2 Kd=11.3 fx=-0.038 fy=-0.012 | fell=False dist=0.21m CoT=2.490 settle_t=0.000s | skipped
+[431/1000] wait=True freq=0.51Hz amp=35.2deg Kp=25.1 Kd=4.5 fx=-0.021 fy=-0.007 | fell=False dist=0.08m CoT=4.775 settle_t=6.456s | skipped
+[432/1000] wait=False freq=0.51Hz amp=35.2deg Kp=25.1 Kd=4.5 fx=-0.021 fy=-0.007 | fell=False dist=0.25m CoT=1.213 settle_t=0.000s | skipped
+[433/1000] wait=True freq=0.70Hz amp=23.9deg Kp=30.4 Kd=14.1 fx=0.012 fy=0.006 | fell=False dist=0.14m CoT=2.427 settle_t=1.000s | skipped
+[434/1000] wait=False freq=0.70Hz amp=23.9deg Kp=30.4 Kd=14.1 fx=0.012 fy=0.006 | fell=False dist=0.28m CoT=1.367 settle_t=0.000s | skipped
+[435/1000] wait=True freq=0.48Hz amp=33.6deg Kp=38.3 Kd=5.3 fx=-0.019 fy=0.005 | fell=False dist=0.29m CoT=3.533 settle_t=1.000s | skipped
+[436/1000] wait=False freq=0.48Hz amp=33.6deg Kp=38.3 Kd=5.3 fx=-0.019 fy=0.005 | fell=False dist=0.28m CoT=3.460 settle_t=0.000s | skipped
+[437/1000] wait=True freq=0.77Hz amp=25.4deg Kp=29.8 Kd=9.2 fx=0.024 fy=-0.001 | fell=False dist=0.27m CoT=0.779 settle_t=2.236s | skipped
+[438/1000] wait=False freq=0.77Hz amp=25.4deg Kp=29.8 Kd=9.2 fx=0.024 fy=-0.001 | fell=False dist=0.07m CoT=3.242 settle_t=0.000s | skipped
+[439/1000] wait=True freq=0.49Hz amp=33.1deg Kp=23.4 Kd=3.5 fx=-0.013 fy=0.006 | fell=False dist=0.04m CoT=6.483 settle_t=1.000s | skipped
+[440/1000] wait=False freq=0.49Hz amp=33.1deg Kp=23.4 Kd=3.5 fx=-0.013 fy=0.006 | fell=False dist=0.07m CoT=3.916 settle_t=0.000s | skipped
+[441/1000] wait=True freq=0.61Hz amp=30.5deg Kp=45.0 Kd=4.5 fx=0.020 fy=-0.003 | fell=True dist=0.51m CoT=1.134 settle_t=4.538s | skipped
+[442/1000] wait=False freq=0.61Hz amp=30.5deg Kp=45.0 Kd=4.5 fx=0.020 fy=-0.003 | fell=True dist=1.99m CoT=0.699 settle_t=0.000s | skipped
+[443/1000] wait=True freq=0.70Hz amp=29.7deg Kp=24.9 Kd=7.1 fx=-0.006 fy=-0.017 | fell=False dist=0.20m CoT=2.149 settle_t=4.546s | skipped
+[444/1000] wait=False freq=0.70Hz amp=29.7deg Kp=24.9 Kd=7.1 fx=-0.006 fy=-0.017 | fell=False dist=0.39m CoT=1.159 settle_t=0.000s | skipped
+[445/1000] wait=True freq=0.52Hz amp=34.8deg Kp=43.4 Kd=7.5 fx=0.018 fy=-0.014 | fell=True dist=1.30m CoT=0.211 settle_t=4.772s | skipped
+[446/1000] wait=False freq=0.52Hz amp=34.8deg Kp=43.4 Kd=7.5 fx=0.018 fy=-0.014 | fell=True dist=1.57m CoT=0.261 settle_t=0.000s | skipped
+[447/1000] wait=True freq=0.55Hz amp=20.4deg Kp=33.7 Kd=3.7 fx=-0.021 fy=0.004 | fell=False dist=0.05m CoT=4.699 settle_t=1.000s | skipped
+[448/1000] wait=False freq=0.55Hz amp=20.4deg Kp=33.7 Kd=3.7 fx=-0.021 fy=0.004 | fell=False dist=0.09m CoT=2.470 settle_t=0.000s | skipped
+[449/1000] wait=True freq=0.47Hz amp=28.7deg Kp=43.8 Kd=2.9 fx=-0.014 fy=-0.002 | fell=False dist=0.14m CoT=6.943 settle_t=2.946s | skipped
+[450/1000] wait=False freq=0.47Hz amp=28.7deg Kp=43.8 Kd=2.9 fx=-0.014 fy=-0.002 | fell=False dist=0.34m CoT=2.884 settle_t=0.000s | skipped
+[451/1000] wait=True freq=0.53Hz amp=32.7deg Kp=44.3 Kd=7.3 fx=-0.061 fy=-0.002 | fell=True dist=0.69m CoT=0.571 settle_t=2.534s | skipped
+[452/1000] wait=False freq=0.53Hz amp=32.7deg Kp=44.3 Kd=7.3 fx=-0.061 fy=-0.002 | fell=False dist=0.57m CoT=4.905 settle_t=0.000s | skipped
+[453/1000] wait=True freq=0.62Hz amp=31.4deg Kp=34.6 Kd=12.2 fx=-0.055 fy=0.006 | fell=True dist=1.19m CoT=0.723 settle_t=1.000s | skipped
+[454/1000] wait=False freq=0.62Hz amp=31.4deg Kp=34.6 Kd=12.2 fx=-0.055 fy=0.006 | fell=False dist=0.21m CoT=10.287 settle_t=0.000s | skipped
+[455/1000] wait=True freq=0.54Hz amp=32.1deg Kp=32.6 Kd=12.3 fx=0.021 fy=-0.006 | fell=False dist=0.15m CoT=2.006 settle_t=4.466s | skipped
+[456/1000] wait=False freq=0.54Hz amp=32.1deg Kp=32.6 Kd=12.3 fx=0.021 fy=-0.006 | fell=True dist=1.17m CoT=0.158 settle_t=0.000s | skipped
+[457/1000] wait=True freq=0.52Hz amp=26.7deg Kp=30.0 Kd=8.2 fx=0.006 fy=0.005 | fell=False dist=0.21m CoT=1.236 settle_t=1.000s | skipped
+[458/1000] wait=False freq=0.52Hz amp=26.7deg Kp=30.0 Kd=8.2 fx=0.006 fy=0.005 | fell=False dist=0.12m CoT=2.121 settle_t=0.000s | skipped
+[459/1000] wait=True freq=0.61Hz amp=26.2deg Kp=34.8 Kd=6.5 fx=-0.046 fy=0.000 | fell=False dist=0.24m CoT=4.065 settle_t=2.232s | skipped
+[460/1000] wait=False freq=0.61Hz amp=26.2deg Kp=34.8 Kd=6.5 fx=-0.046 fy=0.000 | fell=False dist=0.14m CoT=6.950 settle_t=0.000s | skipped
+[461/1000] wait=True freq=0.67Hz amp=28.1deg Kp=28.0 Kd=9.6 fx=-0.023 fy=-0.019 | fell=True dist=0.64m CoT=0.774 settle_t=8.014s | skipped
+[462/1000] wait=False freq=0.67Hz amp=28.1deg Kp=28.0 Kd=9.6 fx=-0.023 fy=-0.019 | fell=False dist=0.54m CoT=1.912 settle_t=0.000s | skipped
+[463/1000] wait=True freq=0.62Hz amp=33.0deg Kp=29.5 Kd=13.0 fx=-0.015 fy=0.001 | fell=False dist=0.23m CoT=4.332 settle_t=2.328s | skipped
+[464/1000] wait=False freq=0.62Hz amp=33.0deg Kp=29.5 Kd=13.0 fx=-0.015 fy=0.001 | fell=False dist=0.29m CoT=3.644 settle_t=0.000s | skipped
+[465/1000] wait=True freq=0.63Hz amp=35.9deg Kp=21.6 Kd=7.3 fx=-0.045 fy=-0.001 | fell=False dist=0.17m CoT=6.138 settle_t=2.240s | skipped
+[466/1000] wait=False freq=0.63Hz amp=35.9deg Kp=21.6 Kd=7.3 fx=-0.045 fy=-0.001 | fell=True dist=0.62m CoT=1.665 settle_t=0.000s | skipped
+[467/1000] wait=True freq=0.73Hz amp=33.8deg Kp=35.3 Kd=14.9 fx=-0.014 fy=-0.009 | fell=True dist=0.73m CoT=0.687 settle_t=4.690s | skipped
+[468/1000] wait=False freq=0.73Hz amp=33.8deg Kp=35.3 Kd=14.9 fx=-0.014 fy=-0.009 | fell=True dist=0.72m CoT=0.437 settle_t=0.000s | skipped
+[469/1000] wait=True freq=0.50Hz amp=30.2deg Kp=44.7 Kd=4.6 fx=-0.033 fy=0.006 | fell=False dist=0.08m CoT=20.458 settle_t=1.000s | skipped
+[470/1000] wait=False freq=0.50Hz amp=30.2deg Kp=44.7 Kd=4.6 fx=-0.033 fy=0.006 | fell=True dist=0.40m CoT=0.418 settle_t=0.000s | skipped
+[471/1000] wait=True freq=0.74Hz amp=20.4deg Kp=22.8 Kd=4.3 fx=-0.035 fy=-0.004 | fell=False dist=0.14m CoT=0.824 settle_t=2.834s | skipped
+[472/1000] wait=False freq=0.74Hz amp=20.4deg Kp=22.8 Kd=4.3 fx=-0.035 fy=-0.004 | fell=False dist=0.10m CoT=1.245 settle_t=0.000s | skipped
+[473/1000] wait=True freq=0.57Hz amp=24.8deg Kp=41.6 Kd=14.3 fx=-0.051 fy=0.008 | fell=False dist=0.12m CoT=13.886 settle_t=1.000s | skipped
+[474/1000] wait=False freq=0.57Hz amp=24.8deg Kp=41.6 Kd=14.3 fx=-0.051 fy=0.008 | fell=False dist=0.25m CoT=7.064 settle_t=0.000s | skipped
+[475/1000] wait=True freq=0.47Hz amp=36.6deg Kp=32.2 Kd=6.8 fx=-0.036 fy=0.006 | fell=False dist=0.73m CoT=1.793 settle_t=1.000s | skipped
+[476/1000] wait=False freq=0.47Hz amp=36.6deg Kp=32.2 Kd=6.8 fx=-0.036 fy=0.006 | fell=False dist=0.31m CoT=4.160 settle_t=0.000s | skipped
+[477/1000] wait=True freq=0.51Hz amp=27.9deg Kp=27.9 Kd=12.7 fx=0.006 fy=-0.019 | fell=False dist=0.08m CoT=7.531 settle_t=9.500s | skipped
+[478/1000] wait=False freq=0.51Hz amp=27.9deg Kp=27.9 Kd=12.7 fx=0.006 fy=-0.019 | fell=False dist=0.36m CoT=1.874 settle_t=0.000s | skipped
+[479/1000] wait=True freq=0.79Hz amp=21.6deg Kp=37.5 Kd=4.7 fx=-0.058 fy=0.001 | fell=False dist=0.18m CoT=3.837 settle_t=2.216s | skipped
+[480/1000] wait=False freq=0.79Hz amp=21.6deg Kp=37.5 Kd=4.7 fx=-0.058 fy=0.001 | fell=False dist=0.13m CoT=5.613 settle_t=0.000s | skipped
+[481/1000] wait=True freq=0.53Hz amp=25.1deg Kp=25.3 Kd=5.2 fx=-0.001 fy=-0.006 | fell=False dist=0.02m CoT=4.251 settle_t=5.276s | skipped
+[482/1000] wait=False freq=0.53Hz amp=25.1deg Kp=25.3 Kd=5.2 fx=-0.001 fy=-0.006 | fell=False dist=0.10m CoT=1.053 settle_t=0.000s | skipped
+[483/1000] wait=True freq=0.67Hz amp=21.2deg Kp=26.5 Kd=3.5 fx=-0.052 fy=-0.019 | fell=False dist=0.19m CoT=1.510 settle_t=4.202s | skipped
+[484/1000] wait=False freq=0.67Hz amp=21.2deg Kp=26.5 Kd=3.5 fx=-0.052 fy=-0.019 | fell=False dist=0.30m CoT=0.783 settle_t=0.000s | skipped
+[485/1000] wait=True freq=0.73Hz amp=21.9deg Kp=40.2 Kd=5.0 fx=0.002 fy=-0.011 | fell=True dist=1.47m CoT=0.336 settle_t=4.862s | skipped
+[486/1000] wait=False freq=0.73Hz amp=21.9deg Kp=40.2 Kd=5.0 fx=0.002 fy=-0.011 | fell=True dist=1.43m CoT=0.402 settle_t=0.000s | skipped
+[487/1000] wait=True freq=0.74Hz amp=30.9deg Kp=33.2 Kd=4.3 fx=-0.002 fy=0.008 | fell=False dist=0.11m CoT=3.013 settle_t=1.000s | skipped
+[488/1000] wait=False freq=0.74Hz amp=30.9deg Kp=33.2 Kd=4.3 fx=-0.002 fy=0.008 | fell=False dist=0.10m CoT=3.179 settle_t=0.000s | skipped
+[489/1000] wait=True freq=0.60Hz amp=29.0deg Kp=40.1 Kd=3.0 fx=0.012 fy=-0.001 | fell=False dist=0.34m CoT=0.672 settle_t=3.144s | skipped
+[490/1000] wait=False freq=0.60Hz amp=29.0deg Kp=40.1 Kd=3.0 fx=0.012 fy=-0.001 | fell=False dist=0.12m CoT=1.985 settle_t=0.000s | skipped
+[491/1000] wait=True freq=0.67Hz amp=23.3deg Kp=27.3 Kd=10.0 fx=-0.012 fy=-0.008 | fell=False dist=0.15m CoT=2.399 settle_t=7.502s | skipped
+[492/1000] wait=False freq=0.67Hz amp=23.3deg Kp=27.3 Kd=10.0 fx=-0.012 fy=-0.008 | fell=False dist=0.26m CoT=1.581 settle_t=0.000s | skipped
+[493/1000] wait=True freq=0.51Hz amp=20.7deg Kp=31.8 Kd=10.9 fx=0.024 fy=-0.002 | fell=False dist=0.06m CoT=2.180 settle_t=2.252s | skipped
+[494/1000] wait=False freq=0.51Hz amp=20.7deg Kp=31.8 Kd=10.9 fx=0.024 fy=-0.002 | fell=False dist=0.12m CoT=1.030 settle_t=0.000s | skipped
+[495/1000] wait=True freq=0.51Hz amp=23.6deg Kp=41.8 Kd=10.5 fx=-0.020 fy=-0.006 | fell=False dist=0.26m CoT=2.744 settle_t=6.328s | skipped
+[496/1000] wait=False freq=0.51Hz amp=23.6deg Kp=41.8 Kd=10.5 fx=-0.020 fy=-0.006 | fell=False dist=0.24m CoT=3.113 settle_t=0.000s | skipped
+[497/1000] wait=True freq=0.41Hz amp=34.0deg Kp=33.9 Kd=13.2 fx=0.014 fy=-0.018 | fell=True dist=1.08m CoT=0.213 settle_t=8.436s | skipped
+[498/1000] wait=False freq=0.41Hz amp=34.0deg Kp=33.9 Kd=13.2 fx=0.014 fy=-0.018 | fell=True dist=0.56m CoT=0.585 settle_t=0.000s | skipped
+[499/1000] wait=True freq=0.54Hz amp=39.9deg Kp=37.0 Kd=14.4 fx=-0.065 fy=-0.015 | fell=True dist=0.60m CoT=0.831 settle_t=4.326s | skipped
+[500/1000] wait=False freq=0.54Hz amp=39.9deg Kp=37.0 Kd=14.4 fx=-0.065 fy=-0.015 | fell=True dist=1.19m CoT=1.229 settle_t=0.000s | skipped
+[501/1000] wait=True freq=0.59Hz amp=26.1deg Kp=24.7 Kd=14.3 fx=-0.012 fy=-0.013 | fell=True dist=1.09m CoT=0.593 settle_t=4.612s | skipped
+[502/1000] wait=False freq=0.59Hz amp=26.1deg Kp=24.7 Kd=14.3 fx=-0.012 fy=-0.013 | fell=True dist=1.20m CoT=0.269 settle_t=0.000s | skipped
+[503/1000] wait=True freq=0.48Hz amp=22.6deg Kp=43.3 Kd=12.9 fx=-0.003 fy=-0.011 | fell=False dist=0.33m CoT=1.818 settle_t=4.878s | skipped
+[504/1000] wait=False freq=0.48Hz amp=22.6deg Kp=43.3 Kd=12.9 fx=-0.003 fy=-0.011 | fell=False dist=0.38m CoT=1.658 settle_t=0.000s | skipped
+[505/1000] wait=True freq=0.69Hz amp=38.9deg Kp=40.4 Kd=12.4 fx=0.020 fy=-0.004 | fell=False dist=0.13m CoT=3.098 settle_t=6.152s | skipped
+[506/1000] wait=False freq=0.69Hz amp=38.9deg Kp=40.4 Kd=12.4 fx=0.020 fy=-0.004 | fell=True dist=0.41m CoT=0.512 settle_t=0.000s | skipped
+[507/1000] wait=True freq=0.57Hz amp=21.6deg Kp=22.6 Kd=3.9 fx=-0.053 fy=-0.016 | fell=False dist=0.18m CoT=0.961 settle_t=4.444s | skipped
+[508/1000] wait=False freq=0.57Hz amp=21.6deg Kp=22.6 Kd=3.9 fx=-0.053 fy=-0.016 | fell=False dist=0.29m CoT=0.565 settle_t=0.000s | skipped
+[509/1000] wait=True freq=0.64Hz amp=38.0deg Kp=22.2 Kd=4.0 fx=0.001 fy=-0.011 | fell=False dist=0.21m CoT=1.110 settle_t=4.968s | skipped
+[510/1000] wait=False freq=0.64Hz amp=38.0deg Kp=22.2 Kd=4.0 fx=0.001 fy=-0.011 | fell=True dist=1.03m CoT=0.343 settle_t=0.000s | skipped
+[511/1000] wait=True freq=0.72Hz amp=36.6deg Kp=42.1 Kd=4.3 fx=-0.029 fy=0.009 | fell=False dist=0.15m CoT=8.875 settle_t=1.000s | skipped
+[512/1000] wait=False freq=0.72Hz amp=36.6deg Kp=42.1 Kd=4.3 fx=-0.029 fy=0.009 | fell=True dist=0.34m CoT=0.579 settle_t=0.000s | skipped
+[513/1000] wait=True freq=0.70Hz amp=29.7deg Kp=33.8 Kd=7.8 fx=-0.026 fy=0.005 | fell=False dist=0.12m CoT=7.508 settle_t=1.000s | skipped
+[514/1000] wait=False freq=0.70Hz amp=29.7deg Kp=33.8 Kd=7.8 fx=-0.026 fy=0.005 | fell=False dist=0.10m CoT=8.327 settle_t=0.000s | skipped
+[515/1000] wait=True freq=0.54Hz amp=34.6deg Kp=26.8 Kd=13.8 fx=0.023 fy=-0.005 | fell=True dist=1.01m CoT=0.201 settle_t=4.458s | skipped
+[516/1000] wait=False freq=0.54Hz amp=34.6deg Kp=26.8 Kd=13.8 fx=0.023 fy=-0.005 | fell=True dist=1.31m CoT=0.168 settle_t=0.000s | skipped
+[517/1000] wait=True freq=0.70Hz amp=34.2deg Kp=35.6 Kd=9.5 fx=-0.060 fy=-0.009 | fell=False dist=2.27m CoT=1.229 settle_t=5.016s | SAVED
+[518/1000] wait=False freq=0.70Hz amp=34.2deg Kp=35.6 Kd=9.5 fx=-0.060 fy=-0.009 | fell=True dist=0.57m CoT=0.413 settle_t=0.000s | skipped
+[519/1000] wait=True freq=0.60Hz amp=35.8deg Kp=27.3 Kd=8.4 fx=-0.009 fy=-0.020 | fell=True dist=0.54m CoT=0.562 settle_t=7.894s | skipped
+[520/1000] wait=False freq=0.60Hz amp=35.8deg Kp=27.3 Kd=8.4 fx=-0.009 fy=-0.020 | fell=True dist=0.61m CoT=0.395 settle_t=0.000s | skipped
+[521/1000] wait=True freq=0.41Hz amp=31.3deg Kp=42.0 Kd=5.7 fx=0.018 fy=0.009 | fell=True dist=0.65m CoT=0.422 settle_t=1.000s | skipped
+[522/1000] wait=False freq=0.41Hz amp=31.3deg Kp=42.0 Kd=5.7 fx=0.018 fy=0.009 | fell=True dist=0.68m CoT=0.376 settle_t=0.000s | skipped
+[523/1000] wait=True freq=0.55Hz amp=25.5deg Kp=26.6 Kd=10.4 fx=-0.023 fy=0.005 | fell=False dist=0.06m CoT=9.477 settle_t=1.000s | skipped
+[524/1000] wait=False freq=0.55Hz amp=25.5deg Kp=26.6 Kd=10.4 fx=-0.023 fy=0.005 | fell=False dist=0.33m CoT=1.814 settle_t=0.000s | skipped
+[525/1000] wait=True freq=0.68Hz amp=23.3deg Kp=34.4 Kd=9.1 fx=0.010 fy=-0.015 | fell=True dist=1.33m CoT=0.332 settle_t=4.738s | skipped
+[526/1000] wait=False freq=0.68Hz amp=23.3deg Kp=34.4 Kd=9.1 fx=0.010 fy=-0.015 | fell=True dist=1.05m CoT=0.438 settle_t=0.000s | skipped
+[527/1000] wait=True freq=0.47Hz amp=32.2deg Kp=36.5 Kd=13.3 fx=-0.070 fy=-0.013 | fell=True dist=0.88m CoT=0.405 settle_t=4.580s | skipped
+[528/1000] wait=False freq=0.47Hz amp=32.2deg Kp=36.5 Kd=13.3 fx=-0.070 fy=-0.013 | fell=False dist=0.64m CoT=3.614 settle_t=0.000s | skipped
+[529/1000] wait=True freq=0.77Hz amp=25.8deg Kp=29.2 Kd=11.4 fx=-0.058 fy=0.009 | fell=False dist=0.15m CoT=10.275 settle_t=1.000s | skipped
+[530/1000] wait=False freq=0.77Hz amp=25.8deg Kp=29.2 Kd=11.4 fx=-0.058 fy=0.009 | fell=False dist=0.29m CoT=5.023 settle_t=0.000s | skipped
+[531/1000] wait=True freq=0.77Hz amp=37.7deg Kp=44.4 Kd=6.5 fx=-0.061 fy=-0.012 | fell=True dist=0.62m CoT=1.403 settle_t=4.702s | skipped
+[532/1000] wait=False freq=0.77Hz amp=37.7deg Kp=44.4 Kd=6.5 fx=-0.061 fy=-0.012 | fell=True dist=0.25m CoT=1.034 settle_t=0.000s | skipped
+[533/1000] wait=True freq=0.60Hz amp=22.2deg Kp=28.1 Kd=3.6 fx=-0.030 fy=-0.014 | fell=False dist=0.14m CoT=1.617 settle_t=4.592s | skipped
+[534/1000] wait=False freq=0.60Hz amp=22.2deg Kp=28.1 Kd=3.6 fx=-0.030 fy=-0.014 | fell=False dist=0.25m CoT=0.782 settle_t=0.000s | skipped
+[535/1000] wait=True freq=0.61Hz amp=34.7deg Kp=41.3 Kd=12.0 fx=0.002 fy=-0.001 | fell=False dist=0.16m CoT=4.217 settle_t=3.136s | skipped
+[536/1000] wait=False freq=0.61Hz amp=34.7deg Kp=41.3 Kd=12.0 fx=0.002 fy=-0.001 | fell=False dist=0.36m CoT=2.129 settle_t=0.000s | skipped
+[537/1000] wait=True freq=0.45Hz amp=20.7deg Kp=27.4 Kd=13.7 fx=-0.040 fy=0.008 | fell=False dist=0.42m CoT=1.257 settle_t=1.000s | skipped
+[538/1000] wait=False freq=0.45Hz amp=20.7deg Kp=27.4 Kd=13.7 fx=-0.040 fy=0.008 | fell=False dist=0.07m CoT=8.418 settle_t=0.000s | skipped
+[539/1000] wait=True freq=0.46Hz amp=38.4deg Kp=32.5 Kd=3.1 fx=-0.013 fy=-0.020 | fell=True dist=0.99m CoT=0.655 settle_t=7.830s | skipped
+[540/1000] wait=False freq=0.46Hz amp=38.4deg Kp=32.5 Kd=3.1 fx=-0.013 fy=-0.020 | fell=True dist=0.55m CoT=0.845 settle_t=0.000s | skipped
+[541/1000] wait=True freq=0.78Hz amp=35.7deg Kp=37.4 Kd=3.1 fx=0.005 fy=-0.002 | fell=False dist=0.27m CoT=1.263 settle_t=2.992s | skipped
+[542/1000] wait=False freq=0.78Hz amp=35.7deg Kp=37.4 Kd=3.1 fx=0.005 fy=-0.002 | fell=False dist=0.12m CoT=2.808 settle_t=0.000s | skipped
+[543/1000] wait=True freq=0.64Hz amp=39.4deg Kp=27.1 Kd=6.0 fx=-0.067 fy=-0.017 | fell=True dist=0.19m CoT=1.354 settle_t=4.296s | skipped
+[544/1000] wait=False freq=0.64Hz amp=39.4deg Kp=27.1 Kd=6.0 fx=-0.067 fy=-0.017 | fell=True dist=0.44m CoT=0.543 settle_t=0.000s | skipped
+[545/1000] wait=True freq=0.58Hz amp=23.0deg Kp=22.7 Kd=11.8 fx=-0.054 fy=-0.009 | fell=False dist=0.21m CoT=3.594 settle_t=5.026s | skipped
+[546/1000] wait=False freq=0.58Hz amp=23.0deg Kp=22.7 Kd=11.8 fx=-0.054 fy=-0.009 | fell=False dist=0.33m CoT=2.354 settle_t=0.000s | skipped
+[547/1000] wait=True freq=0.70Hz amp=22.9deg Kp=23.7 Kd=12.9 fx=-0.010 fy=-0.011 | fell=True dist=0.85m CoT=0.728 settle_t=4.778s | skipped
+[548/1000] wait=False freq=0.70Hz amp=22.9deg Kp=23.7 Kd=12.9 fx=-0.010 fy=-0.011 | fell=True dist=1.24m CoT=0.272 settle_t=0.000s | skipped
+[549/1000] wait=True freq=0.43Hz amp=36.1deg Kp=34.7 Kd=10.1 fx=0.021 fy=0.003 | fell=False dist=0.08m CoT=5.552 settle_t=2.282s | skipped
+[550/1000] wait=False freq=0.43Hz amp=36.1deg Kp=34.7 Kd=10.1 fx=0.021 fy=0.003 | fell=False dist=0.26m CoT=1.902 settle_t=0.000s | skipped
+[551/1000] wait=True freq=0.63Hz amp=33.3deg Kp=44.5 Kd=12.1 fx=0.023 fy=-0.013 | fell=True dist=1.02m CoT=1.381 settle_t=4.688s | skipped
+[552/1000] wait=False freq=0.63Hz amp=33.3deg Kp=44.5 Kd=12.1 fx=0.023 fy=-0.013 | fell=True dist=1.10m CoT=0.316 settle_t=0.000s | skipped
+[553/1000] wait=True freq=0.59Hz amp=21.0deg Kp=20.3 Kd=6.4 fx=-0.055 fy=0.001 | fell=False dist=0.19m CoT=1.464 settle_t=2.230s | skipped
+[554/1000] wait=False freq=0.59Hz amp=21.0deg Kp=20.3 Kd=6.4 fx=-0.055 fy=0.001 | fell=False dist=0.06m CoT=3.754 settle_t=0.000s | skipped
+[555/1000] wait=True freq=0.49Hz amp=34.0deg Kp=26.3 Kd=13.2 fx=-0.055 fy=-0.005 | fell=False dist=1.09m CoT=1.723 settle_t=2.718s | skipped
+[556/1000] wait=False freq=0.49Hz amp=34.0deg Kp=26.3 Kd=13.2 fx=-0.055 fy=-0.005 | fell=False dist=0.31m CoT=5.947 settle_t=0.000s | skipped
+[557/1000] wait=True freq=0.73Hz amp=30.2deg Kp=25.7 Kd=7.5 fx=0.003 fy=-0.017 | fell=True dist=1.73m CoT=0.314 settle_t=10.718s | skipped
+[558/1000] wait=False freq=0.73Hz amp=30.2deg Kp=25.7 Kd=7.5 fx=0.003 fy=-0.017 | fell=True dist=1.76m CoT=0.411 settle_t=0.000s | skipped
+[559/1000] wait=True freq=0.42Hz amp=31.1deg Kp=25.3 Kd=14.8 fx=-0.047 fy=0.010 | fell=False dist=1.16m CoT=1.113 settle_t=1.000s | skipped
+[560/1000] wait=False freq=0.42Hz amp=31.1deg Kp=25.3 Kd=14.8 fx=-0.047 fy=0.010 | fell=False dist=0.91m CoT=1.352 settle_t=0.000s | skipped
+[561/1000] wait=True freq=0.58Hz amp=30.1deg Kp=26.1 Kd=3.8 fx=-0.055 fy=-0.005 | fell=False dist=0.15m CoT=4.929 settle_t=2.744s | skipped
+[562/1000] wait=False freq=0.58Hz amp=30.1deg Kp=26.1 Kd=3.8 fx=-0.055 fy=-0.005 | fell=False dist=0.38m CoT=1.693 settle_t=0.000s | skipped
+[563/1000] wait=True freq=0.70Hz amp=29.7deg Kp=23.0 Kd=3.2 fx=-0.043 fy=0.002 | fell=False dist=0.13m CoT=2.559 settle_t=2.306s | skipped
+[564/1000] wait=False freq=0.70Hz amp=29.7deg Kp=23.0 Kd=3.2 fx=-0.043 fy=0.002 | fell=False dist=0.05m CoT=7.807 settle_t=0.000s | skipped
+[565/1000] wait=True freq=0.55Hz amp=35.3deg Kp=39.9 Kd=9.1 fx=0.003 fy=0.002 | fell=False dist=0.31m CoT=1.843 settle_t=2.396s | skipped
+[566/1000] wait=False freq=0.55Hz amp=35.3deg Kp=39.9 Kd=9.1 fx=0.003 fy=0.002 | fell=False dist=0.23m CoT=2.905 settle_t=0.000s | skipped
+[567/1000] wait=True freq=0.66Hz amp=23.9deg Kp=22.1 Kd=9.1 fx=-0.020 fy=-0.019 | fell=False dist=0.15m CoT=2.832 settle_t=7.896s | skipped
+[568/1000] wait=False freq=0.66Hz amp=23.9deg Kp=22.1 Kd=9.1 fx=-0.020 fy=-0.019 | fell=False dist=0.36m CoT=1.279 settle_t=0.000s | skipped
+[569/1000] wait=True freq=0.49Hz amp=34.9deg Kp=44.9 Kd=3.7 fx=-0.027 fy=0.007 | fell=True dist=0.18m CoT=1.804 settle_t=1.000s | skipped
+[570/1000] wait=False freq=0.49Hz amp=34.9deg Kp=44.9 Kd=3.7 fx=-0.027 fy=0.007 | fell=True dist=0.28m CoT=1.075 settle_t=0.000s | skipped
+[571/1000] wait=True freq=0.67Hz amp=22.4deg Kp=44.6 Kd=10.4 fx=-0.069 fy=-0.010 | fell=False dist=0.43m CoT=4.113 settle_t=4.950s | skipped
+[572/1000] wait=False freq=0.67Hz amp=22.4deg Kp=44.6 Kd=10.4 fx=-0.069 fy=-0.010 | fell=False dist=0.34m CoT=5.075 settle_t=0.000s | skipped
+[573/1000] wait=True freq=0.53Hz amp=26.6deg Kp=20.2 Kd=8.8 fx=-0.054 fy=0.009 | fell=False dist=0.18m CoT=3.791 settle_t=1.000s | skipped
+[574/1000] wait=False freq=0.53Hz amp=26.6deg Kp=20.2 Kd=8.8 fx=-0.054 fy=0.009 | fell=False dist=0.16m CoT=3.861 settle_t=0.000s | skipped
+[575/1000] wait=True freq=0.59Hz amp=29.2deg Kp=31.1 Kd=12.6 fx=0.011 fy=-0.007 | fell=False dist=0.22m CoT=2.184 settle_t=5.492s | skipped
+[576/1000] wait=False freq=0.59Hz amp=29.2deg Kp=31.1 Kd=12.6 fx=0.011 fy=-0.007 | fell=False dist=1.12m CoT=1.004 settle_t=0.000s | skipped
+[577/1000] wait=True freq=0.48Hz amp=20.3deg Kp=33.3 Kd=2.8 fx=-0.059 fy=0.007 | fell=False dist=0.13m CoT=5.019 settle_t=1.000s | skipped
+[578/1000] wait=False freq=0.48Hz amp=20.3deg Kp=33.3 Kd=2.8 fx=-0.059 fy=0.007 | fell=False dist=0.18m CoT=3.552 settle_t=0.000s | skipped
+[579/1000] wait=True freq=0.48Hz amp=20.1deg Kp=34.2 Kd=13.5 fx=-0.040 fy=-0.016 | fell=False dist=0.40m CoT=1.792 settle_t=4.456s | skipped
+[580/1000] wait=False freq=0.48Hz amp=20.1deg Kp=34.2 Kd=13.5 fx=-0.040 fy=-0.016 | fell=False dist=0.31m CoT=2.276 settle_t=0.000s | skipped
+[581/1000] wait=True freq=0.60Hz amp=30.8deg Kp=32.4 Kd=4.2 fx=-0.029 fy=-0.005 | fell=False dist=0.26m CoT=2.748 settle_t=2.790s | skipped
+[582/1000] wait=False freq=0.60Hz amp=30.8deg Kp=32.4 Kd=4.2 fx=-0.029 fy=-0.005 | fell=False dist=0.20m CoT=2.980 settle_t=0.000s | skipped
+[583/1000] wait=True freq=0.63Hz amp=23.9deg Kp=36.1 Kd=2.9 fx=0.014 fy=0.003 | fell=False dist=0.12m CoT=0.946 settle_t=1.000s | skipped
+[584/1000] wait=False freq=0.63Hz amp=23.9deg Kp=36.1 Kd=2.9 fx=0.014 fy=0.003 | fell=False dist=0.09m CoT=1.844 settle_t=0.000s | skipped
+[585/1000] wait=True freq=0.46Hz amp=28.3deg Kp=35.5 Kd=8.1 fx=-0.050 fy=-0.003 | fell=False dist=0.76m CoT=1.582 settle_t=2.876s | skipped
+[586/1000] wait=False freq=0.46Hz amp=28.3deg Kp=35.5 Kd=8.1 fx=-0.050 fy=-0.003 | fell=False dist=0.78m CoT=1.803 settle_t=0.000s | skipped
+[587/1000] wait=True freq=0.69Hz amp=26.5deg Kp=24.6 Kd=6.2 fx=-0.002 fy=0.007 | fell=False dist=0.10m CoT=1.993 settle_t=1.000s | skipped
+[588/1000] wait=False freq=0.69Hz amp=26.5deg Kp=24.6 Kd=6.2 fx=-0.002 fy=0.007 | fell=False dist=0.05m CoT=4.403 settle_t=0.000s | skipped
+[589/1000] wait=True freq=0.68Hz amp=34.4deg Kp=30.0 Kd=2.4 fx=-0.064 fy=0.004 | fell=False dist=0.28m CoT=4.469 settle_t=1.000s | skipped
+[590/1000] wait=False freq=0.68Hz amp=34.4deg Kp=30.0 Kd=2.4 fx=-0.064 fy=0.004 | fell=False dist=0.22m CoT=5.737 settle_t=0.000s | skipped
+[591/1000] wait=True freq=0.54Hz amp=37.4deg Kp=43.3 Kd=9.0 fx=-0.012 fy=-0.007 | fell=False dist=0.21m CoT=5.805 settle_t=2.754s | skipped
+[592/1000] wait=False freq=0.54Hz amp=37.4deg Kp=43.3 Kd=9.0 fx=-0.012 fy=-0.007 | fell=True dist=0.57m CoT=0.509 settle_t=0.000s | skipped
+[593/1000] wait=True freq=0.79Hz amp=24.8deg Kp=41.1 Kd=2.6 fx=-0.062 fy=-0.018 | fell=True dist=1.25m CoT=1.375 settle_t=4.252s | skipped
+[594/1000] wait=False freq=0.79Hz amp=24.8deg Kp=41.1 Kd=2.6 fx=-0.062 fy=-0.018 | fell=False dist=0.52m CoT=2.769 settle_t=0.000s | skipped
+[595/1000] wait=True freq=0.61Hz amp=35.7deg Kp=21.7 Kd=2.9 fx=-0.045 fy=-0.014 | fell=True dist=0.47m CoT=0.219 settle_t=4.412s | skipped
+[596/1000] wait=False freq=0.61Hz amp=35.7deg Kp=21.7 Kd=2.9 fx=-0.045 fy=-0.014 | fell=False dist=0.29m CoT=1.655 settle_t=0.000s | skipped
+[597/1000] wait=True freq=0.74Hz amp=29.0deg Kp=31.1 Kd=2.0 fx=-0.010 fy=-0.005 | fell=False dist=0.09m CoT=2.093 settle_t=6.384s | skipped
+[598/1000] wait=False freq=0.74Hz amp=29.0deg Kp=31.1 Kd=2.0 fx=-0.010 fy=-0.005 | fell=False dist=0.23m CoT=0.639 settle_t=0.000s | skipped
+[599/1000] wait=True freq=0.52Hz amp=38.8deg Kp=42.3 Kd=2.7 fx=-0.015 fy=-0.006 | fell=True dist=0.45m CoT=1.755 settle_t=6.400s | skipped
+[600/1000] wait=False freq=0.52Hz amp=38.8deg Kp=42.3 Kd=2.7 fx=-0.015 fy=-0.006 | fell=True dist=0.75m CoT=0.438 settle_t=0.000s | skipped
+[601/1000] wait=True freq=0.55Hz amp=33.5deg Kp=42.8 Kd=9.7 fx=-0.019 fy=0.002 | fell=False dist=0.28m CoT=4.407 settle_t=2.332s | skipped
+[602/1000] wait=False freq=0.55Hz amp=33.5deg Kp=42.8 Kd=9.7 fx=-0.019 fy=0.002 | fell=False dist=0.10m CoT=11.871 settle_t=0.000s | skipped
+[603/1000] wait=True freq=0.47Hz amp=20.2deg Kp=40.0 Kd=7.8 fx=0.019 fy=-0.006 | fell=False dist=0.07m CoT=2.474 settle_t=4.328s | skipped
+[604/1000] wait=False freq=0.47Hz amp=20.2deg Kp=40.0 Kd=7.8 fx=0.019 fy=-0.006 | fell=False dist=0.31m CoT=0.706 settle_t=0.000s | skipped
+[605/1000] wait=True freq=0.44Hz amp=35.5deg Kp=29.3 Kd=5.2 fx=-0.066 fy=-0.003 | fell=True dist=2.02m CoT=0.545 settle_t=2.752s | skipped
+[606/1000] wait=False freq=0.44Hz amp=35.5deg Kp=29.3 Kd=5.2 fx=-0.066 fy=-0.003 | fell=False dist=1.37m CoT=1.215 settle_t=0.000s | skipped
+[607/1000] wait=True freq=0.49Hz amp=21.7deg Kp=44.8 Kd=5.7 fx=-0.024 fy=0.006 | fell=False dist=0.15m CoT=4.919 settle_t=1.000s | skipped
+[608/1000] wait=False freq=0.49Hz amp=21.7deg Kp=44.8 Kd=5.7 fx=-0.024 fy=0.006 | fell=False dist=0.28m CoT=2.460 settle_t=0.000s | skipped
+[609/1000] wait=True freq=0.73Hz amp=36.0deg Kp=42.7 Kd=14.0 fx=-0.069 fy=0.008 | fell=False dist=0.25m CoT=11.211 settle_t=1.000s | skipped
+[610/1000] wait=False freq=0.73Hz amp=36.0deg Kp=42.7 Kd=14.0 fx=-0.069 fy=0.008 | fell=True dist=0.41m CoT=0.829 settle_t=0.000s | skipped
+[611/1000] wait=True freq=0.47Hz amp=39.8deg Kp=30.8 Kd=5.3 fx=0.025 fy=0.009 | fell=False dist=0.20m CoT=2.019 settle_t=1.000s | skipped
+[612/1000] wait=False freq=0.47Hz amp=39.8deg Kp=30.8 Kd=5.3 fx=0.025 fy=0.009 | fell=False dist=0.24m CoT=1.413 settle_t=0.000s | skipped
+[613/1000] wait=True freq=0.65Hz amp=34.9deg Kp=31.6 Kd=11.7 fx=-0.057 fy=-0.005 | fell=True dist=0.49m CoT=1.220 settle_t=2.724s | skipped
+[614/1000] wait=False freq=0.65Hz amp=34.9deg Kp=31.6 Kd=11.7 fx=-0.057 fy=-0.005 | fell=True dist=0.69m CoT=1.115 settle_t=0.000s | skipped
+[615/1000] wait=True freq=0.79Hz amp=29.2deg Kp=34.1 Kd=8.9 fx=-0.040 fy=-0.001 | fell=False dist=0.35m CoT=3.513 settle_t=2.256s | skipped
+[616/1000] wait=False freq=0.79Hz amp=29.2deg Kp=34.1 Kd=8.9 fx=-0.040 fy=-0.001 | fell=False dist=0.23m CoT=5.469 settle_t=0.000s | skipped
+[617/1000] wait=True freq=0.45Hz amp=39.2deg Kp=22.5 Kd=7.6 fx=0.012 fy=-0.002 | fell=False dist=0.25m CoT=1.308 settle_t=6.804s | skipped
+[618/1000] wait=False freq=0.45Hz amp=39.2deg Kp=22.5 Kd=7.6 fx=0.012 fy=-0.002 | fell=False dist=0.07m CoT=4.508 settle_t=0.000s | skipped
+[619/1000] wait=True freq=0.68Hz amp=37.1deg Kp=34.2 Kd=8.0 fx=0.003 fy=0.004 | fell=False dist=0.14m CoT=3.772 settle_t=1.000s | skipped
+[620/1000] wait=False freq=0.68Hz amp=37.1deg Kp=34.2 Kd=8.0 fx=0.003 fy=0.004 | fell=False dist=0.05m CoT=10.483 settle_t=0.000s | skipped
+[621/1000] wait=True freq=0.58Hz amp=35.4deg Kp=28.8 Kd=9.0 fx=0.002 fy=-0.009 | fell=False dist=0.12m CoT=4.410 settle_t=4.772s | skipped
+[622/1000] wait=False freq=0.58Hz amp=35.4deg Kp=28.8 Kd=9.0 fx=0.002 fy=-0.009 | fell=True dist=0.58m CoT=0.860 settle_t=0.000s | skipped
+[623/1000] wait=True freq=0.75Hz amp=25.8deg Kp=36.5 Kd=4.7 fx=-0.000 fy=-0.004 | fell=False dist=0.16m CoT=1.347 settle_t=2.874s | skipped
+[624/1000] wait=False freq=0.75Hz amp=25.8deg Kp=36.5 Kd=4.7 fx=-0.000 fy=-0.004 | fell=False dist=0.08m CoT=3.647 settle_t=0.000s | skipped
+[625/1000] wait=True freq=0.63Hz amp=23.2deg Kp=23.2 Kd=9.5 fx=-0.062 fy=-0.017 | fell=False dist=0.22m CoT=3.361 settle_t=4.400s | skipped
+[626/1000] wait=False freq=0.63Hz amp=23.2deg Kp=23.2 Kd=9.5 fx=-0.062 fy=-0.017 | fell=False dist=0.30m CoT=2.819 settle_t=0.000s | skipped
+[627/1000] wait=True freq=0.78Hz amp=38.1deg Kp=20.1 Kd=14.7 fx=-0.013 fy=-0.014 | fell=True dist=0.61m CoT=1.211 settle_t=4.480s | skipped
+[628/1000] wait=False freq=0.78Hz amp=38.1deg Kp=20.1 Kd=14.7 fx=-0.013 fy=-0.014 | fell=True dist=0.74m CoT=0.618 settle_t=0.000s | skipped
+[629/1000] wait=True freq=0.77Hz amp=26.0deg Kp=40.9 Kd=5.9 fx=-0.049 fy=-0.015 | fell=False dist=0.89m CoT=2.127 settle_t=4.432s | skipped
+[630/1000] wait=False freq=0.77Hz amp=26.0deg Kp=40.9 Kd=5.9 fx=-0.049 fy=-0.015 | fell=True dist=0.44m CoT=0.661 settle_t=0.000s | skipped
+[631/1000] wait=True freq=0.63Hz amp=20.8deg Kp=27.0 Kd=2.1 fx=0.000 fy=-0.000 | fell=False dist=0.01m CoT=3.507 settle_t=3.346s | skipped
+[632/1000] wait=False freq=0.63Hz amp=20.8deg Kp=27.0 Kd=2.1 fx=0.000 fy=-0.000 | fell=False dist=0.09m CoT=0.596 settle_t=0.000s | skipped
+[633/1000] wait=True freq=0.67Hz amp=29.5deg Kp=40.3 Kd=5.4 fx=0.001 fy=-0.011 | fell=True dist=1.30m CoT=0.516 settle_t=4.730s | skipped
+[634/1000] wait=False freq=0.67Hz amp=29.5deg Kp=40.3 Kd=5.4 fx=0.001 fy=-0.011 | fell=True dist=1.10m CoT=0.657 settle_t=0.000s | skipped
+[635/1000] wait=True freq=0.65Hz amp=37.9deg Kp=37.4 Kd=14.9 fx=0.013 fy=0.007 | fell=False dist=0.52m CoT=1.079 settle_t=1.000s | skipped
+[636/1000] wait=False freq=0.65Hz amp=37.9deg Kp=37.4 Kd=14.9 fx=0.013 fy=0.007 | fell=False dist=0.48m CoT=1.219 settle_t=0.000s | skipped
+[637/1000] wait=True freq=0.77Hz amp=23.5deg Kp=22.1 Kd=6.1 fx=-0.023 fy=0.007 | fell=False dist=0.07m CoT=3.741 settle_t=1.000s | skipped
+[638/1000] wait=False freq=0.77Hz amp=23.5deg Kp=22.1 Kd=6.1 fx=-0.023 fy=0.007 | fell=False dist=0.06m CoT=4.454 settle_t=0.000s | skipped
+[639/1000] wait=True freq=0.77Hz amp=20.3deg Kp=38.7 Kd=13.9 fx=-0.037 fy=-0.006 | fell=False dist=0.15m CoT=7.028 settle_t=2.752s | skipped
+[640/1000] wait=False freq=0.77Hz amp=20.3deg Kp=38.7 Kd=13.9 fx=-0.037 fy=-0.006 | fell=False dist=0.60m CoT=1.884 settle_t=0.000s | skipped
+[641/1000] wait=True freq=0.62Hz amp=39.3deg Kp=35.4 Kd=7.8 fx=-0.059 fy=-0.017 | fell=True dist=0.55m CoT=0.420 settle_t=4.462s | skipped
+[642/1000] wait=False freq=0.62Hz amp=39.3deg Kp=35.4 Kd=7.8 fx=-0.059 fy=-0.017 | fell=True dist=0.09m CoT=6.005 settle_t=0.000s | skipped
+[643/1000] wait=True freq=0.57Hz amp=39.3deg Kp=26.4 Kd=2.3 fx=-0.044 fy=0.010 | fell=True dist=0.17m CoT=1.257 settle_t=1.000s | skipped
+[644/1000] wait=False freq=0.57Hz amp=39.3deg Kp=26.4 Kd=2.3 fx=-0.044 fy=0.010 | fell=True dist=0.19m CoT=1.100 settle_t=0.000s | skipped
+[645/1000] wait=True freq=0.63Hz amp=32.1deg Kp=30.9 Kd=5.4 fx=-0.021 fy=-0.019 | fell=False dist=0.15m CoT=5.268 settle_t=10.510s | skipped
+[646/1000] wait=False freq=0.63Hz amp=32.1deg Kp=30.9 Kd=5.4 fx=-0.021 fy=-0.019 | fell=True dist=0.35m CoT=0.618 settle_t=0.000s | skipped
+[647/1000] wait=True freq=0.79Hz amp=33.9deg Kp=31.0 Kd=12.5 fx=-0.002 fy=-0.008 | fell=False dist=0.06m CoT=9.525 settle_t=4.864s | skipped
+[648/1000] wait=False freq=0.79Hz amp=33.9deg Kp=31.0 Kd=12.5 fx=-0.002 fy=-0.008 | fell=True dist=1.07m CoT=0.668 settle_t=0.000s | skipped
+[649/1000] wait=True freq=0.58Hz amp=39.5deg Kp=39.0 Kd=14.9 fx=-0.007 fy=0.009 | fell=False dist=0.11m CoT=9.890 settle_t=1.000s | skipped
+[650/1000] wait=False freq=0.58Hz amp=39.5deg Kp=39.0 Kd=14.9 fx=-0.007 fy=0.009 | fell=False dist=0.09m CoT=10.496 settle_t=0.000s | skipped
+[651/1000] wait=True freq=0.73Hz amp=35.4deg Kp=44.2 Kd=3.3 fx=0.016 fy=-0.002 | fell=False dist=0.17m CoT=1.725 settle_t=3.250s | skipped
+[652/1000] wait=False freq=0.73Hz amp=35.4deg Kp=44.2 Kd=3.3 fx=0.016 fy=-0.002 | fell=True dist=0.24m CoT=6.304 settle_t=0.000s | skipped
+[653/1000] wait=True freq=0.44Hz amp=20.1deg Kp=35.8 Kd=10.9 fx=-0.050 fy=-0.004 | fell=False dist=0.58m CoT=1.095 settle_t=2.766s | skipped
+[654/1000] wait=False freq=0.44Hz amp=20.1deg Kp=35.8 Kd=10.9 fx=-0.050 fy=-0.004 | fell=False dist=0.40m CoT=1.497 settle_t=0.000s | skipped
+[655/1000] wait=True freq=0.53Hz amp=38.5deg Kp=36.6 Kd=5.9 fx=-0.041 fy=0.005 | fell=False dist=0.39m CoT=4.804 settle_t=1.000s | skipped
+[656/1000] wait=False freq=0.53Hz amp=38.5deg Kp=36.6 Kd=5.9 fx=-0.041 fy=0.005 | fell=False dist=0.47m CoT=3.678 settle_t=0.000s | skipped
+[657/1000] wait=True freq=0.75Hz amp=37.0deg Kp=34.8 Kd=13.3 fx=0.000 fy=-0.017 | fell=True dist=0.23m CoT=2.882 settle_t=8.038s | skipped
+[658/1000] wait=False freq=0.75Hz amp=37.0deg Kp=34.8 Kd=13.3 fx=0.000 fy=-0.017 | fell=True dist=0.74m CoT=0.708 settle_t=0.000s | skipped
+[659/1000] wait=True freq=0.41Hz amp=35.3deg Kp=41.0 Kd=14.8 fx=-0.026 fy=0.004 | fell=False dist=0.34m CoT=4.804 settle_t=1.000s | skipped
+[660/1000] wait=False freq=0.41Hz amp=35.3deg Kp=41.0 Kd=14.8 fx=-0.026 fy=0.004 | fell=True dist=0.65m CoT=0.952 settle_t=0.000s | skipped
+[661/1000] wait=True freq=0.66Hz amp=20.1deg Kp=28.2 Kd=9.2 fx=0.021 fy=0.008 | fell=False dist=0.18m CoT=0.777 settle_t=1.000s | skipped
+[662/1000] wait=False freq=0.66Hz amp=20.1deg Kp=28.2 Kd=9.2 fx=0.021 fy=0.008 | fell=False dist=0.16m CoT=0.835 settle_t=0.000s | skipped
+[663/1000] wait=True freq=0.78Hz amp=32.0deg Kp=41.1 Kd=6.1 fx=-0.057 fy=0.006 | fell=True dist=0.49m CoT=0.481 settle_t=1.000s | skipped
+[664/1000] wait=False freq=0.78Hz amp=32.0deg Kp=41.1 Kd=6.1 fx=-0.057 fy=0.006 | fell=True dist=0.51m CoT=0.480 settle_t=0.000s | skipped
+[665/1000] wait=True freq=0.61Hz amp=25.0deg Kp=44.9 Kd=3.1 fx=0.006 fy=0.003 | fell=False dist=0.20m CoT=1.288 settle_t=1.000s | skipped
+[666/1000] wait=False freq=0.61Hz amp=25.0deg Kp=44.9 Kd=3.1 fx=0.006 fy=0.003 | fell=False dist=0.19m CoT=1.478 settle_t=0.000s | skipped
+[667/1000] wait=True freq=0.68Hz amp=34.6deg Kp=30.5 Kd=9.7 fx=-0.047 fy=-0.007 | fell=False dist=1.72m CoT=1.206 settle_t=5.148s | skipped
+[668/1000] wait=False freq=0.68Hz amp=34.6deg Kp=30.5 Kd=9.7 fx=-0.047 fy=-0.007 | fell=True dist=0.63m CoT=0.689 settle_t=0.000s | skipped
+[669/1000] wait=True freq=0.56Hz amp=23.3deg Kp=36.3 Kd=4.6 fx=0.024 fy=-0.012 | fell=False dist=1.20m CoT=0.696 settle_t=4.722s | skipped
+[670/1000] wait=False freq=0.56Hz amp=23.3deg Kp=36.3 Kd=4.6 fx=0.024 fy=-0.012 | fell=False dist=0.82m CoT=0.906 settle_t=0.000s | skipped
+[671/1000] wait=True freq=0.59Hz amp=28.3deg Kp=41.7 Kd=8.4 fx=-0.022 fy=-0.017 | fell=True dist=1.75m CoT=0.232 settle_t=7.886s | skipped
+[672/1000] wait=False freq=0.59Hz amp=28.3deg Kp=41.7 Kd=8.4 fx=-0.022 fy=-0.017 | fell=True dist=0.64m CoT=0.424 settle_t=0.000s | skipped
+[673/1000] wait=True freq=0.41Hz amp=24.6deg Kp=33.3 Kd=9.0 fx=-0.044 fy=-0.003 | fell=False dist=0.19m CoT=3.447 settle_t=2.888s | skipped
+[674/1000] wait=False freq=0.41Hz amp=24.6deg Kp=33.3 Kd=9.0 fx=-0.044 fy=-0.003 | fell=False dist=0.25m CoT=2.659 settle_t=0.000s | skipped
+[675/1000] wait=True freq=0.75Hz amp=26.1deg Kp=31.4 Kd=7.6 fx=-0.016 fy=-0.013 | fell=False dist=0.19m CoT=2.439 settle_t=4.642s | skipped
+[676/1000] wait=False freq=0.75Hz amp=26.1deg Kp=31.4 Kd=7.6 fx=-0.016 fy=-0.013 | fell=False dist=0.20m CoT=2.719 settle_t=0.000s | skipped
+[677/1000] wait=True freq=0.55Hz amp=26.4deg Kp=34.0 Kd=7.7 fx=0.006 fy=0.002 | fell=False dist=0.37m CoT=0.802 settle_t=2.410s | skipped
+[678/1000] wait=False freq=0.55Hz amp=26.4deg Kp=34.0 Kd=7.7 fx=0.006 fy=0.002 | fell=False dist=0.27m CoT=0.986 settle_t=0.000s | skipped
+[679/1000] wait=True freq=0.77Hz amp=30.7deg Kp=39.4 Kd=2.1 fx=-0.016 fy=-0.016 | fell=True dist=1.18m CoT=0.710 settle_t=7.922s | skipped
+[680/1000] wait=False freq=0.77Hz amp=30.7deg Kp=39.4 Kd=2.1 fx=-0.016 fy=-0.016 | fell=True dist=0.26m CoT=2.338 settle_t=0.000s | skipped
+[681/1000] wait=True freq=0.52Hz amp=20.9deg Kp=34.5 Kd=5.4 fx=-0.029 fy=-0.003 | fell=False dist=0.11m CoT=3.035 settle_t=2.868s | skipped
+[682/1000] wait=False freq=0.52Hz amp=20.9deg Kp=34.5 Kd=5.4 fx=-0.029 fy=-0.003 | fell=False dist=0.11m CoT=2.722 settle_t=0.000s | skipped
+[683/1000] wait=True freq=0.74Hz amp=27.8deg Kp=38.9 Kd=13.7 fx=-0.033 fy=-0.002 | fell=False dist=0.21m CoT=6.179 settle_t=3.044s | skipped
+[684/1000] wait=False freq=0.74Hz amp=27.8deg Kp=38.9 Kd=13.7 fx=-0.033 fy=-0.002 | fell=False dist=0.12m CoT=11.008 settle_t=0.000s | skipped
+[685/1000] wait=True freq=0.41Hz amp=29.9deg Kp=24.3 Kd=2.1 fx=-0.024 fy=-0.015 | fell=False dist=0.22m CoT=1.565 settle_t=4.424s | skipped
+[686/1000] wait=False freq=0.41Hz amp=29.9deg Kp=24.3 Kd=2.1 fx=-0.024 fy=-0.015 | fell=False dist=0.19m CoT=1.763 settle_t=0.000s | skipped
+[687/1000] wait=True freq=0.60Hz amp=24.5deg Kp=42.5 Kd=6.9 fx=-0.018 fy=0.001 | fell=False dist=0.23m CoT=2.601 settle_t=2.312s | skipped
+[688/1000] wait=False freq=0.60Hz amp=24.5deg Kp=42.5 Kd=6.9 fx=-0.018 fy=0.001 | fell=False dist=0.09m CoT=7.560 settle_t=0.000s | skipped
+[689/1000] wait=True freq=0.42Hz amp=35.0deg Kp=34.9 Kd=5.5 fx=-0.032 fy=-0.011 | fell=True dist=1.38m CoT=0.676 settle_t=4.768s | skipped
+[690/1000] wait=False freq=0.42Hz amp=35.0deg Kp=34.9 Kd=5.5 fx=-0.032 fy=-0.011 | fell=True dist=1.15m CoT=0.719 settle_t=0.000s | skipped
+[691/1000] wait=True freq=0.57Hz amp=22.8deg Kp=28.3 Kd=9.8 fx=-0.026 fy=-0.019 | fell=False dist=0.18m CoT=2.685 settle_t=7.742s | skipped
+[692/1000] wait=False freq=0.57Hz amp=22.8deg Kp=28.3 Kd=9.8 fx=-0.026 fy=-0.019 | fell=False dist=0.27m CoT=2.123 settle_t=0.000s | skipped
+[693/1000] wait=True freq=0.42Hz amp=20.6deg Kp=38.5 Kd=2.2 fx=-0.040 fy=-0.006 | fell=False dist=0.21m CoT=2.796 settle_t=2.742s | skipped
+[694/1000] wait=False freq=0.42Hz amp=20.6deg Kp=38.5 Kd=2.2 fx=-0.040 fy=-0.006 | fell=False dist=0.56m CoT=1.204 settle_t=0.000s | skipped
+[695/1000] wait=True freq=0.71Hz amp=38.3deg Kp=31.8 Kd=2.5 fx=0.010 fy=-0.003 | fell=False dist=0.23m CoT=1.033 settle_t=3.058s | skipped
+[696/1000] wait=False freq=0.71Hz amp=38.3deg Kp=31.8 Kd=2.5 fx=0.010 fy=-0.003 | fell=False dist=0.10m CoT=2.485 settle_t=0.000s | skipped
+[697/1000] wait=True freq=0.75Hz amp=32.0deg Kp=42.6 Kd=4.3 fx=0.012 fy=0.004 | fell=False dist=0.11m CoT=3.267 settle_t=1.000s | skipped
+[698/1000] wait=False freq=0.75Hz amp=32.0deg Kp=42.6 Kd=4.3 fx=0.012 fy=0.004 | fell=False dist=0.28m CoT=1.309 settle_t=0.000s | skipped
+[699/1000] wait=True freq=0.43Hz amp=24.0deg Kp=20.9 Kd=8.7 fx=-0.021 fy=-0.000 | fell=False dist=0.25m CoT=0.918 settle_t=2.608s | skipped
+[700/1000] wait=False freq=0.43Hz amp=24.0deg Kp=20.9 Kd=8.7 fx=-0.021 fy=-0.000 | fell=False dist=0.22m CoT=0.977 settle_t=0.000s | skipped
+[701/1000] wait=True freq=0.42Hz amp=38.0deg Kp=23.6 Kd=3.4 fx=0.009 fy=0.007 | fell=False dist=0.10m CoT=2.462 settle_t=1.000s | skipped
+[702/1000] wait=False freq=0.42Hz amp=38.0deg Kp=23.6 Kd=3.4 fx=0.009 fy=0.007 | fell=False dist=0.08m CoT=2.992 settle_t=0.000s | skipped
+[703/1000] wait=True freq=0.76Hz amp=38.3deg Kp=29.0 Kd=6.3 fx=0.020 fy=-0.016 | fell=True dist=2.07m CoT=0.506 settle_t=4.516s | skipped
+[704/1000] wait=False freq=0.76Hz amp=38.3deg Kp=29.0 Kd=6.3 fx=0.020 fy=-0.016 | fell=True dist=0.45m CoT=0.957 settle_t=0.000s | skipped
+[705/1000] wait=True freq=0.65Hz amp=33.7deg Kp=31.3 Kd=9.3 fx=-0.064 fy=0.008 | fell=False dist=0.16m CoT=12.257 settle_t=1.000s | skipped
+[706/1000] wait=False freq=0.65Hz amp=33.7deg Kp=31.3 Kd=9.3 fx=-0.064 fy=0.008 | fell=False dist=0.30m CoT=6.395 settle_t=0.000s | skipped
+[707/1000] wait=True freq=0.67Hz amp=27.4deg Kp=28.3 Kd=9.9 fx=-0.001 fy=0.000 | fell=False dist=0.19m CoT=2.122 settle_t=2.644s | skipped
+[708/1000] wait=False freq=0.67Hz amp=27.4deg Kp=28.3 Kd=9.9 fx=-0.001 fy=0.000 | fell=False dist=0.15m CoT=2.801 settle_t=0.000s | skipped
+[709/1000] wait=True freq=0.41Hz amp=39.5deg Kp=38.5 Kd=13.7 fx=0.010 fy=-0.014 | fell=True dist=0.82m CoT=0.286 settle_t=4.648s | skipped
+[710/1000] wait=False freq=0.41Hz amp=39.5deg Kp=38.5 Kd=13.7 fx=0.010 fy=-0.014 | fell=True dist=0.57m CoT=0.365 settle_t=0.000s | skipped
+[711/1000] wait=True freq=0.54Hz amp=22.5deg Kp=32.5 Kd=3.4 fx=-0.032 fy=0.001 | fell=False dist=0.17m CoT=2.115 settle_t=2.294s | skipped
+[712/1000] wait=False freq=0.54Hz amp=22.5deg Kp=32.5 Kd=3.4 fx=-0.032 fy=0.001 | fell=False dist=0.07m CoT=3.414 settle_t=0.000s | skipped
+[713/1000] wait=True freq=0.66Hz amp=37.8deg Kp=37.7 Kd=3.0 fx=-0.043 fy=0.001 | fell=True dist=0.28m CoT=0.707 settle_t=2.266s | skipped
+[714/1000] wait=False freq=0.66Hz amp=37.8deg Kp=37.7 Kd=3.0 fx=-0.043 fy=0.001 | fell=True dist=0.33m CoT=0.608 settle_t=0.000s | skipped
+[715/1000] wait=True freq=0.68Hz amp=27.2deg Kp=21.9 Kd=13.8 fx=-0.009 fy=-0.009 | fell=False dist=0.09m CoT=8.743 settle_t=4.734s | skipped
+[716/1000] wait=False freq=0.68Hz amp=27.2deg Kp=21.9 Kd=13.8 fx=-0.009 fy=-0.009 | fell=True dist=1.45m CoT=0.241 settle_t=0.000s | skipped
+[717/1000] wait=True freq=0.46Hz amp=37.7deg Kp=42.8 Kd=9.9 fx=-0.035 fy=0.002 | fell=True dist=0.38m CoT=1.056 settle_t=2.316s | skipped
+[718/1000] wait=False freq=0.46Hz amp=37.7deg Kp=42.8 Kd=9.9 fx=-0.035 fy=0.002 | fell=True dist=1.15m CoT=1.215 settle_t=0.000s | skipped
+[719/1000] wait=True freq=0.72Hz amp=29.6deg Kp=30.4 Kd=5.0 fx=0.022 fy=-0.018 | fell=False dist=0.23m CoT=1.707 settle_t=4.578s | skipped
+[720/1000] wait=False freq=0.72Hz amp=29.6deg Kp=30.4 Kd=5.0 fx=0.022 fy=-0.018 | fell=True dist=0.97m CoT=0.409 settle_t=0.000s | skipped
+[721/1000] wait=True freq=0.43Hz amp=29.4deg Kp=27.6 Kd=8.2 fx=-0.065 fy=-0.019 | fell=True dist=0.64m CoT=0.398 settle_t=4.218s | skipped
+[722/1000] wait=False freq=0.43Hz amp=29.4deg Kp=27.6 Kd=8.2 fx=-0.065 fy=-0.019 | fell=False dist=0.72m CoT=1.776 settle_t=0.000s | skipped
+[723/1000] wait=True freq=0.71Hz amp=22.7deg Kp=30.7 Kd=7.6 fx=0.008 fy=-0.012 | fell=False dist=0.21m CoT=0.918 settle_t=4.674s | skipped
+[724/1000] wait=False freq=0.71Hz amp=22.7deg Kp=30.7 Kd=7.6 fx=0.008 fy=-0.012 | fell=True dist=0.82m CoT=0.471 settle_t=0.000s | skipped
+[725/1000] wait=True freq=0.61Hz amp=22.8deg Kp=38.6 Kd=10.6 fx=0.010 fy=0.005 | fell=False dist=0.10m CoT=2.936 settle_t=1.000s | skipped
+[726/1000] wait=False freq=0.61Hz amp=22.8deg Kp=38.6 Kd=10.6 fx=0.010 fy=0.005 | fell=False dist=0.27m CoT=1.119 settle_t=0.000s | skipped
+[727/1000] wait=True freq=0.76Hz amp=28.8deg Kp=33.0 Kd=10.4 fx=-0.053 fy=-0.013 | fell=True dist=0.58m CoT=0.288 settle_t=4.648s | skipped
+[728/1000] wait=False freq=0.76Hz amp=28.8deg Kp=33.0 Kd=10.4 fx=-0.053 fy=-0.013 | fell=True dist=0.52m CoT=1.417 settle_t=0.000s | skipped
+[729/1000] wait=True freq=0.67Hz amp=38.5deg Kp=23.3 Kd=14.2 fx=-0.003 fy=0.006 | fell=False dist=0.12m CoT=6.704 settle_t=1.000s | skipped
+[730/1000] wait=False freq=0.67Hz amp=38.5deg Kp=23.3 Kd=14.2 fx=-0.003 fy=0.006 | fell=False dist=0.12m CoT=6.040 settle_t=0.000s | skipped
+[731/1000] wait=True freq=0.45Hz amp=33.8deg Kp=29.9 Kd=8.8 fx=0.020 fy=-0.019 | fell=True dist=1.63m CoT=0.346 settle_t=8.210s | skipped
+[732/1000] wait=False freq=0.45Hz amp=33.8deg Kp=29.9 Kd=8.8 fx=0.020 fy=-0.019 | fell=True dist=0.84m CoT=0.340 settle_t=0.000s | skipped
+[733/1000] wait=True freq=0.79Hz amp=32.5deg Kp=32.4 Kd=14.9 fx=-0.066 fy=-0.005 | fell=True dist=0.34m CoT=1.680 settle_t=2.706s | skipped
+[734/1000] wait=False freq=0.79Hz amp=32.5deg Kp=32.4 Kd=14.9 fx=-0.066 fy=-0.005 | fell=True dist=0.71m CoT=0.556 settle_t=0.000s | skipped
+[735/1000] wait=True freq=0.55Hz amp=36.7deg Kp=36.2 Kd=2.5 fx=-0.063 fy=0.005 | fell=True dist=0.26m CoT=0.830 settle_t=1.000s | skipped
+[736/1000] wait=False freq=0.55Hz amp=36.7deg Kp=36.2 Kd=2.5 fx=-0.063 fy=0.005 | fell=True dist=0.42m CoT=0.847 settle_t=0.000s | skipped
+[737/1000] wait=True freq=0.48Hz amp=35.3deg Kp=35.2 Kd=7.9 fx=-0.060 fy=-0.003 | fell=False dist=0.60m CoT=3.703 settle_t=2.822s | skipped
+[738/1000] wait=False freq=0.48Hz amp=35.3deg Kp=35.2 Kd=7.9 fx=-0.060 fy=-0.003 | fell=True dist=1.00m CoT=0.689 settle_t=0.000s | skipped
+[739/1000] wait=True freq=0.48Hz amp=24.3deg Kp=38.6 Kd=10.1 fx=0.008 fy=0.009 | fell=False dist=0.44m CoT=0.899 settle_t=1.000s | skipped
+[740/1000] wait=False freq=0.48Hz amp=24.3deg Kp=38.6 Kd=10.1 fx=0.008 fy=0.009 | fell=False dist=0.12m CoT=3.240 settle_t=0.000s | skipped
+[741/1000] wait=True freq=0.65Hz amp=32.5deg Kp=42.2 Kd=7.0 fx=-0.018 fy=0.000 | fell=False dist=0.26m CoT=3.618 settle_t=2.344s | skipped
+[742/1000] wait=False freq=0.65Hz amp=32.5deg Kp=42.2 Kd=7.0 fx=-0.018 fy=0.000 | fell=False dist=0.25m CoT=3.517 settle_t=0.000s | skipped
+[743/1000] wait=True freq=0.50Hz amp=24.1deg Kp=20.4 Kd=4.8 fx=-0.019 fy=-0.007 | fell=False dist=0.06m CoT=1.709 settle_t=6.420s | skipped
+[744/1000] wait=False freq=0.50Hz amp=24.1deg Kp=20.4 Kd=4.8 fx=-0.019 fy=-0.007 | fell=False dist=0.23m CoT=0.356 settle_t=0.000s | skipped
+[745/1000] wait=True freq=0.45Hz amp=21.3deg Kp=39.7 Kd=9.6 fx=-0.044 fy=0.006 | fell=False dist=0.37m CoT=2.045 settle_t=1.000s | skipped
+[746/1000] wait=False freq=0.45Hz amp=21.3deg Kp=39.7 Kd=9.6 fx=-0.044 fy=0.006 | fell=False dist=0.29m CoT=2.628 settle_t=0.000s | skipped
+[747/1000] wait=True freq=0.74Hz amp=23.4deg Kp=39.2 Kd=12.6 fx=0.004 fy=0.005 | fell=False dist=0.19m CoT=2.245 settle_t=1.000s | skipped
+[748/1000] wait=False freq=0.74Hz amp=23.4deg Kp=39.2 Kd=12.6 fx=0.004 fy=0.005 | fell=False dist=0.06m CoT=6.795 settle_t=0.000s | skipped
+[749/1000] wait=True freq=0.62Hz amp=36.8deg Kp=36.9 Kd=7.7 fx=-0.024 fy=-0.009 | fell=True dist=1.02m CoT=1.325 settle_t=5.092s | skipped
+[750/1000] wait=False freq=0.62Hz amp=36.8deg Kp=36.9 Kd=7.7 fx=-0.024 fy=-0.009 | fell=True dist=1.16m CoT=1.195 settle_t=0.000s | skipped
+[751/1000] wait=True freq=0.42Hz amp=24.3deg Kp=44.3 Kd=7.2 fx=-0.060 fy=-0.019 | fell=True dist=0.75m CoT=0.521 settle_t=7.468s | skipped
+[752/1000] wait=False freq=0.42Hz amp=24.3deg Kp=44.3 Kd=7.2 fx=-0.060 fy=-0.019 | fell=True dist=0.76m CoT=1.328 settle_t=0.000s | skipped
+[753/1000] wait=True freq=0.42Hz amp=27.5deg Kp=25.4 Kd=11.6 fx=-0.038 fy=0.004 | fell=False dist=0.52m CoT=1.413 settle_t=1.000s | skipped
+[754/1000] wait=False freq=0.42Hz amp=27.5deg Kp=25.4 Kd=11.6 fx=-0.038 fy=0.004 | fell=False dist=0.29m CoT=2.412 settle_t=0.000s | skipped
+[755/1000] wait=True freq=0.76Hz amp=37.6deg Kp=33.6 Kd=12.6 fx=-0.063 fy=-0.018 | fell=True dist=0.43m CoT=0.452 settle_t=4.318s | skipped
+[756/1000] wait=False freq=0.76Hz amp=37.6deg Kp=33.6 Kd=12.6 fx=-0.063 fy=-0.018 | fell=True dist=0.37m CoT=0.476 settle_t=0.000s | skipped
+[757/1000] wait=True freq=0.56Hz amp=31.7deg Kp=26.6 Kd=7.4 fx=-0.033 fy=-0.007 | fell=False dist=0.10m CoT=8.265 settle_t=5.156s | skipped
+[758/1000] wait=False freq=0.56Hz amp=31.7deg Kp=26.6 Kd=7.4 fx=-0.033 fy=-0.007 | fell=False dist=0.32m CoT=2.620 settle_t=0.000s | skipped
+[759/1000] wait=True freq=0.46Hz amp=21.8deg Kp=37.0 Kd=11.1 fx=0.020 fy=-0.016 | fell=False dist=0.19m CoT=1.479 settle_t=4.580s | skipped
+[760/1000] wait=False freq=0.46Hz amp=21.8deg Kp=37.0 Kd=11.1 fx=0.020 fy=-0.016 | fell=True dist=0.66m CoT=0.355 settle_t=0.000s | skipped
+[761/1000] wait=True freq=0.64Hz amp=24.6deg Kp=30.5 Kd=2.5 fx=-0.043 fy=-0.004 | fell=False dist=0.12m CoT=3.557 settle_t=2.794s | skipped
+[762/1000] wait=False freq=0.64Hz amp=24.6deg Kp=30.5 Kd=2.5 fx=-0.043 fy=-0.004 | fell=False dist=0.23m CoT=1.938 settle_t=0.000s | skipped
+[763/1000] wait=True freq=0.43Hz amp=37.4deg Kp=24.9 Kd=8.9 fx=-0.059 fy=-0.008 | fell=False dist=1.55m CoT=1.028 settle_t=5.082s | skipped
+[764/1000] wait=False freq=0.43Hz amp=37.4deg Kp=24.9 Kd=8.9 fx=-0.059 fy=-0.008 | fell=False dist=0.81m CoT=2.013 settle_t=0.000s | skipped
+[765/1000] wait=True freq=0.51Hz amp=32.4deg Kp=20.1 Kd=10.3 fx=-0.019 fy=-0.015 | fell=False dist=0.16m CoT=3.574 settle_t=7.860s | skipped
+[766/1000] wait=False freq=0.51Hz amp=32.4deg Kp=20.1 Kd=10.3 fx=-0.019 fy=-0.015 | fell=False dist=0.34m CoT=2.303 settle_t=0.000s | skipped
+[767/1000] wait=True freq=0.54Hz amp=28.0deg Kp=42.9 Kd=8.5 fx=-0.017 fy=-0.006 | fell=False dist=0.16m CoT=5.720 settle_t=6.340s | skipped
+[768/1000] wait=False freq=0.54Hz amp=28.0deg Kp=42.9 Kd=8.5 fx=-0.017 fy=-0.006 | fell=False dist=0.12m CoT=7.425 settle_t=0.000s | skipped
+[769/1000] wait=True freq=0.78Hz amp=29.1deg Kp=21.0 Kd=11.5 fx=-0.000 fy=-0.003 | fell=False dist=0.17m CoT=2.502 settle_t=2.920s | skipped
+[770/1000] wait=False freq=0.78Hz amp=29.1deg Kp=21.0 Kd=11.5 fx=-0.000 fy=-0.003 | fell=True dist=0.71m CoT=0.678 settle_t=0.000s | skipped
+[771/1000] wait=True freq=0.53Hz amp=38.5deg Kp=26.8 Kd=13.4 fx=-0.008 fy=0.005 | fell=False dist=0.17m CoT=4.974 settle_t=1.000s | skipped
+[772/1000] wait=False freq=0.53Hz amp=38.5deg Kp=26.8 Kd=13.4 fx=-0.008 fy=0.005 | fell=False dist=0.09m CoT=9.850 settle_t=0.000s | skipped
+[773/1000] wait=True freq=0.50Hz amp=31.1deg Kp=35.5 Kd=13.0 fx=-0.037 fy=0.003 | fell=False dist=0.79m CoT=2.137 settle_t=2.340s | skipped
+[774/1000] wait=False freq=0.50Hz amp=31.1deg Kp=35.5 Kd=13.0 fx=-0.037 fy=0.003 | fell=False dist=0.35m CoT=4.533 settle_t=0.000s | skipped
+[775/1000] wait=True freq=0.44Hz amp=34.7deg Kp=27.5 Kd=2.6 fx=-0.030 fy=-0.007 | fell=False dist=0.17m CoT=3.332 settle_t=5.142s | skipped
+[776/1000] wait=False freq=0.44Hz amp=34.7deg Kp=27.5 Kd=2.6 fx=-0.030 fy=-0.007 | fell=False dist=0.11m CoT=4.688 settle_t=0.000s | skipped
+[777/1000] wait=True freq=0.78Hz amp=26.7deg Kp=40.5 Kd=12.3 fx=-0.017 fy=-0.020 | fell=True dist=0.65m CoT=0.570 settle_t=11.722s | skipped
+[778/1000] wait=False freq=0.78Hz amp=26.7deg Kp=40.5 Kd=12.3 fx=-0.017 fy=-0.020 | fell=True dist=1.59m CoT=0.288 settle_t=0.000s | skipped
+[779/1000] wait=True freq=0.69Hz amp=27.3deg Kp=44.7 Kd=4.0 fx=-0.049 fy=-0.013 | fell=False dist=1.51m CoT=1.436 settle_t=4.650s | skipped
+[780/1000] wait=False freq=0.69Hz amp=27.3deg Kp=44.7 Kd=4.0 fx=-0.049 fy=-0.013 | fell=False dist=0.43m CoT=3.651 settle_t=0.000s | skipped
+[781/1000] wait=True freq=0.65Hz amp=34.1deg Kp=30.3 Kd=14.6 fx=-0.022 fy=0.007 | fell=False dist=0.14m CoT=8.931 settle_t=1.000s | skipped
+[782/1000] wait=False freq=0.65Hz amp=34.1deg Kp=30.3 Kd=14.6 fx=-0.022 fy=0.007 | fell=False dist=0.14m CoT=8.449 settle_t=0.000s | skipped
+[783/1000] wait=True freq=0.40Hz amp=37.9deg Kp=26.0 Kd=11.5 fx=0.020 fy=-0.012 | fell=True dist=0.32m CoT=0.999 settle_t=4.682s | skipped
+[784/1000] wait=False freq=0.40Hz amp=37.9deg Kp=26.0 Kd=11.5 fx=0.020 fy=-0.012 | fell=True dist=0.63m CoT=0.566 settle_t=0.000s | skipped
+[785/1000] wait=True freq=0.43Hz amp=30.6deg Kp=21.7 Kd=11.3 fx=0.019 fy=-0.004 | fell=False dist=0.21m CoT=1.085 settle_t=6.138s | skipped
+[786/1000] wait=False freq=0.43Hz amp=30.6deg Kp=21.7 Kd=11.3 fx=0.019 fy=-0.004 | fell=False dist=0.13m CoT=1.642 settle_t=0.000s | skipped
+[787/1000] wait=True freq=0.43Hz amp=25.9deg Kp=44.5 Kd=14.0 fx=-0.046 fy=-0.014 | fell=True dist=1.47m CoT=0.965 settle_t=4.416s | skipped
+[788/1000] wait=False freq=0.43Hz amp=25.9deg Kp=44.5 Kd=14.0 fx=-0.046 fy=-0.014 | fell=False dist=1.47m CoT=1.161 settle_t=0.000s | skipped
+[789/1000] wait=True freq=0.76Hz amp=21.6deg Kp=25.8 Kd=11.8 fx=-0.052 fy=-0.013 | fell=False dist=0.27m CoT=3.741 settle_t=4.640s | skipped
+[790/1000] wait=False freq=0.76Hz amp=21.6deg Kp=25.8 Kd=11.8 fx=-0.052 fy=-0.013 | fell=False dist=0.25m CoT=4.072 settle_t=0.000s | skipped
+[791/1000] wait=True freq=0.52Hz amp=30.0deg Kp=26.7 Kd=11.6 fx=-0.025 fy=0.002 | fell=False dist=0.10m CoT=9.939 settle_t=2.310s | skipped
+[792/1000] wait=False freq=0.52Hz amp=30.0deg Kp=26.7 Kd=11.6 fx=-0.025 fy=0.002 | fell=False dist=0.23m CoT=4.521 settle_t=0.000s | skipped
+[793/1000] wait=True freq=0.49Hz amp=36.3deg Kp=30.1 Kd=15.0 fx=-0.022 fy=-0.014 | fell=True dist=0.91m CoT=0.612 settle_t=4.562s | skipped
+[794/1000] wait=False freq=0.49Hz amp=36.3deg Kp=30.1 Kd=15.0 fx=-0.022 fy=-0.014 | fell=True dist=1.10m CoT=0.407 settle_t=0.000s | skipped
+[795/1000] wait=True freq=0.55Hz amp=36.7deg Kp=28.7 Kd=4.4 fx=-0.067 fy=-0.007 | fell=True dist=1.46m CoT=1.433 settle_t=2.696s | skipped
+[796/1000] wait=False freq=0.55Hz amp=36.7deg Kp=28.7 Kd=4.4 fx=-0.067 fy=-0.007 | fell=False dist=0.33m CoT=5.866 settle_t=0.000s | skipped
+[797/1000] wait=True freq=0.56Hz amp=30.7deg Kp=43.2 Kd=5.2 fx=-0.037 fy=-0.008 | fell=True dist=0.58m CoT=1.061 settle_t=5.126s | skipped
+[798/1000] wait=False freq=0.56Hz amp=30.7deg Kp=43.2 Kd=5.2 fx=-0.037 fy=-0.008 | fell=True dist=0.44m CoT=0.450 settle_t=0.000s | skipped
+[799/1000] wait=True freq=0.68Hz amp=26.6deg Kp=38.8 Kd=4.7 fx=-0.058 fy=-0.003 | fell=False dist=0.21m CoT=5.517 settle_t=2.876s | skipped
+[800/1000] wait=False freq=0.68Hz amp=26.6deg Kp=38.8 Kd=4.7 fx=-0.058 fy=-0.003 | fell=False dist=0.35m CoT=3.577 settle_t=0.000s | skipped
+[801/1000] wait=True freq=0.57Hz amp=34.0deg Kp=25.9 Kd=5.9 fx=-0.027 fy=0.008 | fell=False dist=0.14m CoT=5.047 settle_t=1.000s | skipped
+[802/1000] wait=False freq=0.57Hz amp=34.0deg Kp=25.9 Kd=5.9 fx=-0.027 fy=0.008 | fell=False dist=0.18m CoT=3.800 settle_t=0.000s | skipped
+[803/1000] wait=True freq=0.65Hz amp=33.2deg Kp=31.6 Kd=11.7 fx=-0.043 fy=-0.003 | fell=True dist=1.64m CoT=0.815 settle_t=2.838s | skipped
+[804/1000] wait=False freq=0.65Hz amp=33.2deg Kp=31.6 Kd=11.7 fx=-0.043 fy=-0.003 | fell=False dist=1.37m CoT=1.404 settle_t=0.000s | skipped
+[805/1000] wait=True freq=0.54Hz amp=37.5deg Kp=24.0 Kd=7.2 fx=-0.001 fy=-0.006 | fell=False dist=0.22m CoT=1.391 settle_t=2.822s | skipped
+[806/1000] wait=False freq=0.54Hz amp=37.5deg Kp=24.0 Kd=7.2 fx=-0.001 fy=-0.006 | fell=False dist=0.14m CoT=2.940 settle_t=0.000s | skipped
+[807/1000] wait=True freq=0.66Hz amp=25.0deg Kp=36.8 Kd=4.2 fx=-0.053 fy=-0.018 | fell=True dist=0.84m CoT=0.740 settle_t=7.672s | skipped
+[808/1000] wait=False freq=0.66Hz amp=25.0deg Kp=36.8 Kd=4.2 fx=-0.053 fy=-0.018 | fell=False dist=0.33m CoT=2.987 settle_t=0.000s | skipped
+[809/1000] wait=True freq=0.51Hz amp=33.0deg Kp=27.8 Kd=14.7 fx=-0.058 fy=-0.006 | fell=False dist=0.39m CoT=5.452 settle_t=2.714s | skipped
+[810/1000] wait=False freq=0.51Hz amp=33.0deg Kp=27.8 Kd=14.7 fx=-0.058 fy=-0.006 | fell=False dist=0.89m CoT=2.503 settle_t=0.000s | skipped
+[811/1000] wait=True freq=0.57Hz amp=32.4deg Kp=21.9 Kd=13.6 fx=-0.062 fy=0.004 | fell=False dist=0.23m CoT=8.443 settle_t=1.000s | skipped
+[812/1000] wait=False freq=0.57Hz amp=32.4deg Kp=21.9 Kd=13.6 fx=-0.062 fy=0.004 | fell=False dist=0.30m CoT=6.585 settle_t=0.000s | skipped
+[813/1000] wait=True freq=0.71Hz amp=32.7deg Kp=29.5 Kd=12.5 fx=-0.027 fy=-0.000 | fell=True dist=1.09m CoT=0.739 settle_t=2.292s | skipped
+[814/1000] wait=False freq=0.71Hz amp=32.7deg Kp=29.5 Kd=12.5 fx=-0.027 fy=-0.000 | fell=False dist=1.96m CoT=1.198 settle_t=0.000s | skipped
+[815/1000] wait=True freq=0.57Hz amp=37.7deg Kp=36.4 Kd=11.9 fx=0.022 fy=0.003 | fell=False dist=0.19m CoT=2.452 settle_t=1.000s | skipped
+[816/1000] wait=False freq=0.57Hz amp=37.7deg Kp=36.4 Kd=11.9 fx=0.022 fy=0.003 | fell=False dist=2.66m CoT=0.799 settle_t=0.000s | SAVED
+[817/1000] wait=True freq=0.53Hz amp=34.8deg Kp=31.5 Kd=8.3 fx=0.009 fy=-0.020 | fell=True dist=0.87m CoT=0.302 settle_t=14.784s | skipped
+[818/1000] wait=False freq=0.53Hz amp=34.8deg Kp=31.5 Kd=8.3 fx=0.009 fy=-0.020 | fell=True dist=0.61m CoT=0.352 settle_t=0.000s | skipped
+[819/1000] wait=True freq=0.44Hz amp=28.4deg Kp=28.0 Kd=14.1 fx=-0.006 fy=-0.017 | fell=False dist=0.48m CoT=1.469 settle_t=8.124s | skipped
+[820/1000] wait=False freq=0.44Hz amp=28.4deg Kp=28.0 Kd=14.1 fx=-0.006 fy=-0.017 | fell=False dist=0.19m CoT=4.228 settle_t=0.000s | skipped
+[821/1000] wait=True freq=0.56Hz amp=26.7deg Kp=42.7 Kd=11.0 fx=-0.026 fy=-0.015 | fell=True dist=0.83m CoT=0.528 settle_t=4.422s | skipped
+[822/1000] wait=False freq=0.56Hz amp=26.7deg Kp=42.7 Kd=11.0 fx=-0.026 fy=-0.015 | fell=True dist=0.76m CoT=0.261 settle_t=0.000s | skipped
+[823/1000] wait=True freq=0.44Hz amp=24.2deg Kp=25.7 Kd=3.2 fx=-0.011 fy=-0.012 | fell=False dist=0.19m CoT=0.432 settle_t=4.834s | skipped
+[824/1000] wait=False freq=0.44Hz amp=24.2deg Kp=25.7 Kd=3.2 fx=-0.011 fy=-0.012 | fell=False dist=0.31m CoT=0.472 settle_t=0.000s | skipped
+[825/1000] wait=True freq=0.40Hz amp=26.4deg Kp=24.3 Kd=6.4 fx=-0.008 fy=-0.020 | fell=False dist=0.08m CoT=3.593 settle_t=7.914s | skipped
+[826/1000] wait=False freq=0.40Hz amp=26.4deg Kp=24.3 Kd=6.4 fx=-0.008 fy=-0.020 | fell=False dist=0.31m CoT=1.128 settle_t=0.000s | skipped
+[827/1000] wait=True freq=0.49Hz amp=32.0deg Kp=44.0 Kd=3.5 fx=-0.007 fy=-0.003 | fell=False dist=0.19m CoT=4.248 settle_t=2.866s | skipped
+[828/1000] wait=False freq=0.49Hz amp=32.0deg Kp=44.0 Kd=3.5 fx=-0.007 fy=-0.003 | fell=False dist=0.12m CoT=5.950 settle_t=0.000s | skipped
+[829/1000] wait=True freq=0.64Hz amp=25.9deg Kp=28.1 Kd=8.2 fx=-0.058 fy=-0.017 | fell=False dist=0.27m CoT=3.256 settle_t=4.400s | skipped
+[830/1000] wait=False freq=0.64Hz amp=25.9deg Kp=28.1 Kd=8.2 fx=-0.058 fy=-0.017 | fell=False dist=0.20m CoT=4.907 settle_t=0.000s | skipped
+[831/1000] wait=True freq=0.54Hz amp=32.5deg Kp=40.3 Kd=2.1 fx=-0.032 fy=-0.019 | fell=True dist=1.33m CoT=0.370 settle_t=10.452s | skipped
+[832/1000] wait=False freq=0.54Hz amp=32.5deg Kp=40.3 Kd=2.1 fx=-0.032 fy=-0.019 | fell=True dist=0.33m CoT=1.253 settle_t=0.000s | skipped
+[833/1000] wait=True freq=0.50Hz amp=28.6deg Kp=27.6 Kd=10.6 fx=0.025 fy=-0.006 | fell=True dist=2.29m CoT=0.254 settle_t=4.480s | skipped
+[834/1000] wait=False freq=0.50Hz amp=28.6deg Kp=27.6 Kd=10.6 fx=0.025 fy=-0.006 | fell=True dist=1.18m CoT=0.254 settle_t=0.000s | skipped
+[835/1000] wait=True freq=0.66Hz amp=23.5deg Kp=25.1 Kd=8.8 fx=-0.038 fy=-0.005 | fell=False dist=0.28m CoT=1.877 settle_t=2.792s | skipped
+[836/1000] wait=False freq=0.66Hz amp=23.5deg Kp=25.1 Kd=8.8 fx=-0.038 fy=-0.005 | fell=False dist=0.19m CoT=2.626 settle_t=0.000s | skipped
+[837/1000] wait=True freq=0.56Hz amp=34.9deg Kp=20.0 Kd=10.5 fx=-0.057 fy=-0.010 | fell=False dist=0.37m CoT=3.788 settle_t=2.644s | skipped
+[838/1000] wait=False freq=0.56Hz amp=34.9deg Kp=20.0 Kd=10.5 fx=-0.057 fy=-0.010 | fell=False dist=0.29m CoT=5.891 settle_t=0.000s | skipped
+[839/1000] wait=True freq=0.71Hz amp=20.7deg Kp=32.1 Kd=13.4 fx=0.005 fy=-0.019 | fell=True dist=0.53m CoT=0.872 settle_t=12.108s | skipped
+[840/1000] wait=False freq=0.71Hz amp=20.7deg Kp=32.1 Kd=13.4 fx=0.005 fy=-0.019 | fell=False dist=0.25m CoT=3.545 settle_t=0.000s | skipped
+[841/1000] wait=True freq=0.42Hz amp=31.6deg Kp=28.5 Kd=9.2 fx=-0.011 fy=-0.013 | fell=False dist=0.19m CoT=3.229 settle_t=4.558s | skipped
+[842/1000] wait=False freq=0.42Hz amp=31.6deg Kp=28.5 Kd=9.2 fx=-0.011 fy=-0.013 | fell=False dist=0.54m CoT=1.179 settle_t=0.000s | skipped
+[843/1000] wait=True freq=0.49Hz amp=24.3deg Kp=39.6 Kd=8.4 fx=-0.042 fy=-0.017 | fell=False dist=0.55m CoT=2.014 settle_t=4.302s | skipped
+[844/1000] wait=False freq=0.49Hz amp=24.3deg Kp=39.6 Kd=8.4 fx=-0.042 fy=-0.017 | fell=False dist=0.27m CoT=4.593 settle_t=0.000s | skipped
+[845/1000] wait=True freq=0.48Hz amp=30.9deg Kp=37.2 Kd=5.1 fx=-0.006 fy=-0.007 | fell=False dist=0.04m CoT=11.140 settle_t=7.738s | skipped
+[846/1000] wait=False freq=0.48Hz amp=30.9deg Kp=37.2 Kd=5.1 fx=-0.006 fy=-0.007 | fell=False dist=0.66m CoT=0.827 settle_t=0.000s | skipped
+[847/1000] wait=True freq=0.55Hz amp=23.7deg Kp=36.2 Kd=2.9 fx=-0.005 fy=-0.007 | fell=False dist=0.20m CoT=0.902 settle_t=7.522s | skipped
+[848/1000] wait=False freq=0.55Hz amp=23.7deg Kp=36.2 Kd=2.9 fx=-0.005 fy=-0.007 | fell=False dist=0.30m CoT=0.845 settle_t=0.000s | skipped
+[849/1000] wait=True freq=0.60Hz amp=36.2deg Kp=42.4 Kd=14.0 fx=-0.030 fy=0.007 | fell=False dist=0.20m CoT=7.955 settle_t=1.000s | skipped
+[850/1000] wait=False freq=0.60Hz amp=36.2deg Kp=42.4 Kd=14.0 fx=-0.030 fy=0.007 | fell=True dist=1.70m CoT=0.479 settle_t=0.000s | skipped
+[851/1000] wait=True freq=0.45Hz amp=29.8deg Kp=41.5 Kd=12.6 fx=-0.069 fy=0.004 | fell=False dist=1.64m CoT=1.245 settle_t=1.000s | skipped
+[852/1000] wait=False freq=0.45Hz amp=29.8deg Kp=41.5 Kd=12.6 fx=-0.069 fy=0.004 | fell=False dist=1.42m CoT=1.420 settle_t=0.000s | skipped
+[853/1000] wait=True freq=0.42Hz amp=25.9deg Kp=30.6 Kd=7.6 fx=-0.010 fy=0.001 | fell=False dist=0.13m CoT=1.912 settle_t=2.520s | skipped
+[854/1000] wait=False freq=0.42Hz amp=25.9deg Kp=30.6 Kd=7.6 fx=-0.010 fy=0.001 | fell=False dist=0.12m CoT=2.103 settle_t=0.000s | skipped
+[855/1000] wait=True freq=0.48Hz amp=27.4deg Kp=27.2 Kd=14.5 fx=-0.028 fy=-0.009 | fell=False dist=0.22m CoT=4.488 settle_t=5.062s | skipped
+[856/1000] wait=False freq=0.48Hz amp=27.4deg Kp=27.2 Kd=14.5 fx=-0.028 fy=-0.009 | fell=False dist=0.31m CoT=3.132 settle_t=0.000s | skipped
+[857/1000] wait=True freq=0.61Hz amp=39.8deg Kp=43.0 Kd=12.4 fx=-0.010 fy=0.007 | fell=False dist=0.14m CoT=7.387 settle_t=1.000s | skipped
+[858/1000] wait=False freq=0.61Hz amp=39.8deg Kp=43.0 Kd=12.4 fx=-0.010 fy=0.007 | fell=False dist=0.13m CoT=8.062 settle_t=0.000s | skipped
+[859/1000] wait=True freq=0.77Hz amp=32.4deg Kp=40.1 Kd=9.7 fx=-0.014 fy=-0.004 | fell=False dist=0.20m CoT=3.806 settle_t=2.808s | skipped
+[860/1000] wait=False freq=0.77Hz amp=32.4deg Kp=40.1 Kd=9.7 fx=-0.014 fy=-0.004 | fell=True dist=0.83m CoT=0.844 settle_t=0.000s | skipped
+[861/1000] wait=True freq=0.71Hz amp=36.2deg Kp=36.0 Kd=5.6 fx=-0.067 fy=-0.014 | fell=True dist=0.53m CoT=0.494 settle_t=4.366s | skipped
+[862/1000] wait=False freq=0.71Hz amp=36.2deg Kp=36.0 Kd=5.6 fx=-0.067 fy=-0.014 | fell=True dist=0.34m CoT=1.135 settle_t=0.000s | skipped
+[863/1000] wait=True freq=0.74Hz amp=21.7deg Kp=37.6 Kd=2.7 fx=-0.017 fy=-0.002 | fell=False dist=0.16m CoT=1.274 settle_t=2.894s | skipped
+[864/1000] wait=False freq=0.74Hz amp=21.7deg Kp=37.6 Kd=2.7 fx=-0.017 fy=-0.002 | fell=False dist=0.10m CoT=1.937 settle_t=0.000s | skipped
+[865/1000] wait=True freq=0.70Hz amp=33.7deg Kp=31.5 Kd=4.8 fx=-0.037 fy=-0.020 | fell=True dist=0.74m CoT=0.716 settle_t=7.786s | skipped
+[866/1000] wait=False freq=0.70Hz amp=33.7deg Kp=31.5 Kd=4.8 fx=-0.037 fy=-0.020 | fell=True dist=0.44m CoT=0.431 settle_t=0.000s | skipped
+[867/1000] wait=True freq=0.68Hz amp=31.0deg Kp=41.0 Kd=9.3 fx=-0.048 fy=-0.003 | fell=True dist=0.65m CoT=0.880 settle_t=2.928s | skipped
+[868/1000] wait=False freq=0.68Hz amp=31.0deg Kp=41.0 Kd=9.3 fx=-0.048 fy=-0.003 | fell=False dist=2.29m CoT=0.913 settle_t=0.000s | SAVED
+[869/1000] wait=True freq=0.43Hz amp=35.2deg Kp=41.7 Kd=4.8 fx=0.015 fy=-0.012 | fell=True dist=1.13m CoT=0.225 settle_t=4.700s | skipped
+[870/1000] wait=False freq=0.43Hz amp=35.2deg Kp=41.7 Kd=4.8 fx=0.015 fy=-0.012 | fell=True dist=0.12m CoT=3.583 settle_t=0.000s | skipped
+[871/1000] wait=True freq=0.45Hz amp=27.5deg Kp=28.4 Kd=10.2 fx=-0.018 fy=0.009 | fell=False dist=0.69m CoT=0.810 settle_t=1.000s | skipped
+[872/1000] wait=False freq=0.45Hz amp=27.5deg Kp=28.4 Kd=10.2 fx=-0.018 fy=0.009 | fell=False dist=0.40m CoT=1.388 settle_t=0.000s | skipped
+[873/1000] wait=True freq=0.79Hz amp=28.9deg Kp=39.1 Kd=9.6 fx=-0.028 fy=-0.014 | fell=True dist=0.59m CoT=0.488 settle_t=4.528s | skipped
+[874/1000] wait=False freq=0.79Hz amp=28.9deg Kp=39.1 Kd=9.6 fx=-0.028 fy=-0.014 | fell=True dist=0.80m CoT=0.682 settle_t=0.000s | skipped
+[875/1000] wait=True freq=0.55Hz amp=31.4deg Kp=36.7 Kd=3.6 fx=-0.064 fy=-0.002 | fell=True dist=0.56m CoT=1.007 settle_t=2.228s | skipped
+[876/1000] wait=False freq=0.55Hz amp=31.4deg Kp=36.7 Kd=3.6 fx=-0.064 fy=-0.002 | fell=True dist=0.33m CoT=0.549 settle_t=0.000s | skipped
+[877/1000] wait=True freq=0.40Hz amp=23.8deg Kp=30.2 Kd=9.5 fx=-0.035 fy=-0.005 | fell=False dist=0.91m CoT=0.618 settle_t=2.808s | skipped
+[878/1000] wait=False freq=0.40Hz amp=23.8deg Kp=30.2 Kd=9.5 fx=-0.035 fy=-0.005 | fell=False dist=0.23m CoT=2.141 settle_t=0.000s | skipped
+[879/1000] wait=True freq=0.66Hz amp=21.5deg Kp=33.8 Kd=3.1 fx=-0.034 fy=0.002 | fell=False dist=0.08m CoT=3.610 settle_t=2.342s | skipped
+[880/1000] wait=False freq=0.66Hz amp=21.5deg Kp=33.8 Kd=3.1 fx=-0.034 fy=0.002 | fell=False dist=0.21m CoT=1.847 settle_t=0.000s | skipped
+[881/1000] wait=True freq=0.63Hz amp=32.3deg Kp=31.7 Kd=12.0 fx=-0.069 fy=-0.010 | fell=True dist=0.98m CoT=0.882 settle_t=4.968s | skipped
+[882/1000] wait=False freq=0.63Hz amp=32.3deg Kp=31.7 Kd=12.0 fx=-0.069 fy=-0.010 | fell=False dist=3.16m CoT=0.611 settle_t=0.000s | SAVED
+[883/1000] wait=True freq=0.70Hz amp=29.3deg Kp=37.9 Kd=6.2 fx=0.004 fy=0.000 | fell=False dist=0.24m CoT=1.647 settle_t=3.394s | skipped
+[884/1000] wait=False freq=0.70Hz amp=29.3deg Kp=37.9 Kd=6.2 fx=0.004 fy=0.000 | fell=False dist=0.11m CoT=3.028 settle_t=0.000s | skipped
+[885/1000] wait=True freq=0.69Hz amp=36.0deg Kp=20.5 Kd=3.9 fx=-0.029 fy=0.001 | fell=False dist=0.32m CoT=1.235 settle_t=2.288s | skipped
+[886/1000] wait=False freq=0.69Hz amp=36.0deg Kp=20.5 Kd=3.9 fx=-0.029 fy=0.001 | fell=False dist=0.18m CoT=1.880 settle_t=0.000s | skipped
+[887/1000] wait=True freq=0.52Hz amp=39.1deg Kp=32.8 Kd=2.7 fx=-0.007 fy=-0.002 | fell=False dist=0.13m CoT=4.334 settle_t=2.934s | skipped
+[888/1000] wait=False freq=0.52Hz amp=39.1deg Kp=32.8 Kd=2.7 fx=-0.007 fy=-0.002 | fell=True dist=0.58m CoT=0.491 settle_t=0.000s | skipped
+[889/1000] wait=True freq=0.45Hz amp=28.7deg Kp=29.4 Kd=5.1 fx=-0.049 fy=0.007 | fell=False dist=0.11m CoT=6.759 settle_t=1.000s | skipped
+[890/1000] wait=False freq=0.45Hz amp=28.7deg Kp=29.4 Kd=5.1 fx=-0.049 fy=0.007 | fell=False dist=0.12m CoT=6.275 settle_t=0.000s | skipped
+[891/1000] wait=True freq=0.60Hz amp=27.1deg Kp=31.3 Kd=6.8 fx=-0.032 fy=-0.002 | fell=False dist=0.16m CoT=4.044 settle_t=2.974s | skipped
+[892/1000] wait=False freq=0.60Hz amp=27.1deg Kp=31.3 Kd=6.8 fx=-0.032 fy=-0.002 | fell=False dist=0.08m CoT=7.914 settle_t=0.000s | skipped
+[893/1000] wait=True freq=0.48Hz amp=33.2deg Kp=21.1 Kd=14.1 fx=-0.006 fy=0.008 | fell=False dist=0.25m CoT=2.874 settle_t=1.000s | skipped
+[894/1000] wait=False freq=0.48Hz amp=33.2deg Kp=21.1 Kd=14.1 fx=-0.006 fy=0.008 | fell=False dist=0.14m CoT=5.547 settle_t=0.000s | skipped
+[895/1000] wait=True freq=0.71Hz amp=27.1deg Kp=24.2 Kd=11.2 fx=0.007 fy=-0.008 | fell=True dist=1.11m CoT=0.313 settle_t=5.056s | skipped
+[896/1000] wait=False freq=0.71Hz amp=27.1deg Kp=24.2 Kd=11.2 fx=0.007 fy=-0.008 | fell=True dist=0.81m CoT=0.571 settle_t=0.000s | skipped
+[897/1000] wait=True freq=0.40Hz amp=24.1deg Kp=31.0 Kd=2.5 fx=-0.011 fy=-0.016 | fell=False dist=0.15m CoT=1.519 settle_t=4.486s | skipped
+[898/1000] wait=False freq=0.40Hz amp=24.1deg Kp=31.0 Kd=2.5 fx=-0.011 fy=-0.016 | fell=False dist=0.33m CoT=0.851 settle_t=0.000s | skipped
+[899/1000] wait=True freq=0.59Hz amp=32.8deg Kp=21.1 Kd=9.3 fx=-0.003 fy=-0.007 | fell=False dist=0.05m CoT=6.033 settle_t=7.716s | skipped
+[900/1000] wait=False freq=0.59Hz amp=32.8deg Kp=21.1 Kd=9.3 fx=-0.003 fy=-0.007 | fell=False dist=0.26m CoT=1.379 settle_t=0.000s | skipped
+[901/1000] wait=True freq=0.73Hz amp=30.4deg Kp=23.3 Kd=6.4 fx=-0.046 fy=0.003 | fell=False dist=0.11m CoT=6.152 settle_t=2.312s | skipped
+[902/1000] wait=False freq=0.73Hz amp=30.4deg Kp=23.3 Kd=6.4 fx=-0.046 fy=0.003 | fell=False dist=0.28m CoT=2.607 settle_t=0.000s | skipped
+[903/1000] wait=True freq=0.63Hz amp=28.0deg Kp=41.2 Kd=5.3 fx=-0.064 fy=0.008 | fell=False dist=0.16m CoT=11.874 settle_t=1.000s | skipped
+[904/1000] wait=False freq=0.63Hz amp=28.0deg Kp=41.2 Kd=5.3 fx=-0.064 fy=0.008 | fell=False dist=0.25m CoT=7.383 settle_t=0.000s | skipped
+[905/1000] wait=True freq=0.72Hz amp=38.7deg Kp=43.8 Kd=6.7 fx=-0.028 fy=-0.009 | fell=True dist=0.26m CoT=2.864 settle_t=2.708s | skipped
+[906/1000] wait=False freq=0.72Hz amp=38.7deg Kp=43.8 Kd=6.7 fx=-0.028 fy=-0.009 | fell=True dist=0.18m CoT=1.919 settle_t=0.000s | skipped
+[907/1000] wait=True freq=0.58Hz amp=31.2deg Kp=32.8 Kd=13.9 fx=-0.067 fy=-0.009 | fell=True dist=0.38m CoT=3.904 settle_t=4.970s | skipped
+[908/1000] wait=False freq=0.58Hz amp=31.2deg Kp=32.8 Kd=13.9 fx=-0.067 fy=-0.009 | fell=True dist=1.05m CoT=1.761 settle_t=0.000s | skipped
+[909/1000] wait=True freq=0.75Hz amp=39.4deg Kp=21.5 Kd=3.2 fx=-0.011 fy=-0.010 | fell=False dist=0.09m CoT=3.020 settle_t=4.658s | skipped
+[910/1000] wait=False freq=0.75Hz amp=39.4deg Kp=21.5 Kd=3.2 fx=-0.011 fy=-0.010 | fell=False dist=0.28m CoT=1.112 settle_t=0.000s | skipped
+[911/1000] wait=True freq=0.46Hz amp=25.3deg Kp=41.8 Kd=9.1 fx=-0.013 fy=-0.008 | fell=False dist=0.14m CoT=5.375 settle_t=7.568s | skipped
+[912/1000] wait=False freq=0.46Hz amp=25.3deg Kp=41.8 Kd=9.1 fx=-0.013 fy=-0.008 | fell=False dist=0.15m CoT=5.665 settle_t=0.000s | skipped
+[913/1000] wait=True freq=0.45Hz amp=21.3deg Kp=37.2 Kd=8.6 fx=-0.041 fy=-0.002 | fell=False dist=0.49m CoT=1.421 settle_t=2.940s | skipped
+[914/1000] wait=False freq=0.45Hz amp=21.3deg Kp=37.2 Kd=8.6 fx=-0.041 fy=-0.002 | fell=False dist=0.21m CoT=2.537 settle_t=0.000s | skipped
+[915/1000] wait=True freq=0.54Hz amp=37.5deg Kp=24.1 Kd=3.6 fx=-0.053 fy=-0.011 | fell=False dist=0.08m CoT=11.518 settle_t=4.920s | skipped
+[916/1000] wait=False freq=0.54Hz amp=37.5deg Kp=24.1 Kd=3.6 fx=-0.053 fy=-0.011 | fell=True dist=0.44m CoT=0.408 settle_t=0.000s | skipped
+[917/1000] wait=True freq=0.71Hz amp=22.2deg Kp=31.9 Kd=13.7 fx=-0.043 fy=-0.004 | fell=False dist=0.10m CoT=12.320 settle_t=2.818s | skipped
+[918/1000] wait=False freq=0.71Hz amp=22.2deg Kp=31.9 Kd=13.7 fx=-0.043 fy=-0.004 | fell=False dist=0.41m CoT=2.695 settle_t=0.000s | skipped
+[919/1000] wait=True freq=0.50Hz amp=29.2deg Kp=24.4 Kd=11.4 fx=-0.024 fy=0.010 | fell=False dist=0.13m CoT=6.007 settle_t=1.000s | skipped
+[920/1000] wait=False freq=0.50Hz amp=29.2deg Kp=24.4 Kd=11.4 fx=-0.024 fy=0.010 | fell=False dist=0.11m CoT=6.640 settle_t=0.000s | skipped
+[921/1000] wait=True freq=0.62Hz amp=29.2deg Kp=40.8 Kd=8.3 fx=-0.036 fy=0.009 | fell=False dist=0.19m CoT=6.990 settle_t=1.000s | skipped
+[922/1000] wait=False freq=0.62Hz amp=29.2deg Kp=40.8 Kd=8.3 fx=-0.036 fy=0.009 | fell=False dist=0.22m CoT=5.809 settle_t=0.000s | skipped
+[923/1000] wait=True freq=0.59Hz amp=25.4deg Kp=21.8 Kd=13.1 fx=0.009 fy=-0.015 | fell=True dist=0.95m CoT=0.467 settle_t=4.748s | skipped
+[924/1000] wait=False freq=0.59Hz amp=25.4deg Kp=21.8 Kd=13.1 fx=0.009 fy=-0.015 | fell=True dist=0.96m CoT=0.471 settle_t=0.000s | skipped
+[925/1000] wait=True freq=0.73Hz amp=39.5deg Kp=27.7 Kd=8.9 fx=0.004 fy=-0.002 | fell=False dist=0.07m CoT=7.274 settle_t=3.012s | skipped
+[926/1000] wait=False freq=0.73Hz amp=39.5deg Kp=27.7 Kd=8.9 fx=0.004 fy=-0.002 | fell=False dist=0.23m CoT=2.701 settle_t=0.000s | skipped
+[927/1000] wait=True freq=0.69Hz amp=34.6deg Kp=35.1 Kd=13.1 fx=-0.015 fy=0.009 | fell=False dist=0.10m CoT=10.431 settle_t=1.000s | skipped
+[928/1000] wait=False freq=0.69Hz amp=34.6deg Kp=35.1 Kd=13.1 fx=-0.015 fy=0.009 | fell=False dist=0.19m CoT=4.910 settle_t=0.000s | skipped
+[929/1000] wait=True freq=0.41Hz amp=39.6deg Kp=23.1 Kd=13.5 fx=0.015 fy=-0.007 | fell=True dist=0.94m CoT=0.325 settle_t=5.534s | skipped
+[930/1000] wait=False freq=0.41Hz amp=39.6deg Kp=23.1 Kd=13.5 fx=0.015 fy=-0.007 | fell=True dist=0.85m CoT=0.270 settle_t=0.000s | skipped
+[931/1000] wait=True freq=0.53Hz amp=33.6deg Kp=30.1 Kd=3.8 fx=-0.065 fy=0.006 | fell=False dist=0.70m CoT=2.246 settle_t=1.000s | skipped
+[932/1000] wait=False freq=0.53Hz amp=33.6deg Kp=30.1 Kd=3.8 fx=-0.065 fy=0.006 | fell=False dist=0.43m CoT=4.134 settle_t=0.000s | skipped
+[933/1000] wait=True freq=0.75Hz amp=36.4deg Kp=35.1 Kd=11.1 fx=0.006 fy=-0.001 | fell=False dist=0.26m CoT=2.062 settle_t=3.024s | skipped
+[934/1000] wait=False freq=0.75Hz amp=36.4deg Kp=35.1 Kd=11.1 fx=0.006 fy=-0.001 | fell=False dist=0.16m CoT=3.298 settle_t=0.000s | skipped
+[935/1000] wait=True freq=0.72Hz amp=22.4deg Kp=20.3 Kd=4.9 fx=-0.011 fy=-0.010 | fell=False dist=0.16m CoT=0.446 settle_t=4.662s | skipped
+[936/1000] wait=False freq=0.72Hz amp=22.4deg Kp=20.3 Kd=4.9 fx=-0.011 fy=-0.010 | fell=False dist=0.25m CoT=0.473 settle_t=0.000s | skipped
+[937/1000] wait=True freq=0.67Hz amp=21.9deg Kp=33.2 Kd=10.1 fx=-0.005 fy=-0.011 | fell=False dist=0.14m CoT=2.326 settle_t=4.838s | skipped
+[938/1000] wait=False freq=0.67Hz amp=21.9deg Kp=33.2 Kd=10.1 fx=-0.005 fy=-0.011 | fell=False dist=1.09m CoT=0.850 settle_t=0.000s | skipped
+[939/1000] wait=True freq=0.76Hz amp=38.9deg Kp=22.8 Kd=8.1 fx=-0.018 fy=0.009 | fell=False dist=0.20m CoT=4.024 settle_t=1.000s | skipped
+[940/1000] wait=False freq=0.76Hz amp=38.9deg Kp=22.8 Kd=8.1 fx=-0.018 fy=0.009 | fell=False dist=0.20m CoT=4.001 settle_t=0.000s | skipped
+[941/1000] wait=True freq=0.58Hz amp=21.2deg Kp=25.0 Kd=8.0 fx=-0.053 fy=-0.013 | fell=False dist=0.05m CoT=7.848 settle_t=4.662s | skipped
+[942/1000] wait=False freq=0.58Hz amp=21.2deg Kp=25.0 Kd=8.0 fx=-0.053 fy=-0.013 | fell=False dist=0.29m CoT=1.529 settle_t=0.000s | skipped
+[943/1000] wait=True freq=0.78Hz amp=33.4deg Kp=31.7 Kd=6.0 fx=-0.003 fy=0.002 | fell=False dist=0.19m CoT=2.118 settle_t=2.402s | skipped
+[944/1000] wait=False freq=0.78Hz amp=33.4deg Kp=31.7 Kd=6.0 fx=-0.003 fy=0.002 | fell=False dist=0.29m CoT=1.458 settle_t=0.000s | skipped
+[945/1000] wait=True freq=0.63Hz amp=22.3deg Kp=44.1 Kd=13.9 fx=-0.052 fy=0.005 | fell=False dist=0.26m CoT=5.935 settle_t=1.000s | skipped
+[946/1000] wait=False freq=0.63Hz amp=22.3deg Kp=44.1 Kd=13.9 fx=-0.052 fy=0.005 | fell=False dist=0.52m CoT=2.966 settle_t=0.000s | skipped
+[947/1000] wait=True freq=0.46Hz amp=28.2deg Kp=28.9 Kd=7.5 fx=-0.044 fy=-0.010 | fell=False dist=0.45m CoT=1.736 settle_t=2.676s | skipped
+[948/1000] wait=False freq=0.46Hz amp=28.2deg Kp=28.9 Kd=7.5 fx=-0.044 fy=-0.010 | fell=False dist=0.20m CoT=3.185 settle_t=0.000s | skipped
+[949/1000] wait=True freq=0.43Hz amp=30.3deg Kp=36.1 Kd=9.8 fx=-0.051 fy=-0.006 | fell=True dist=1.26m CoT=0.208 settle_t=2.750s | skipped
+[950/1000] wait=False freq=0.43Hz amp=30.3deg Kp=36.1 Kd=9.8 fx=-0.051 fy=-0.006 | fell=False dist=0.70m CoT=2.324 settle_t=0.000s | skipped
+[951/1000] wait=True freq=0.51Hz amp=30.8deg Kp=38.9 Kd=7.1 fx=0.015 fy=0.000 | fell=False dist=0.19m CoT=1.492 settle_t=2.384s | skipped
+[952/1000] wait=False freq=0.51Hz amp=30.8deg Kp=38.9 Kd=7.1 fx=0.015 fy=0.000 | fell=False dist=0.27m CoT=1.287 settle_t=0.000s | skipped
+[953/1000] wait=True freq=0.65Hz amp=31.7deg Kp=26.9 Kd=2.6 fx=-0.013 fy=-0.017 | fell=False dist=0.10m CoT=2.898 settle_t=6.660s | skipped
+[954/1000] wait=False freq=0.65Hz amp=31.7deg Kp=26.9 Kd=2.6 fx=-0.013 fy=-0.017 | fell=False dist=0.23m CoT=1.617 settle_t=0.000s | skipped
+[955/1000] wait=True freq=0.51Hz amp=24.9deg Kp=38.7 Kd=3.3 fx=-0.067 fy=-0.010 | fell=False dist=0.96m CoT=1.550 settle_t=5.006s | skipped
+[956/1000] wait=False freq=0.51Hz amp=24.9deg Kp=38.7 Kd=3.3 fx=-0.067 fy=-0.010 | fell=False dist=0.31m CoT=4.961 settle_t=0.000s | skipped
+[957/1000] wait=True freq=0.78Hz amp=20.5deg Kp=23.9 Kd=3.5 fx=0.017 fy=-0.012 | fell=False dist=0.18m CoT=0.309 settle_t=4.688s | skipped
+[958/1000] wait=False freq=0.78Hz amp=20.5deg Kp=23.9 Kd=3.5 fx=0.017 fy=-0.012 | fell=False dist=0.28m CoT=0.253 settle_t=0.000s | skipped
+[959/1000] wait=True freq=0.43Hz amp=29.5deg Kp=32.3 Kd=11.4 fx=0.007 fy=-0.010 | fell=False dist=0.48m CoT=1.059 settle_t=5.010s | skipped
+[960/1000] wait=False freq=0.43Hz amp=29.5deg Kp=32.3 Kd=11.4 fx=0.007 fy=-0.010 | fell=True dist=0.56m CoT=0.742 settle_t=0.000s | skipped
+[961/1000] wait=True freq=0.45Hz amp=28.5deg Kp=42.0 Kd=6.9 fx=-0.045 fy=0.005 | fell=False dist=0.72m CoT=2.156 settle_t=1.000s | skipped
+[962/1000] wait=False freq=0.45Hz amp=28.5deg Kp=42.0 Kd=6.9 fx=-0.045 fy=0.005 | fell=False dist=1.10m CoT=1.498 settle_t=0.000s | skipped
+[963/1000] wait=True freq=0.47Hz amp=33.7deg Kp=23.0 Kd=14.2 fx=0.014 fy=0.001 | fell=False dist=0.15m CoT=3.073 settle_t=2.520s | skipped
+[964/1000] wait=False freq=0.47Hz amp=33.7deg Kp=23.0 Kd=14.2 fx=0.014 fy=0.001 | fell=False dist=0.33m CoT=1.495 settle_t=0.000s | skipped
+[965/1000] wait=True freq=0.69Hz amp=28.6deg Kp=29.0 Kd=9.3 fx=-0.036 fy=-0.012 | fell=True dist=0.52m CoT=1.953 settle_t=4.638s | skipped
+[966/1000] wait=False freq=0.69Hz amp=28.6deg Kp=29.0 Kd=9.3 fx=-0.036 fy=-0.012 | fell=True dist=0.18m CoT=1.362 settle_t=0.000s | skipped
+[967/1000] wait=True freq=0.80Hz amp=38.8deg Kp=44.6 Kd=11.9 fx=-0.060 fy=-0.009 | fell=True dist=0.43m CoT=2.101 settle_t=5.014s | skipped
+[968/1000] wait=False freq=0.80Hz amp=38.8deg Kp=44.6 Kd=11.9 fx=-0.060 fy=-0.009 | fell=True dist=0.51m CoT=0.774 settle_t=0.000s | skipped
+[969/1000] wait=True freq=0.73Hz amp=30.3deg Kp=37.3 Kd=10.3 fx=-0.001 fy=-0.012 | fell=True dist=0.59m CoT=1.145 settle_t=4.706s | skipped
+[970/1000] wait=False freq=0.73Hz amp=30.3deg Kp=37.3 Kd=10.3 fx=-0.001 fy=-0.012 | fell=True dist=0.76m CoT=0.670 settle_t=0.000s | skipped
+[971/1000] wait=True freq=0.78Hz amp=30.5deg Kp=36.7 Kd=12.3 fx=-0.039 fy=0.005 | fell=False dist=0.34m CoT=4.312 settle_t=1.000s | skipped
+[972/1000] wait=False freq=0.78Hz amp=30.5deg Kp=36.7 Kd=12.3 fx=-0.039 fy=0.005 | fell=False dist=0.21m CoT=6.737 settle_t=0.000s | skipped
+[973/1000] wait=True freq=0.49Hz amp=28.2deg Kp=39.8 Kd=10.4 fx=0.013 fy=-0.005 | fell=True dist=1.57m CoT=0.250 settle_t=5.864s | skipped
+[974/1000] wait=False freq=0.49Hz amp=28.2deg Kp=39.8 Kd=10.4 fx=0.013 fy=-0.005 | fell=False dist=0.10m CoT=4.633 settle_t=0.000s | skipped
+[975/1000] wait=True freq=0.74Hz amp=39.0deg Kp=32.7 Kd=11.5 fx=-0.038 fy=-0.001 | fell=True dist=0.60m CoT=2.675 settle_t=2.562s | skipped
+[976/1000] wait=False freq=0.74Hz amp=39.0deg Kp=32.7 Kd=11.5 fx=-0.038 fy=-0.001 | fell=False dist=0.23m CoT=6.827 settle_t=0.000s | skipped
+[977/1000] wait=True freq=0.66Hz amp=31.2deg Kp=24.8 Kd=14.4 fx=0.016 fy=0.008 | fell=False dist=0.22m CoT=2.018 settle_t=1.000s | skipped
+[978/1000] wait=False freq=0.66Hz amp=31.2deg Kp=24.8 Kd=14.4 fx=0.016 fy=0.008 | fell=False dist=0.19m CoT=2.431 settle_t=0.000s | skipped
+[979/1000] wait=True freq=0.71Hz amp=29.6deg Kp=35.7 Kd=11.4 fx=-0.052 fy=0.007 | fell=False dist=0.94m CoT=1.873 settle_t=1.000s | skipped
+[980/1000] wait=False freq=0.71Hz amp=29.6deg Kp=35.7 Kd=11.4 fx=-0.052 fy=0.007 | fell=False dist=2.66m CoT=0.776 settle_t=0.000s | SAVED
+[981/1000] wait=True freq=0.50Hz amp=30.6deg Kp=33.0 Kd=14.5 fx=0.018 fy=-0.002 | fell=False dist=0.17m CoT=2.341 settle_t=7.210s | skipped
+[982/1000] wait=False freq=0.50Hz amp=30.6deg Kp=33.0 Kd=14.5 fx=0.018 fy=-0.002 | fell=False dist=0.07m CoT=7.579 settle_t=0.000s | skipped
+[983/1000] wait=True freq=0.53Hz amp=20.6deg Kp=35.9 Kd=12.1 fx=-0.039 fy=-0.015 | fell=False dist=0.29m CoT=2.262 settle_t=4.514s | skipped
+[984/1000] wait=False freq=0.53Hz amp=20.6deg Kp=35.9 Kd=12.1 fx=-0.039 fy=-0.015 | fell=False dist=0.38m CoT=2.049 settle_t=0.000s | skipped
+[985/1000] wait=True freq=0.62Hz amp=35.7deg Kp=36.9 Kd=14.4 fx=-0.030 fy=-0.014 | fell=True dist=0.26m CoT=0.491 settle_t=4.660s | skipped
+[986/1000] wait=False freq=0.62Hz amp=35.7deg Kp=36.9 Kd=14.4 fx=-0.030 fy=-0.014 | fell=True dist=0.87m CoT=0.328 settle_t=0.000s | skipped
+[987/1000] wait=True freq=0.63Hz amp=28.6deg Kp=32.0 Kd=8.2 fx=-0.055 fy=-0.018 | fell=False dist=2.80m CoT=0.499 settle_t=7.656s | SAVED
+[988/1000] wait=False freq=0.63Hz amp=28.6deg Kp=32.0 Kd=8.2 fx=-0.055 fy=-0.018 | fell=True dist=0.56m CoT=1.538 settle_t=0.000s | skipped
+[989/1000] wait=True freq=0.68Hz amp=28.5deg Kp=22.9 Kd=8.8 fx=0.023 fy=0.006 | fell=False dist=0.11m CoT=2.461 settle_t=1.000s | skipped
+[990/1000] wait=False freq=0.68Hz amp=28.5deg Kp=22.9 Kd=8.8 fx=0.023 fy=0.006 | fell=False dist=0.47m CoT=0.588 settle_t=0.000s | skipped
+[991/1000] wait=True freq=0.40Hz amp=35.1deg Kp=37.9 Kd=5.8 fx=-0.037 fy=-0.011 | fell=True dist=0.81m CoT=0.780 settle_t=4.900s | skipped
+[992/1000] wait=False freq=0.40Hz amp=35.1deg Kp=37.9 Kd=5.8 fx=-0.037 fy=-0.011 | fell=True dist=0.61m CoT=1.898 settle_t=0.000s | skipped
+[993/1000] wait=True freq=0.50Hz amp=38.1deg Kp=29.6 Kd=11.9 fx=-0.029 fy=0.000 | fell=False dist=0.24m CoT=6.381 settle_t=2.270s | skipped
+[994/1000] wait=False freq=0.50Hz amp=38.1deg Kp=29.6 Kd=11.9 fx=-0.029 fy=0.000 | fell=False dist=0.22m CoT=6.860 settle_t=0.000s | skipped
+[995/1000] wait=True freq=0.66Hz amp=25.3deg Kp=21.3 Kd=12.8 fx=-0.051 fy=-0.018 | fell=False dist=0.25m CoT=5.055 settle_t=7.622s | skipped
+[996/1000] wait=False freq=0.66Hz amp=25.3deg Kp=21.3 Kd=12.8 fx=-0.051 fy=-0.018 | fell=False dist=0.20m CoT=6.532 settle_t=0.000s | skipped
+[997/1000] wait=True freq=0.42Hz amp=35.6deg Kp=39.4 Kd=14.5 fx=-0.008 fy=0.006 | fell=False dist=0.35m CoT=3.068 settle_t=1.000s | skipped
+[998/1000] wait=False freq=0.42Hz amp=35.6deg Kp=39.4 Kd=14.5 fx=-0.008 fy=0.006 | fell=True dist=0.55m CoT=0.766 settle_t=0.000s | skipped
+[999/1000] wait=True freq=0.52Hz amp=21.0deg Kp=25.2 Kd=11.6 fx=0.000 fy=-0.017 | fell=False dist=0.07m CoT=3.302 settle_t=8.174s | skipped
+[1000/1000] wait=False freq=0.52Hz amp=21.0deg Kp=25.2 Kd=11.6 fx=0.000 fy=-0.017 | fell=False dist=0.40m CoT=0.677 settle_t=0.000s | skipped
+
+Sweep complete. 14/1000 trials passed (no fall + >2.0m). Wrote 1000 rows to 'sweep_hip_offset_settle_ab.csv'.

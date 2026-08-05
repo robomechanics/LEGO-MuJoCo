@@ -10,10 +10,11 @@ test_sim_usefeet.py's LEFT_OFFSET/RIGHT_OFFSET) applied to the baked-in
 foot geoms -- no OpenSCAD foot-geometry injection, no offset sweep.
 """
 import csv
+import os
 import numpy as np
 import mujoco
 
-from sim_common import calculate_sine_reference, pd_torque
+from sim_common import calculate_sine_reference, pd_torque, place_on_ground, measure_avg_quaternion_pose
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER CONFIGURATION
@@ -23,12 +24,17 @@ ENTRY_XML          = "bigfoot/scene.xml"
 JOINT_NAME         = "hip"
 TORSO_BODY_NAME    = "motor"
 TORQUE_LIMIT       = 25.0
-T_WAIT             = 3.0
 USE_RAMP           = False
 RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0
 MIN_DISTANCE       = 2.0    # metres -- minimum to count as a walking result
+QUAT_MEASURE_S     = 5.0    # fixed hip-rigid window averaged into the pose (see measure_avg_quaternion_pose)
+
+FOOT_COLLISION_GEOMS = [
+    "right_foot_1_col", "right_foot_2_col", "right_foot_3_col",
+    "left_foot_1_col",  "left_foot_2_col",  "left_foot_3_col",
+]
 
 # ── Fixed gains (hardware-validated defaults, from copy_motorwave.py) ────────
 Kp = 35.5
@@ -48,7 +54,7 @@ FOOT_GEOM_NAMES = [
 # ── Amplitude / frequency grid: +/-20% around the hardware defaults ─────────
 AMP_DEG_CENTER  = 37.5
 FREQ_HZ_CENTER  = 0.55
-GRID_BINS       = 20
+GRID_BINS       = 7
 AMP_DEG_VALUES  = np.linspace(AMP_DEG_CENTER * 0.8, AMP_DEG_CENTER * 1.2, GRID_BINS)
 FREQ_HZ_VALUES  = np.linspace(FREQ_HZ_CENTER * 0.8, FREQ_HZ_CENTER * 1.2, GRID_BINS)
 
@@ -63,32 +69,20 @@ START_FREQ_MULT_VALUES = np.linspace(0.7, 1.4, 10)
 model = mujoco.MjModel.from_xml_path(ENTRY_XML)
 data  = mujoco.MjData(model)
 
-# ── Apply the fixed foot offset to the baked-in geoms/bodies ─────────────────
+# ── Apply the fixed foot offset to the baked-in geoms (geom-only -- see
+# sim_common.apply_foot_offsets' docstring for why body_ipos/mass is not
+# touched here) ────────────────────────────────────────────────────────────
 original_geom_pos = {}
 for name in FOOT_GEOM_NAMES:
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if geom_id != -1:
         original_geom_pos[name] = model.geom_pos[geom_id].copy()
 
-foot_parent_body_ids = set()
-for name in FOOT_GEOM_NAMES:
-    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
-    if geom_id != -1:
-        foot_parent_body_ids.add(model.geom_bodyid[geom_id])
-original_body_ipos = {bid: model.body_ipos[bid].copy() for bid in foot_parent_body_ids}
-
 for name in FOOT_GEOM_NAMES:
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if geom_id != -1:
         delta = RIGHT_OFFSET if "right" in name else LEFT_OFFSET
         model.geom_pos[geom_id] = original_geom_pos[name] + delta
-
-for bid in foot_parent_body_ids:
-    body_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, bid)
-    if body_name == "motor":  # right-side root body
-        model.body_ipos[bid] = original_body_ipos[bid] + RIGHT_OFFSET
-    elif body_name == "simplified_motor___arm_rod":  # left-side sub-body
-        model.body_ipos[bid] = original_body_ipos[bid] + LEFT_OFFSET
 
 mujoco.mj_setConst(model, data)
 mujoco.mj_forward(model, data)
@@ -105,6 +99,11 @@ if joint_id == -1 or torso_body_id == -1:
 qpos_idx = model.jnt_qposadr[joint_id]
 qvel_idx = model.jnt_dofadr[joint_id]
 
+free_joint_id   = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "motor_freejoint")
+free_qpos_start = model.jnt_qposadr[free_joint_id]
+free_z_qpos_idx = free_qpos_start + 2
+free_quat_idx   = free_qpos_start + 3
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -117,9 +116,23 @@ def check_has_fallen(body_id, height_threshold=0.5, angle_threshold_deg=45.0):
     return tilt_angle_deg > angle_threshold_deg
 
 
+# Foot offset and Kp/Kd are fixed for this entire sweep (only amp/freq/startup
+# multipliers vary), so the average settled quaternion is the same for every
+# one of the ~40,000 trials -- computed once here instead of per trial, unlike
+# test_sim_sweep.py/test_sim_sweep_hip_offset_quatpose.py where foot offset
+# and gains are randomized per trial and the quaternion genuinely differs.
+mujoco.mj_resetData(model, data)
+place_on_ground(model, data, FOOT_COLLISION_GEOMS, free_z_qpos_idx)
+AVG_QUAT = measure_avg_quaternion_pose(model, data, qpos_idx, qvel_idx, torso_body_id,
+                                        Kp, Kd, TORQUE_LIMIT, measure_s=QUAT_MEASURE_S)
+print(f"Average settled quaternion (computed once): {AVG_QUAT.round(4)}")
+
+
 def run_trial(amp_deg, freq_hz, start_amp_mult, start_freq_mult):
     mujoco.mj_resetData(model, data)
-    mujoco.mj_forward(model, data)
+    data.qpos[free_quat_idx:free_quat_idx + 4] = AVG_QUAT
+    place_on_ground(model, data, FOOT_COLLISION_GEOMS, free_z_qpos_idx)
+    t_wait = 0.0
 
     start_x    = data.xpos[torso_body_id][0]
     start_y    = data.xpos[torso_body_id][1]
@@ -134,7 +147,7 @@ def run_trial(amp_deg, freq_hz, start_amp_mult, start_freq_mult):
         t = data.time
 
         target_pos_rad, target_vel_rad = calculate_sine_reference(
-            t, hip_omega, leg_amp_rad, start_amp_mult, start_freq_mult, t_wait=T_WAIT
+            t, hip_omega, leg_amp_rad, start_amp_mult, start_freq_mult, t_wait=t_wait
         )
 
         current_pos = data.qpos[qpos_idx]
@@ -150,7 +163,7 @@ def run_trial(amp_deg, freq_hz, start_amp_mult, start_freq_mult):
 
         mujoco.mj_step(model, data)
 
-        if t > T_WAIT and check_has_fallen(torso_body_id):
+        if t > t_wait and check_has_fallen(torso_body_id):
             fell = True
             break
 
@@ -160,7 +173,14 @@ def run_trial(amp_deg, freq_hz, start_amp_mult, start_freq_mult):
     cot = (energy_used / (TOTAL_MASS * GRAVITY * distance)) if distance > 1e-6 else float('inf')
     passed = not fell and distance >= MIN_DISTANCE
 
-    return fell, distance, cot, passed
+    # Average velocity over actual walk time (data.time at exit, not the
+    # nominal ITERATION_DURATION -- a fall ends the loop early). None for
+    # fallen trials: a crash's instantaneous distance/time isn't a
+    # meaningful walking speed, so it's excluded rather than skewing the
+    # per-bin ranking toward lucky lunges.
+    avg_velocity = (distance / data.time) if (not fell and data.time > 1e-6) else None
+
+    return fell, distance, cot, passed, avg_velocity
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -185,7 +205,7 @@ def main():
 
             for start_amp_mult in START_AMP_MULT_VALUES:
                 for start_freq_mult in START_FREQ_MULT_VALUES:
-                    fell, distance, cot, passed = run_trial(
+                    fell, distance, cot, passed, avg_velocity = run_trial(
                         amp_deg, freq_hz, start_amp_mult, start_freq_mult
                     )
 
@@ -202,34 +222,42 @@ def main():
                         "Distance_Traversed": round(distance, 4),
                         "CoT":             round(cot, 4),
                         "Passed":          passed,
+                        "Avg_Velocity":    avg_velocity,
                     }
                     all_results.append(row)
                     bin_results.append(row)
 
+            with_velocity = [r for r in bin_results if r["Avg_Velocity"] is not None]
             print(f"[bin {bin_idx:>3}/{total_bins}] amp={amp_deg:.2f} deg freq={freq_hz:.3f} Hz "
-                  f"| passed={sum(r['Passed'] for r in bin_results)}/{len(bin_results)}")
+                  f"| survived={len(with_velocity)}/{len(bin_results)}")
 
-            passing = [r for r in bin_results if r["Passed"]]
-            if passing:
-                best = min(passing, key=lambda r: r["CoT"])
+            # Rank by average velocity (survived trials only) instead of
+            # gating on the MIN_DISTANCE pass/fail threshold -- this fills in
+            # bins that never cleared MIN_DISTANCE but still walked somewhere,
+            # rather than leaving them blank just because no single trial hit
+            # an arbitrary distance bar.
+            if with_velocity:
+                best = max(with_velocity, key=lambda r: r["Avg_Velocity"])
             else:
                 best = max(bin_results, key=lambda r: r["Distance_Traversed"])
             best_per_bin.append(best)
 
-    print(f"\nSweep complete. {sum(r['Passed'] for r in all_results)}/{total_trials} "
-          f"trials passed (no fall + >{MIN_DISTANCE}m).")
+    survived_total = sum(1 for r in all_results if r["Avg_Velocity"] is not None)
+    print(f"\nSweep complete. {survived_total}/{total_trials} trials survived the full "
+          f"{ITERATION_DURATION:.0f}s without falling.")
 
     # ═══════════════════════════════════════════════════════════════════════
     # EXPORT
     # ═══════════════════════════════════════════════════════════════════════
 
-    with open("sweep_actuation_all.csv", "w", newline="") as f:
+    os.makedirs("results", exist_ok=True)
+    with open("results/sweep_actuation_all.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=all_results[0].keys())
         writer.writeheader()
         writer.writerows(all_results)
-    print("Wrote all trials to 'sweep_actuation_all.csv'.")
+    print("Wrote all trials to 'results/sweep_actuation_all.csv'.")
 
-    with open("sweep_actuation_best_per_bin.csv", "w", newline="") as f:
+    with open("results/sweep_actuation_best_per_bin.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=best_per_bin[0].keys())
         writer.writeheader()
         writer.writerows(best_per_bin)

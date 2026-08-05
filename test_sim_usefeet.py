@@ -66,8 +66,9 @@ BOX_X = 0.667      # total foot length, Current Robot: 0.667
 BOX_Y = 0.24       # total foot width, Current Robot: 0.24
 FN    = 80         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm (fixed length of the middle foot part)
-LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])
 RIGHT_OFFSET = np.array([0.07, -0.0105, 0.0])
+LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])
+
 
 # ── Motor / control -- match these directly to motorwave.py for hardware
 #    replication ─────────────────────────────────────────────────────────
@@ -76,12 +77,12 @@ KD           = 6.7
 TORQUE_LIMIT = 25.0       # Nm -- Torque Limit for AK80-8
 
 # ── Trajectory ──────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.4644 * 2 * np.pi   # natural freq should be 0.52 Hz
-# LEG_AMP_DEG     = 30
-LEG_AMP_DEG     = 0
+HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 43.46
+# LEG_AMP_DEG     = 0
 T_WAIT          = 3.0
-START_FREQ_MULT = 0.8
-START_AMP_MULT  = 0.7
+START_FREQ_MULT = 1.17
+START_AMP_MULT  = 1.58
 
 # ── Per-foot rotation corrections ────────────────────────────────────────
 # Semicolon-separated "axis:degrees" tokens, applied (in order, left to
@@ -102,8 +103,8 @@ RAMP_TIME = 2.0
 CMD_DELAY_STEPS = 1
 
 # ── Output files ──────────────────────────────────────────────────────────────
-TELEMETRY_PLOT_FILE   = 'joint_telemetry_plot.png'
-ORIENTATION_PLOT_FILE = 'orientation_telemetry_plot.png'
+TELEMETRY_PLOT_FILE   = 'results/joint_telemetry_plot.png'
+ORIENTATION_PLOT_FILE = 'results/orientation_telemetry_plot.png'
 
 # ── Derived constants ─────────────────────────────────────────────────────
 leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
@@ -653,6 +654,8 @@ def main():
     quat_history_arr = np.array(quat_history)
     rpy_history = np.rad2deg(quat_to_rpy(quat_history_arr))
     roll_history, pitch_history, yaw_history = rpy_history[:, 0], rpy_history[:, 1], rpy_history[:, 2]
+
+    Path("results").mkdir(exist_ok=True)
 
     # ── Joint telemetry plot ────────────────────────────────────────────
     fig, ax1 = plt.subplots(figsize=(11, 7))

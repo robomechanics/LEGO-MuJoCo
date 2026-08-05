@@ -1,7 +1,11 @@
 import csv
+import os
 import mujoco
 import numpy as np
 from scipy.stats import qmc
+
+from sim_common import (calculate_sine_reference, pd_torque, apply_foot_offsets,
+                         place_on_ground, measure_avg_quaternion_pose)
 
 def generate_lhs_samples(n_trials):
     """
@@ -26,13 +30,13 @@ def generate_lhs_samples(n_trials):
 JOINT_NAME         = "hip"
 TORSO_BODY_NAME    = "motor"
 TORQUE_LIMIT       = 25.0
-T_WAIT             = 3.0
 USE_RAMP           = False
 RAMP_TIME          = 1.0
 CMD_DELAY_STEPS    = 1
 ITERATION_DURATION = 20.0
 MIN_DISTANCE       = 2.0    # metres — minimum to save a result
 NUM_TRIALS         = 500  # ← change this to run more or fewer trials
+QUAT_MEASURE_S     = 5.0    # fixed hip-rigid window (own Kp/Kd/foot offset) averaged into the pose
 
 # ── Randomisation ranges [min, max] ───────────────────────────────────────────
 RANGES = {
@@ -71,6 +75,16 @@ if joint_id == -1 or torso_body_id == -1:
 qpos_idx = model.jnt_qposadr[joint_id]
 qvel_idx = model.jnt_dofadr[joint_id]
 
+free_joint_id   = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "motor_freejoint")
+free_qpos_start = model.jnt_qposadr[free_joint_id]
+free_z_qpos_idx = free_qpos_start + 2
+free_quat_idx   = free_qpos_start + 3
+
+FOOT_COLLISION_GEOMS = [
+    "right_foot_1_col", "right_foot_2_col", "right_foot_3_col",
+    "left_foot_1_col",  "left_foot_2_col",  "left_foot_3_col",
+]
+
 # ── Snapshot original geom positions BEFORE any modification ─────────────────
 original_geom_pos = {}
 for name in FOOT_GEOM_NAMES:
@@ -92,52 +106,6 @@ original_body_ipos = {bid: model.body_ipos[bid].copy() for bid in foot_parent_bo
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def apply_foot_offsets(model, data, foot_x, foot_y):
-    """
-    Applies foot offsets by correcting geoms and body centers of mass
-    (matches the head-on):
-
-      - GEOM offsets use the mesh-local rotated mapping:
-            right: [x,  y, 0]
-            left:  [0, -y, x]
-
-      - BODY (mass/inertia) offsets use the Global mirrored mapping:
-            right: [ x, y, 0]
-            left:  [-x, y, 0]
-        Shifts gloablly.
-    """
-    # Geom-space deltas (mesh-local, rotated for the left leg)
-    delta_right_geom = np.array([foot_x,  foot_y, 0.0])
-    delta_left_geom  = np.array([0.0,    -foot_y, foot_x])
-
-    # Body-space deltas (world-aligned, true mirror — matches head-on script)
-    delta_right_body = np.array([foot_x, foot_y, 0.0])
-    delta_left_body  = np.array([-foot_x, foot_y, 0.0])
-
-    # --- STEP 1: Update Body Centers of Mass (ipos) ---
-    for bid in foot_parent_body_ids:
-        body_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, bid)
-
-        if "motor" == body_name:  # Right side root body
-            model.body_ipos[bid] = original_body_ipos[bid] + delta_right_body
-
-        elif "simplified_motor___arm_rod" == body_name:  # Left side sub-body
-            model.body_ipos[bid] = original_body_ipos[bid] + delta_left_body
-
-    # --- STEP 2: Update Individual Geoms ---
-    for name in FOOT_GEOM_NAMES:
-        geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
-        if geom_id != -1:
-            if "right" in name.lower():
-                model.geom_pos[geom_id] = original_geom_pos[name] + delta_right_geom
-            else:
-                model.geom_pos[geom_id] = original_geom_pos[name] + delta_left_geom
-
-    # --- STEP 3: Bake changes into MuJoCo's solver engine ---
-    mujoco.mj_setConst(model, data)  # Recalculates mass distribution matrices
-    mujoco.mj_forward(model, data)   # Re-evaluates global geometry transformations
-
-
 def check_has_fallen(body_id, height_threshold=0.5, angle_threshold_deg=45.0):
     if data.xpos[body_id][2] < height_threshold:
         return True
@@ -152,30 +120,6 @@ def check_has_fallen(body_id, height_threshold=0.5, angle_threshold_deg=45.0):
     return tilt_angle_deg > angle_threshold_deg
 
 
-def calculate_sine_reference(t, hip_omega, leg_amp_rad, start_amp_mult, start_freq_mult):
-    w1           = hip_omega * start_freq_mult
-    w2           = hip_omega
-    t0           = T_WAIT
-    At           = start_amp_mult * leg_amp_rad
-    As           = leg_amp_rad
-    t_transition = t0 + np.pi / w1
-
-    if t <= t0:
-        position, velocity = 0.0, 0.0
-
-    elif t < t_transition:
-        phase    = w1 * (t - t0)
-        position = At * np.sin(phase)
-        velocity = At * w1 * np.cos(phase)      # true derivative
-
-    else:
-        phase    = w2 * (t - t_transition)
-        position = -As * np.sin(phase)
-        velocity = -As * w2 * np.cos(phase)     # true derivative
-
-    return position, velocity
-
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # RANDOM SWEEP
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -186,12 +130,24 @@ print(f"Starting random sweep: {NUM_TRIALS} trials. Saving results with no fall 
 
 for trial_idx, params in enumerate(all_params, 1):
 
-    # full sim reset
+    # Pass 1: measure this trial's own average quaternion (own foot offset/gains) --
+    # hold the hip rigid over a fixed window instead of free-falling from the
+    # XML's guessed 1.2m spawn height or waiting for a dynamic convergence check.
     mujoco.mj_resetData(model, data)
+    apply_foot_offsets(model, data, params['foot_x'], params['foot_y'], FOOT_GEOM_NAMES,
+                        foot_parent_body_ids, original_geom_pos, original_body_ipos)
+    place_on_ground(model, data, FOOT_COLLISION_GEOMS, free_z_qpos_idx)
+    avg_quat = measure_avg_quaternion_pose(model, data, qpos_idx, qvel_idx, torso_body_id,
+                                            params['Kp'], params['Kd'], TORQUE_LIMIT,
+                                            measure_s=QUAT_MEASURE_S)
 
-    # apply foot offsets for this trial
-    apply_foot_offsets(model, data, params['foot_x'], params['foot_y'])
-    mujoco.mj_forward(model, data)
+    # Pass 2: fresh reset, teleport straight to that quaternion, walk from t=0.
+    mujoco.mj_resetData(model, data)
+    apply_foot_offsets(model, data, params['foot_x'], params['foot_y'], FOOT_GEOM_NAMES,
+                        foot_parent_body_ids, original_geom_pos, original_body_ipos)
+    data.qpos[free_quat_idx:free_quat_idx + 4] = avg_quat
+    place_on_ground(model, data, FOOT_COLLISION_GEOMS, free_z_qpos_idx)
+    t_wait = 0.0
 
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "right_foot_3_col")
     print(f"Global Position: {data.geom_xpos[geom_id]}")
@@ -209,16 +165,15 @@ for trial_idx, params in enumerate(all_params, 1):
         t = data.time
 
         target_pos_rad, target_vel_rad = calculate_sine_reference(
-            t, hip_omega, leg_amp_rad, params['start_amp_mult'], params['start_freq_mult']
+            t, hip_omega, leg_amp_rad, params['start_amp_mult'], params['start_freq_mult'], t_wait=t_wait
         )
 
         current_pos = data.qpos[qpos_idx]
         current_vel = data.qvel[qvel_idx]
 
-        ramp      = min(1.0, t / RAMP_TIME) if USE_RAMP and RAMP_TIME > 0 else 1.0
-        tau       = (params['Kp'] * ramp * (target_pos_rad - current_pos) +
-                     params['Kd'] * ramp * (target_vel_rad - current_vel))
-        tau       = np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT)
+        ramp = min(1.0, t / RAMP_TIME) if USE_RAMP and RAMP_TIME > 0 else 1.0
+        tau  = pd_torque(target_pos_rad, target_vel_rad, current_pos, current_vel,
+                         params['Kp'], params['Kd'], TORQUE_LIMIT, ramp=ramp)
         energy_used += abs(tau * current_vel) * model.opt.timestep
 
 
@@ -227,7 +182,7 @@ for trial_idx, params in enumerate(all_params, 1):
 
         mujoco.mj_step(model, data)
 
-        if t > T_WAIT and check_has_fallen(torso_body_id):
+        if t > t_wait and check_has_fallen(torso_body_id):
             print(f"   [DEBUG] Fell at t={data.time:.3f}s. Height={data.xpos[torso_body_id][2]:.2f}m")
             fell = True
             break
@@ -267,7 +222,8 @@ print(f"Save rate: {len(results)}/{NUM_TRIALS} = {len(results)/NUM_TRIALS*100:.1
 # ═══════════════════════════════════════════════════════════════════════════════
 
 if results:
-    csv_file = "sweep_results.csv"
+    os.makedirs("results", exist_ok=True)
+    csv_file = "results/sweep_results.csv"
     with open(csv_file, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=results[0].keys())
         writer.writeheader()

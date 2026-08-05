@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import mujoco
 import numpy as np
 
@@ -215,7 +216,8 @@ for freq_hz in frequencies:
 # ═══════════════════════════════════════════════════════════════════════════════
 # EXPORT DATA
 # ═══════════════════════════════════════════════════════════════════════════════
-csv_file = "simulation_results.csv"
+os.makedirs("results", exist_ok=True)
+csv_file = "results/simulation_results.csv"
 keys     = results[0].keys()
 
 with open(csv_file, 'w', newline='') as output_file:

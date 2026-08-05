@@ -1,10 +1,12 @@
 import mujoco
 import mujoco.viewer
 import numpy as np
+import os
 import time
 import pickle as pkl
 
-from sim_common import calculate_sine_reference, pd_torque
+from sim_common import (calculate_sine_reference, pd_torque, quat_to_rpy,
+                         place_on_ground, wait_until_pitch_settled)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS — match these directly to motorwave.py for hardware replication
@@ -16,19 +18,19 @@ KD           = 7.15
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.421 * 2 * np.pi   # natural freq should be 0.52 Hz
-# LEG_AMP_DEG     = 24.27
-LEG_AMP_DEG     = 0
+HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
+LEG_AMP_DEG     = 43.46
+# LEG_AMP_DEG     = 0
 T_WAIT          = 3.0
-START_FREQ_MULT = 1.123 
-START_AMP_MULT  = 1.717
+START_FREQ_MULT = 1.17
+START_AMP_MULT  = 1.58
 
 # FOOT OFFSETS
 #If Right = [a, b, c], then left = [-c, -b, a]
 # for right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
 # For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
 #Notes: Position of Y shift @0.0 reflects the second slot pretty well, but not perfectly 
-foot_position_deltaRight = np.array([-0.0599, -0.0192, 0.0])
+foot_position_deltaRight = np.array([-0.0304, 0.0029, 0.0])
 foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], foot_position_deltaRight[0]]) # Symmetrical world shift
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -47,7 +49,7 @@ CMD_DELAY_STEPS = 1
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model_y10pct.xml")
+model = mujoco.MjModel.from_xml_path("bigfoot/scene.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
@@ -97,27 +99,6 @@ print(f"Total mass:      {sum(model.body_mass[i] for i in range(model.nbody)):.3
 leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 cmd_buffer  = [0.0] * CMD_DELAY_STEPS
 
-
-def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
-    """Vectorized (N,4) quat[w,x,y,z] -> (N,3) [roll, pitch, yaw] in radians."""
-    q = np.atleast_2d(quat_wxyz)
-    w, x, y, z = q[:, 0], q[:, 1], q[:, 2], q[:, 3]
- 
-    # Roll (x-axis rotation)
-    sinr_cosp = 2.0 * (w * x + y * z)
-    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
-    roll = np.arctan2(sinr_cosp, cosr_cosp)
- 
-    # Pitch (y-axis rotation)
-    sinp = np.clip(2.0 * (w * y - z * x), -1.0, 1.0)
-    pitch = np.arcsin(sinp)
- 
-    # Yaw (z-axis rotation)
-    siny_cosp = 2.0 * (w * z + x * y)
-    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
-    yaw = np.arctan2(siny_cosp, cosy_cosp)
- 
-    return np.column_stack([roll, pitch, yaw])
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TRAJECTORY — direct port of motorwave.py calculate_sine_reference
@@ -198,15 +179,28 @@ contact_geoms, con_dict = init_geom_to_body_tracking(model, my_collision_geoms)
 mujoco.mj_setConst(model, data)
 mujoco.mj_forward(model, data)
 
-with mujoco.viewer.launch_passive(model, data) as viewer:
-    #data.qpos[2] = 1.2
+# ── Place on the ground from the actual foot mesh (not a guessed spawn
+# height), then settle-and-verify instead of a fixed guessed T_WAIT ────────
+FOOT_COLLISION_GEOMS = [
+    "right_foot_1_col", "right_foot_2_col", "right_foot_3_col",
+    "left_foot_1_col",  "left_foot_2_col",  "left_foot_3_col",
+]
+motor_freejoint = model.joint("motor_freejoint")
+free_z_qpos_idx = motor_freejoint.qposadr[0] + 2
 
+place_on_ground(model, data, FOOT_COLLISION_GEOMS, free_z_qpos_idx)
+settle_time = wait_until_pitch_settled(model, data, hip_qpos_adr, hip_qvel_adr, motor_id,
+                                        KP, KD, TORQUE_LIMIT, max_wait_s=20.0,
+                                        window_s=1.0, pp_thresh_deg=2.0, dwell_s=2.0)
+print(f"Settled in {settle_time:.3f}s (was a fixed T_WAIT={T_WAIT}s guess before).")
+
+with mujoco.viewer.launch_passive(model, data) as viewer:
     while viewer.is_running():
         t = data.time
 
         # radians — same units as motorwave.py MIT_controller calls
         target_pos_rad, target_vel_rad = calculate_sine_reference(
-            t, HIP_OMEGA, leg_amp_rad, START_AMP_MULT, START_FREQ_MULT, t_wait=T_WAIT
+            t, HIP_OMEGA, leg_amp_rad, START_AMP_MULT, START_FREQ_MULT, t_wait=settle_time
         )
 
         current_pos = data.qpos[hip_qpos_adr]
@@ -221,7 +215,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         targetVelocity_history.append(target_vel_rad)
         quat_history.append(data.xquat[motor_id].copy())
         #torqueCommand_history.append(data.qfrc_actuator[0])
-        if t > T_WAIT:
+        if t > settle_time:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
 
 
@@ -246,6 +240,8 @@ print("Viewer closed. Generating Matplotlib plots...")
 import matplotlib
 matplotlib.use('agg') # Force a non-interactive background backend
 import matplotlib.pyplot as plt
+
+os.makedirs("results", exist_ok=True)
 
 time_history = np.array(time_history)
 torqueActual_history = np.array(torqueActual_history)
@@ -296,7 +292,7 @@ ax1.legend(lines, labels, loc='upper right')
 
 # 3. Clean layout adjustments and render
 plt.tight_layout()
-plt.savefig('joint_telemetry_plot.png', dpi=300)
+plt.savefig('results/joint_telemetry_plot.png', dpi=300)
 print("Plot successfully saved as 'joint_telemetry_plot.png'")
 
 # ── Roll / Pitch / Yaw plot (motor body), overwritten fresh each run ──────────
@@ -313,7 +309,7 @@ ax3.grid(True, linestyle=':', alpha=0.6)
 ax3.legend(loc='upper right')
  
 plt.tight_layout()
-plt.savefig('orientation_telemetry_plot.png', dpi=300)
+plt.savefig('results/orientation_telemetry_plot.png', dpi=300)
 plt.close(fig2)
 print("Plot successfully saved as 'orientation_telemetry_plot.png'")
 
@@ -326,7 +322,7 @@ for name in con_dict.keys():
         con_dict[name]['t_coords'] = np.empty((0, 4))
 
 # Save the dictionary to disk so your PyVista script can read it
-output_filename = "contact_dict.pkl"
+output_filename = "results/contact_dict.pkl"
 with open(output_filename, "wb") as f:
     pkl.dump(con_dict, f)
 

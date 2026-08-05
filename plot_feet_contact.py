@@ -8,7 +8,7 @@ import pickle
 import argparse
 
 parser = argparse.ArgumentParser(description="contact mapping")
-parser.add_argument("-fn", "--filename", type=str, default=f"contact_dict.pkl", help="name of the contact points path")
+parser.add_argument("-fn", "--filename", type=str, default="results/contact_dict.pkl", help="name of the contact points path")
 args = vars(parser.parse_args())
 
 file_path = args['filename']

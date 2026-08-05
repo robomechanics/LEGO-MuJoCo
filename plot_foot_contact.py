@@ -11,7 +11,7 @@ except OSError:
     pass
 
 parser = argparse.ArgumentParser(description="Plot simulated contact trajectory data")
-parser.add_argument("-fn", "--filename", type=str, default="contact_dict.pkl", help="Name of your simulation pickle file")
+parser.add_argument("-fn", "--filename", type=str, default="results/contact_dict.pkl", help="Name of your simulation pickle file")
 args = vars(parser.parse_args())
 
 # ---------------------------------------------------------------------------
