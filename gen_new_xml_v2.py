@@ -5,16 +5,24 @@ Pipeline:
     1. Generate 3-part hollow-shell feet (front/middle/back) via OpenSCAD
        from ellipsoid + bounding-box + wall-thickness parameters.
     2. Preview the 3-part feet standalone in the MuJoCo viewer.
-    3. Inject the generated meshes into an existing robot MJCF, replacing the
-       existing right_foot_1/2/3 (+_col) and left_foot_1/2/3 (+_col) geoms,
-       reusing each foot's existing pos/quat plus a per-side rotation
-       correction and position offset.
-    4. Optionally save the fully modified robot model to OUTPUT_XML so the
-       saved file can be loaded from a different script/location.
+    3. Inject the generated meshes into an existing robot MJCF (ENTRY_XML,
+       e.g. robot.xml), replacing the existing right_foot_1/2/3 (+_col) and
+       left_foot_1/2/3 (+_col) geoms, reusing each foot's existing pos/quat
+       (read from the XML itself, not hardcoded) plus a per-side rotation
+       correction and position offset (LEFT_OFFSET/RIGHT_OFFSET). Only
+       geoms on the foot bodies are touched -- joints and actuators
+       (expected to be <motor> in ENTRY_XML) are left completely alone and
+       are printed out via report_actuators() for confirmation.
+    4. Optionally save the fully modified robot model to OUTPUT_XML,
+        so the saved file can be loaded from a different script/location.
 
-This file is intentionally API-compatible with gen_new_xml.py so callers can
-swap imports without changing call sites, while still exposing the v2 shell +
-mass-calibration behavior.
+Requirements:
+    - OpenSCAD installed (path set below via OPENSCAD_PATH, make sure version is newest)
+    - mujoco python package
+    - feet_generator_new.scad
+Usage:
+    Edit the USER PARAMETERS block below, then just run:
+        python3 gen_new_xml.py
 """
 
 import subprocess
@@ -100,8 +108,8 @@ FOOT_DENSITY_KG_PER_M3   = (FOOT_MATERIAL_MASS_KG / FOOT_MATERIAL_VOLUME_MM3) * 
 
 # Per-section density multipliers, applied on top of FOOT_DENSITY_KG_PER_M3.
 # Currently very similar, but allows for tuning between the two if desired. 
-FRONT_BACK_DENSITY_MULTIPLIER = 0.352
-MIDDLE_DENSITY_MULTIPLIER     = 0.343
+FRONT_BACK_DENSITY_MULTIPLIER = 0.416
+MIDDLE_DENSITY_MULTIPLIER     = 0.415
 
 FRONT_BACK_DENSITY_KG_PER_M3 = FOOT_DENSITY_KG_PER_M3 * FRONT_BACK_DENSITY_MULTIPLIER
 MIDDLE_DENSITY_KG_PER_M3     = FOOT_DENSITY_KG_PER_M3 * MIDDLE_DENSITY_MULTIPLIER
