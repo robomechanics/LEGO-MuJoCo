@@ -27,6 +27,7 @@ Usage:
 
 import subprocess
 import sys
+import os
 from pathlib import Path
 from typing import Tuple
 
@@ -35,14 +36,32 @@ import mujoco
 import mujoco.viewer
 
 
+def _env_flag(name: str, default: bool = True) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+VERBOSE = _env_flag("GEN_NEW_XML_VERBOSE", True)
+
+
+def vprint(*args, **kwargs) -> None:
+    if VERBOSE:
+        print(*args, **kwargs)
+
+
+REPO_ROOT = Path(__file__).resolve().parent
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths ────────────────────────────────────────────────────────────
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
-SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
-ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
+OPENSCAD_PATH = "/usr/bin/openscad"  # adjust if needed
+SCAD_DIR = REPO_ROOT
+ENTRY_XML = REPO_ROOT / "bigfoot" / "scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
@@ -70,8 +89,8 @@ RIGHT_OFFSET = np.array([0.113, -0.027, 0.0])    # centered reference: [0.113667
 # ═══════════════════════════════════════════════════════════════════════════
 # ADDITIONAL PARAMETERS (Likely do not change)
 # ═══════════════════════════════════════════════════════════════════════════
-OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
-OUTPUT_XML = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/modified_model.xml"   # optional: path to also write the modified model XML to disk
+OUT_DIR = "./foot_section_out"                     # where generated shell mesh files go
+OUTPUT_XML = REPO_ROOT / "modified_model.xml"      # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
@@ -277,10 +296,12 @@ def generate_foot_section_obj(
     left_foot_flag: int,
     slice_x0: float,
     slice_x1: float,
-    shell_thickness: float,
+    shell_thickness: float | None = None,
     verbose: bool = True,
 ) -> None:
-    """Call OpenSCAD to render one foot *section* (hollow shell) to an .obj file."""
+    """Call OpenSCAD to render one foot *section* (hollow shell) to a mesh file."""
+    if shell_thickness is None:
+        shell_thickness = WALL_THICKNESS
     command = [
         OPENSCAD_PATH,
         "-D", f"X={X}",
@@ -293,20 +314,21 @@ def generate_foot_section_obj(
         "-D", f"slice_x0={slice_x0}",
         "-D", f"slice_x1={slice_x1}",
         "-D", f"shell_thickness={shell_thickness}",
+        "--export-format", "binstl",
         "-o", str(out_path),
         str(scad_file),
     ]
     if verbose:
-        print(f"Running: {' '.join(command)}")
+        vprint(f"Running: {' '.join(command)}")
 
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"OpenSCAD failed for {out_path.name}:\n{result.stderr}")
+        vprint(f"OpenSCAD failed for {out_path.name}:\n{result.stderr}")
         raise RuntimeError(f"OpenSCAD generation failed: {result.stderr}")
     if not out_path.exists():
         raise RuntimeError(f"Expected output {out_path} was not created.")
 
-    print(f"Generated {out_path}")
+    vprint(f"Generated {out_path}")
 
 
 def generate_all_sections(
@@ -314,8 +336,8 @@ def generate_all_sections(
     out_dir: Path,
     X: float, Y: float, Z: float,
     box_x: float, box_y: float, fn: int,
-    shell_thickness: float,
     swap_front_back: bool = False,
+    shell_thickness: float | None = None,
 ) -> dict:
     """
     Generates front/middle/back hollow-shell sections for both feet.
@@ -331,7 +353,7 @@ def generate_all_sections(
 
     for side, flag in foot_flags.items():
         for section, (x0, x1) in bounds.items():
-            out_path = out_dir / f"{side}_foot_{section}.obj"
+            out_path = out_dir / f"{side}_foot_{section}.stl"
             generate_foot_section_obj(
                 scad_file, out_path, X, Y, Z, box_x, box_y, fn,
                 left_foot_flag=flag, slice_x0=x0, slice_x1=x1,
@@ -340,6 +362,33 @@ def generate_all_sections(
             results[side][section] = out_path
 
     return results
+
+
+def generate_all_sections_shell(
+    scad_file: Path,
+    out_dir: Path,
+    X: float,
+    Y: float,
+    Z: float,
+    box_x: float,
+    box_y: float,
+    fn: int,
+    shell_thickness: float = WALL_THICKNESS,
+    swap_front_back: bool = False,
+) -> dict:
+    """Explicit v2 helper for callers that want to specify shell thickness."""
+    return generate_all_sections(
+        scad_file,
+        out_dir,
+        X,
+        Y,
+        Z,
+        box_x,
+        box_y,
+        fn,
+        swap_front_back=swap_front_back,
+        shell_thickness=shell_thickness,
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -392,8 +441,8 @@ def launch_preview(sections: dict) -> None:
     xml = build_preview_mjcf(sections)
     model = mujoco.MjModel.from_xml_string(xml)
     data = mujoco.MjData(model)
-    print("Launching preview viewer... red=front, green=middle, blue=back. "
-          "Close the window to continue.")
+    vprint("Launching preview viewer... red=front, green=middle, blue=back. "
+           "Close the window to continue.")
     mujoco.viewer.launch(model, data)
 
 
@@ -448,7 +497,7 @@ def report_actuators(model: "mujoco.MjModel") -> None:
     notice if something in the source robot.xml isn't a plain motor -- it
     is NOT auto-corrected.
     """
-    print(f"\nActuators in compiled model: {model.nu}")
+    vprint(f"\nActuators in compiled model: {model.nu}")
     for i in range(model.nu):
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, i) or f"actuator_{i}"
         gaintype_enum = mujoco.mjtGain(model.actuator_gaintype[i])
@@ -464,8 +513,8 @@ def report_actuators(model: "mujoco.MjModel") -> None:
             and dyntype_enum == mujoco.mjtDyn.mjDYN_NONE
         )
         flag = "" if is_motor_like else "  <-- WARNING: not a plain motor/general-as-motor actuator; verify this is intentional"
-        print(f"  [{i}] {name}: gain={gaintype} bias={biastype} dyn={dyntype} "
-              f"gear={gear} ctrlrange={ctrlrange} forcerange={forcerange}{flag}")
+        vprint(f"  [{i}] {name}: gain={gaintype} bias={biastype} dyn={dyntype} "
+               f"gear={gear} ctrlrange={ctrlrange} forcerange={forcerange}{flag}")
 
 
 def inject_feet_into_model(
@@ -521,8 +570,8 @@ def inject_feet_into_model(
                 new_visual_geom = body.add_geom(visual_default)
             else:
                 new_visual_geom = body.add_geom()
-                print(f"Warning: no 'visual' default class found; "
-                      f"{visual_name} will use the body's childclass instead.")
+                vprint(f"Warning: no 'visual' default class found; "
+                       f"{visual_name} will use the body's childclass instead.")
 
             new_visual_geom.name = visual_name
             new_visual_geom.type = mujoco.mjtGeom.mjGEOM_MESH
@@ -535,8 +584,8 @@ def inject_feet_into_model(
                 new_collision_geom = body.add_geom(collision_default)
             else:
                 new_collision_geom = body.add_geom()
-                print(f"Warning: no 'collision' default class found; "
-                      f"{collision_name} will use the body's childclass instead.")
+                vprint(f"Warning: no 'collision' default class found; "
+                       f"{collision_name} will use the body's childclass instead.")
 
             new_collision_geom.name = collision_name
             new_collision_geom.type = mujoco.mjtGeom.mjGEOM_MESH
@@ -544,10 +593,10 @@ def inject_feet_into_model(
             new_collision_geom.pos = list(corrected_pos)
             new_collision_geom.quat = list(corrected_quat)
             new_collision_geom.mass = section_mass_kg
-            print(f"  {collision_name}: mass={section_mass_kg*1000:.2f} g "
-                  f"(density={section_density:.2f} kg/m^3)")
+            vprint(f"  {collision_name}: mass={section_mass_kg*1000:.2f} g "
+                   f"(density={section_density:.2f} kg/m^3)")
 
-            print(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
+            vprint(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
 
     model = spec.compile()
 
@@ -558,7 +607,7 @@ def inject_feet_into_model(
     if output_xml_path is not None:
         xml_str = spec.to_xml()
         Path(output_xml_path).write_text(xml_str)
-        print(f"Wrote modified model XML to {output_xml_path}")
+        vprint(f"Wrote modified model XML to {output_xml_path}")
 
     return model
 
@@ -569,20 +618,13 @@ def inject_feet_into_model(
 # ═══════════════════════════════════════════════════════════════════════════
 
 def main():
-    scad_file = Path(SCAD_DIR) / "feet_generator_new.scad"
+    scad_file = Path(SCAD_DIR) / "shell_feet_generator.scad"
     if not scad_file.exists():
         sys.exit(f"Could not find {scad_file}")
 
     out_dir = Path(OUT_DIR).resolve()
 
-    sections = generate_all_sections(
-        scad_file, out_dir,
-        X, Y, Z, BOX_X, BOX_Y, FN,
-        shell_thickness=WALL_THICKNESS,
-        swap_front_back=SWAP_FRONT_BACK,
-    )
-
-    sections = generate_all_sections(
+    sections = generate_all_sections_shell(
         scad_file, out_dir,
         X, Y, Z, BOX_X, BOX_Y, FN,
         shell_thickness=WALL_THICKNESS,
@@ -590,11 +632,11 @@ def main():
     )
 
     section_masses = compute_section_masses(sections)
-    print("Section masses (density-based):")
+    vprint("Section masses (density-based):")
     for side in ["right", "left"]:
         for section in ["front", "middle", "back"]:
-            print(f"  [{side}] {section}: {section_masses[side][section]*1000:.2f} g")
-        print(f"  [{side}] total: {sum(section_masses[side].values()):.4f} kg")
+            vprint(f"  [{side}] {section}: {section_masses[side][section]*1000:.2f} g")
+        vprint(f"  [{side}] total: {sum(section_masses[side].values()):.4f} kg")
 
     if PREVIEW_ONLY or ENTRY_XML is None:
         launch_preview(sections)
@@ -614,7 +656,7 @@ def main():
         offset_frame=OFFSET_FRAME,
     )
     data = mujoco.MjData(model)
-    print("Launching full robot viewer with new feet... close the window to exit.")
+    vprint("Launching full robot viewer with new feet... close the window to exit.")
     mujoco.viewer.launch(model, data)
 
 

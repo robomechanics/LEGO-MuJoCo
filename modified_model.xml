@@ -1,0 +1,113 @@
+<mujoco model="scene">
+  <compiler angle="radian"/>
+
+  <visual>
+    <global azimuth="160" elevation="-20"/>
+    <headlight ambient="0.3 0.3 0.3" diffuse="0.6 0.6 0.6" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+  </visual>
+
+  <default>
+    <default class="bigfoot">
+      <joint armature="0.0039" frictionloss="0.75"/>
+      <general ctrllimited="true" ctrlrange="-25 25"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+
+  <asset>
+    <texture type="skybox" colorspace="auto" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" colorspace="auto" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="simplified_motor___arm_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="footstl_scaled_v4_mirrored_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="cf_rod___leg_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="raspberry_pi___battery___motor_cover_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="footstl_scaled_v4_mirrored__2_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="footstl_scaled_v4_mirrored__3_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="arm_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="exo_hip_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="hip_inner_right_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="motor_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="battery_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="footstl_scaled_v4_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="footstl_scaled_v4__2_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="footstl_scaled_v4__3_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <mesh name="simplified_motor___arm_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/simplified_motor___arm_rod.stl"/>
+    <mesh name="battery" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/battery.stl"/>
+    <mesh name="motor" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/motor.stl"/>
+    <mesh name="exo_hip_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/exo_hip_rod.stl"/>
+    <mesh name="arm_rod" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/arm_rod.stl"/>
+    <mesh name="hip_inner_right" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/hip_inner_right.stl"/>
+    <mesh name="cf_rod___leg" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/cf_rod___leg.stl"/>
+    <mesh name="raspberry_pi___battery___motor_cover" file="/home/rml3/Documents/nick/LEGO-MuJoCo/bigfoot/assets/raspberry_pi___battery___motor_cover.stl"/>
+    <mesh name="right_front_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_front.stl"/>
+    <mesh name="right_back_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_back.stl"/>
+    <mesh name="right_middle_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/right_foot_middle.stl"/>
+    <mesh name="left_front_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_front.stl"/>
+    <mesh name="left_back_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_back.stl"/>
+    <mesh name="left_middle_mesh" file="/home/rml3/Documents/nick/LEGO-MuJoCo/foot_section_out/left_foot_middle.stl"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" size="0 0 0.05" type="plane" friction="2.7 0.6 0.2" material="groundplane"/>
+    <light pos="0 0 3.5" dir="0 0 -1" type="directional"/>
+    <body name="motor" childclass="bigfoot" pos="0 0 1.2">
+      <inertial pos="-0.0575168 -0.241732 -0.430678" quat="0.701846 0.0348921 0.0655699 0.708446" mass="4.309" diaginertia="0.858782 0.750131 0.194052"/>
+      <joint name="motor_freejoint" type="free" armature="0" frictionloss="0"/>
+      <geom class="visual" pos="-0.356716 -0.242053 -0.066037" quat="0.5 0.5 0.5 0.5" material="simplified_motor___arm_rod_material" mesh="simplified_motor___arm_rod"/>
+      <geom class="collision" pos="-0.356716 -0.242053 -0.066037" quat="0.5 0.5 0.5 0.5" type="mesh" material="simplified_motor___arm_rod_material" mesh="simplified_motor___arm_rod"/>
+      <geom class="visual" pos="-0.226779 -0.242053 -0.989937" quat="1 4.2617e-08 1.034e-09 4.972e-09" material="cf_rod___leg_material" mesh="cf_rod___leg"/>
+      <geom class="collision" pos="-0.226779 -0.242053 -0.989937" quat="1 4.2617e-08 1.034e-09 4.972e-09" type="mesh" material="cf_rod___leg_material" mesh="cf_rod___leg"/>
+      <geom class="visual" pos="-0.047396 -0.191253 0.033163" quat="4.2617e-08 -1 -4.972e-09 1.034e-09" material="raspberry_pi___battery___motor_cover_material" mesh="raspberry_pi___battery___motor_cover"/>
+      <geom class="collision" pos="-0.047396 -0.191253 0.033163" quat="4.2617e-08 -1 -4.972e-09 1.034e-09" type="mesh" material="raspberry_pi___battery___motor_cover_material" mesh="raspberry_pi___battery___motor_cover"/>
+      <geom class="visual" pos="0.273037 -0.242053 -0.056537" quat="4.972e-09 -1.034e-09 4.2617e-08 -1" material="arm_rod_material" mesh="arm_rod"/>
+      <geom class="collision" pos="0.273037 -0.242053 -0.056537" quat="4.972e-09 -1.034e-09 4.2617e-08 -1" type="mesh" material="arm_rod_material" mesh="arm_rod"/>
+      <geom class="visual" pos="-0.092396 -0.242053 -0.375337" quat="1 4.2617e-08 1.034e-09 4.972e-09" material="exo_hip_rod_material" mesh="exo_hip_rod"/>
+      <geom class="collision" pos="-0.092396 -0.242053 -0.375337" quat="1 4.2617e-08 1.034e-09 4.972e-09" type="mesh" material="exo_hip_rod_material" mesh="exo_hip_rod"/>
+      <geom class="visual" pos="-0.092396 -0.242053 -0.410337" quat="1 4.2617e-08 1.034e-09 4.972e-09" material="hip_inner_right_material" mesh="hip_inner_right"/>
+      <geom class="collision" pos="-0.092396 -0.242053 -0.410337" quat="1 4.2617e-08 1.034e-09 4.972e-09" type="mesh" material="hip_inner_right_material" mesh="hip_inner_right"/>
+      <geom class="visual" pos="-0.072396 -0.242053 -0.066037" quat="0.707107 2.662e-08 0.707107 3.3651e-08" material="motor_material" mesh="motor"/>
+      <geom class="collision" pos="-0.072396 -0.242053 -0.066037" quat="0.707107 2.662e-08 0.707107 3.3651e-08" type="mesh" material="motor_material" mesh="motor"/>
+      <geom class="visual" pos="0.273037 -0.242053 -0.506537" quat="1 4.2617e-08 1.034e-09 4.972e-09" material="battery_material" mesh="battery"/>
+      <geom class="collision" pos="0.273037 -0.242053 -0.506537" quat="1 4.2617e-08 1.034e-09 4.972e-09" type="mesh" material="battery_material" mesh="battery"/>
+      <geom name="right_foot_1" class="visual" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" mesh="right_front_mesh"/>
+      <geom name="right_foot_1_col" class="collision" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" type="mesh" mesh="right_front_mesh"/>
+      <geom name="right_foot_2" class="visual" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" mesh="right_back_mesh"/>
+      <geom name="right_foot_2_col" class="collision" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" type="mesh" mesh="right_back_mesh"/>
+      <geom name="right_foot_3" class="visual" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" mesh="right_middle_mesh"/>
+      <geom name="right_foot_3_col" class="collision" pos="-0.113779 -0.242053 -0.989937" quat="0.707107 2.94036e-08 3.08659e-08 -0.707107" type="mesh" mesh="right_middle_mesh"/>
+      <body name="simplified_motor___arm_rod" pos="-0.022396 -0.242053 -0.066037" quat="1.1977e-08 0.707107 -4.946e-09 -0.707107">
+        <inertial pos="0.534737 0.00883575 0.0105451" quat="0.417716 0.557624 0.565594 0.441216" mass="3.017" diaginertia="0.563183 0.462055 0.1832"/>
+        <joint name="hip" pos="0 0 0" axis="0 0 1"/>
+        <geom class="visual" pos="0.3443 0 -0.02" quat="0 0.707107 0 -0.707107" material="hip_inner_right_material" mesh="hip_inner_right"/>
+        <geom class="collision" pos="0.3443 0 -0.02" quat="0 0.707107 0 -0.707107" type="mesh" material="hip_inner_right_material" mesh="hip_inner_right"/>
+        <geom class="visual" pos="-0.0095 0 0.345432" quat="0 -0.707107 0 0.707107" material="arm_rod_material" mesh="arm_rod"/>
+        <geom class="collision" pos="-0.0095 0 0.345432" quat="0 -0.707107 0 0.707107" type="mesh" material="arm_rod_material" mesh="arm_rod"/>
+        <geom class="visual" pos="0.9239 0 -0.154383" quat="0 0.707107 0 -0.707107" material="cf_rod___leg_material" mesh="cf_rod___leg"/>
+        <geom class="collision" pos="0.9239 0 -0.154383" quat="0 0.707107 0 -0.707107" type="mesh" material="cf_rod___leg_material" mesh="cf_rod___leg"/>
+        <geom class="visual" pos="0 0 -0.28432" material="simplified_motor___arm_rod_material" mesh="simplified_motor___arm_rod"/>
+        <geom class="collision" pos="0 0 -0.28432" type="mesh" material="simplified_motor___arm_rod_material" mesh="simplified_motor___arm_rod"/>
+        <geom class="visual" pos="0.4405 0 0.345432" quat="0.707107 0 -0.707107 0" material="battery_material" mesh="battery"/>
+        <geom class="collision" pos="0.4405 0 0.345432" quat="0.707107 0 -0.707107 0" type="mesh" material="battery_material" mesh="battery"/>
+        <geom class="visual" pos="0.3093 0 -0.02" quat="0 0.707107 0 -0.707107" material="exo_hip_rod_material" mesh="exo_hip_rod"/>
+        <geom class="collision" pos="0.3093 0 -0.02" quat="0 0.707107 0 -0.707107" type="mesh" material="exo_hip_rod_material" mesh="exo_hip_rod"/>
+        <geom name="left_foot_1" class="visual" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" mesh="left_front_mesh"/>
+        <geom name="left_foot_1_col" class="collision" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" type="mesh" mesh="left_front_mesh"/>
+        <geom name="left_foot_2" class="visual" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" mesh="left_back_mesh"/>
+        <geom name="left_foot_2_col" class="collision" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" type="mesh" mesh="left_back_mesh"/>
+        <geom name="left_foot_3" class="visual" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" mesh="left_middle_mesh"/>
+        <geom name="left_foot_3_col" class="collision" pos="0.9239 0 -0.041383" quat="0.5 -0.5 -0.5 0.5" type="mesh" mesh="left_middle_mesh"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <general name="hip" class="bigfoot" joint="hip"/>
+  </actuator>
+</mujoco>

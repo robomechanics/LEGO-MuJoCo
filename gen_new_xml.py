@@ -23,6 +23,7 @@ Usage:
 
 import subprocess
 import sys
+import os
 from pathlib import Path
 from typing import Tuple
 
@@ -31,14 +32,32 @@ import mujoco
 import mujoco.viewer
 
 
+def _env_flag(name: str, default: bool = True) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+VERBOSE = _env_flag("GEN_NEW_XML_VERBOSE", True)
+
+
+def vprint(*args, **kwargs) -> None:
+    if VERBOSE:
+        print(*args, **kwargs)
+
+
+REPO_ROOT = Path(__file__).resolve().parent
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── File paths ────────────────────────────────────────────────────────────
-OPENSCAD_PATH = "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"  # adjust if needed
-SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_generator.scad
-ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
+OPENSCAD_PATH = "/usr/bin/openscad"  # adjust if needed
+SCAD_DIR = REPO_ROOT                    # dir containing feet_generator.scad
+ENTRY_XML = REPO_ROOT / "bigfoot" / "scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
@@ -59,8 +78,8 @@ RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0
 # ═══════════════════════════════════════════════════════════════════════════
 # ADDITIONAL PARAMETERS (Likely do not change)
 # ═══════════════════════════════════════════════════════════════════════════
-OUT_DIR       = "./foot_section_out"                     # where generated .obj files go
-OUTPUT_XML = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/modified_model.xml"   # optional: path to also write the modified model XML to disk
+OUT_DIR = "./foot_section_out"                     # where generated .stl files go
+OUTPUT_XML = REPO_ROOT / "modified_model.xml"     # optional: path to also write the modified model XML to disk
 
 # ── Mode flags ────────────────────────────────────────────────────────────
 PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injection
@@ -201,7 +220,7 @@ def compute_section_bounds(box_x: float, swap_front_back: bool = False) -> dict:
 # OpenSCAD generation
 # ═══════════════════════════════════════════════════════════════════════════
 
-def generate_foot_section_obj(
+def generate_foot_section_stl(
     scad_file: Path,
     out_path: Path,
     X: float,
@@ -215,7 +234,7 @@ def generate_foot_section_obj(
     slice_x1: float,
     verbose: bool = True,
 ) -> None:
-    """Call OpenSCAD to render one foot *section* to an .obj file."""
+    """Call OpenSCAD to render one foot *section* to an STL file."""
     command = [
         OPENSCAD_PATH,
         "-D", f"X={X}",
@@ -227,20 +246,21 @@ def generate_foot_section_obj(
         "-D", f"left_foot={left_foot_flag}",
         "-D", f"slice_x0={slice_x0}",
         "-D", f"slice_x1={slice_x1}",
+        "--export-format", "binstl",
         "-o", str(out_path),
         str(scad_file),
     ]
     if verbose:
-        print(f"Running: {' '.join(command)}")
+        vprint(f"Running: {' '.join(command)}")
 
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"OpenSCAD failed for {out_path.name}:\n{result.stderr}")
+        vprint(f"OpenSCAD failed for {out_path.name}:\n{result.stderr}")
         raise RuntimeError(f"OpenSCAD generation failed: {result.stderr}")
     if not out_path.exists():
         raise RuntimeError(f"Expected output {out_path} was not created.")
 
-    print(f"Generated {out_path}")
+    vprint(f"Generated {out_path}")
 
 
 def generate_all_sections(
@@ -264,8 +284,8 @@ def generate_all_sections(
 
     for side, flag in foot_flags.items():
         for section, (x0, x1) in bounds.items():
-            out_path = out_dir / f"{side}_foot_{section}.obj"
-            generate_foot_section_obj(
+            out_path = out_dir / f"{side}_foot_{section}.stl"
+            generate_foot_section_stl(
                 scad_file, out_path, X, Y, Z, box_x, box_y, fn,
                 left_foot_flag=flag, slice_x0=x0, slice_x1=x1,
             )
@@ -324,8 +344,8 @@ def launch_preview(sections: dict) -> None:
     xml = build_preview_mjcf(sections)
     model = mujoco.MjModel.from_xml_string(xml)
     data = mujoco.MjData(model)
-    print("Launching preview viewer... red=front, green=middle, blue=back. "
-          "Close the window to continue.")
+    vprint("Launching preview viewer... red=front, green=middle, blue=back. "
+           "Close the window to continue.")
     mujoco.viewer.launch(model, data)
 
 
@@ -416,8 +436,8 @@ def inject_feet_into_model(
                 new_visual_geom = body.add_geom(visual_default)
             else:
                 new_visual_geom = body.add_geom()
-                print(f"Warning: no 'visual' default class found; "
-                      f"{visual_name} will use the body's childclass instead.")
+                vprint(f"Warning: no 'visual' default class found; "
+                       f"{visual_name} will use the body's childclass instead.")
 
             new_visual_geom.name = visual_name
             new_visual_geom.type = mujoco.mjtGeom.mjGEOM_MESH
@@ -430,8 +450,8 @@ def inject_feet_into_model(
                 new_collision_geom = body.add_geom(collision_default)
             else:
                 new_collision_geom = body.add_geom()
-                print(f"Warning: no 'collision' default class found; "
-                      f"{collision_name} will use the body's childclass instead.")
+                vprint(f"Warning: no 'collision' default class found; "
+                       f"{collision_name} will use the body's childclass instead.")
 
             new_collision_geom.name = collision_name
             new_collision_geom.type = mujoco.mjtGeom.mjGEOM_MESH
@@ -439,14 +459,14 @@ def inject_feet_into_model(
             new_collision_geom.pos = list(corrected_pos)
             new_collision_geom.quat = list(corrected_quat)
 
-            print(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
+            vprint(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
 
     model = spec.compile()
 
     if output_xml_path is not None:
         xml_str = spec.to_xml()
         Path(output_xml_path).write_text(xml_str)
-        print(f"Wrote modified model XML to {output_xml_path}")
+        vprint(f"Wrote modified model XML to {output_xml_path}")
 
     return model
 
@@ -487,7 +507,7 @@ def main():
         offset_frame=OFFSET_FRAME,
     )
     data = mujoco.MjData(model)
-    print("Launching full robot viewer with new feet... close the window to exit.")
+    vprint("Launching full robot viewer with new feet... close the window to exit.")
     mujoco.viewer.launch(model, data)
 
 

@@ -44,7 +44,7 @@ CMD_DELAY_STEPS = 1
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path("modified_model_v2.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
