@@ -13,7 +13,7 @@ X_VALUES = [round(BASE_X * (1.0 + pct / 100.0), 6) for pct in PERCENT_DELTAS]
 Y_VALUES = [round(BASE_Y * (1.0 + pct / 100.0), 6) for pct in PERCENT_DELTAS]
 
 RUNS_PER_PAIR = 1               # unnecessary to change right now
-TEST_SIM_NUM_TRIALS = 2000        # defines number of randomized trials
+TEST_SIM_NUM_TRIALS = 1000        # defines number of randomized trials
 RUNNER_VERBOSE = True
 MAX_WORKERS = None              # None -> use up to os.cpu_count() workers
 TRIAL_WORKERS_PER_PAIR = None   # None -> auto; >1 splits a pair's trials across workers
