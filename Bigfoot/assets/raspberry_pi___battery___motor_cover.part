@@ -1,0 +1,13 @@
+{
+    "configuration": "default",
+    "documentId": "17c5c8d07f4ec308269aab5c",
+    "documentMicroversion": "646ddaf8c82170138dfa3c83",
+    "elementId": "55c4fac25cf5518fc669d360",
+    "fullConfiguration": "default",
+    "id": "MKF6h9nT/SDlJsfj7",
+    "isStandardContent": false,
+    "name": "Raspberry Pi + Battery + Motor Cover <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}
