@@ -5,7 +5,7 @@
   <compiler angle="radian" meshdir="assets" autolimits="true"/>
   <default>
     <default class="Bigfoot">
-      <joint frictionloss="0.4" armature="0.0039"/>
+      <joint frictionloss="0.1" armature="0.005"/>
       <motor ctrllimited="true" ctrlrange="-25 25"/>
       <default class="visual">
         <geom type="mesh" contype="0" conaffinity="0" group="2"/>
@@ -17,27 +17,21 @@
   </default>
   <worldbody>
     <!-- Link motor -->
-    <body name="motor" pos="0 0 1.2" quat="1 0 0 0" childclass="Bigfoot">
+    <body name="motor" pos="0 0 1.0" quat="-0.94857412 0.01568716 -0.00530978 0.31612157" childclass="Bigfoot">
       <freejoint name="motor_freejoint"/>
-      <inertial pos="-0.0219295 0.0081844 -0.355622" mass="4.428" fullinertia="0.754635 0.896329 0.228485 0.000247725 -0.105498 -0.0114501"/>
+      <inertial pos="-0.0180294 0.0078004 -0.355012" mass="4.444" fullinertia="0.753982 0.890493 0.219429 1.73138e-05 -0.0945368 -0.0124142"/>
       <!-- Part simplified_motor___arm_rod -->
       <geom type="mesh" class="visual" pos="-0.30932 -5.55112e-17 2.77556e-17" quat="0.5 0.5 0.5 0.5" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
       <geom type="mesh" class="collision" pos="-0.30932 -5.55112e-17 2.77556e-17" quat="0.5 0.5 0.5 0.5" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
-      <!-- Part footstl_scaled_v4_mirrored -->
-      <geom name="right_foot_1" type="mesh" class="visual" pos="-0.226383 0.029 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04497e-18" mesh="footstl_scaled_v4_mirrored" material="footstl_scaled_v4_mirrored_material"/>
-      <geom name="right_foot_1_col" type="mesh" class="collision" pos="-0.226383 0.029 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04497e-18" mesh="footstl_scaled_v4_mirrored" material="footstl_scaled_v4_mirrored_material"/>
       <!-- Part cf_rod___leg -->
       <geom type="mesh" class="visual" pos="-0.179383 4.16334e-17 -0.9239" quat="1 -6.42713e-17 1.11022e-16 2.08167e-17" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
       <geom type="mesh" class="collision" pos="-0.179383 4.16334e-17 -0.9239" quat="1 -6.42713e-17 1.11022e-16 2.08167e-17" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
       <!-- Part raspberry_pi___battery___motor_cover -->
       <geom type="mesh" class="visual" pos="-1.66533e-16 0.0535 0.0992" quat="0 1 0 0" mesh="raspberry_pi___battery___motor_cover" material="raspberry_pi___battery___motor_cover_material"/>
       <geom type="mesh" class="collision" pos="-1.66533e-16 0.0535 0.0992" quat="0 1 0 0" mesh="raspberry_pi___battery___motor_cover" material="raspberry_pi___battery___motor_cover_material"/>
-      <!-- Part footstl_scaled_v4_mirrored_2 -->
-      <geom name="right_foot_2" type="mesh" class="visual" pos="-0.226383 0.029 -0.9239" quat="0 1 0 0" mesh="footstl_scaled_v4_mirrored__2" material="footstl_scaled_v4_mirrored__2_material"/>
-      <geom name="right_foot_2_col" type="mesh" class="collision" pos="-0.226383 0.029 -0.9239" quat="0 1 0 0" mesh="footstl_scaled_v4_mirrored__2" material="footstl_scaled_v4_mirrored__2_material"/>
-      <!-- Part footstl_scaled_v4_mirrored_3 -->
-      <geom name="right_foot_3" type="mesh" class="visual" pos="-0.226383 0.029 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04497e-18" mesh="footstl_scaled_v4_mirrored__3" material="footstl_scaled_v4_mirrored__3_material"/>
-      <geom name="right_foot_3_col" type="mesh" class="collision" pos="-0.226383 0.029 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04497e-18" mesh="footstl_scaled_v4_mirrored__3" material="footstl_scaled_v4_mirrored__3_material"/>
+      <!-- Part footstl_scaled_v4_mirrored -->
+      <geom name="right_foot_1" type="mesh" class="visual" pos="-0.208871 0.0274398 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04496e-18" mesh="footstl_scaled_v4_mirrored" material="footstl_scaled_v4_mirrored_material"/>
+      <geom name="right_foot_1_col" type="mesh" class="collision" pos="-0.208871 0.0274398 -0.9239" quat="6.46484e-17 1 1.06661e-17 9.04496e-18" mesh="footstl_scaled_v4_mirrored" material="footstl_scaled_v4_mirrored_material"/>
       <!-- Part arm_rod -->
       <geom type="mesh" class="visual" pos="0.320432 2.77556e-17 0.0095" quat="6.93889e-17 8.78706e-19 6.50521e-17 1" mesh="arm_rod" material="arm_rod_material"/>
       <geom type="mesh" class="collision" pos="0.320432 2.77556e-17 0.0095" quat="6.93889e-17 8.78706e-19 6.50521e-17 1" mesh="arm_rod" material="arm_rod_material"/>
@@ -54,72 +48,58 @@
       <geom type="mesh" class="visual" pos="0.320432 7.45931e-17 -0.4405" quat="1 -6.46484e-17 2.22045e-16 1.6005e-17" mesh="battery" material="battery_material"/>
       <geom type="mesh" class="collision" pos="0.320432 7.45931e-17 -0.4405" quat="1 -6.46484e-17 2.22045e-16 1.6005e-17" mesh="battery" material="battery_material"/>
       <!-- Link simplified_motor___arm_rod -->
-      <body name="simplified_motor___arm_rod" pos="0.025 4.26644e-18 6.83537e-18" quat="7.08559e-16 -0.707107 -7.77156e-16 0.707107">
+      <body name="simplified_motor___arm_rod" pos="0.025 4.26644e-18 6.83537e-18" quat="3.62575e-16 -0.707107 -4.44089e-16 0.707107">
         <!-- Joint from motor to simplified_motor___arm_rod -->
         <joint axis="0 0 1" name="hip" type="hinge"/>
-        <inertial pos="0.524746 -0.00134085 -0.00644552" mass="3.088" fullinertia="0.224105 0.599928 0.45797 0.00171116 0.0890751 -0.000912264"/>
+        <inertial pos="0.523 -0.000826344 -0.000812721" mass="3.104" fullinertia="0.215327 0.59576 0.458662 0.000996794 0.0810771 -0.000576093"/>
         <!-- Part hip_inner_right_2 -->
-        <geom type="mesh" class="visual" pos="0.3443 1.18341e-16 -0.02" quat="4.21493e-17 0.707107 1.11022e-16 -0.707107" mesh="hip_inner_right" material="hip_inner_right_material"/>
-        <geom type="mesh" class="collision" pos="0.3443 1.18341e-16 -0.02" quat="4.21493e-17 0.707107 1.11022e-16 -0.707107" mesh="hip_inner_right" material="hip_inner_right_material"/>
+        <geom type="mesh" class="visual" pos="0.3443 6.34483e-17 -0.02" quat="8.11852e-17 0.707107 0 -0.707107" mesh="hip_inner_right" material="hip_inner_right_material"/>
+        <geom type="mesh" class="collision" pos="0.3443 6.34483e-17 -0.02" quat="8.11852e-17 0.707107 0 -0.707107" mesh="hip_inner_right" material="hip_inner_right_material"/>
         <!-- Part arm_rod_2 -->
-        <geom type="mesh" class="visual" pos="-0.0095 5.14622e-19 0.345432" quat="7.18926e-17 -0.707107 0 0.707107" mesh="arm_rod" material="arm_rod_material"/>
-        <geom type="mesh" class="collision" pos="-0.0095 5.14622e-19 0.345432" quat="7.18926e-17 -0.707107 0 0.707107" mesh="arm_rod" material="arm_rod_material"/>
-        <!-- Part footstl_scaled_v4 -->
-        <geom name="left_foot_1" type="mesh" class="visual" pos="0.9239 -0.029 -0.201383" quat="0.707107 -2.07169e-16 -0.707107 1.88738e-15" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
-        <geom name="left_foot_1_col" type="mesh" class="collision" pos="0.9239 -0.029 -0.201383" quat="0.707107 -2.07169e-16 -0.707107 1.88738e-15" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+        <geom type="mesh" class="visual" pos="-0.0095 -1.15648e-18 0.345432" quat="7.23671e-17 -0.707107 0 0.707107" mesh="arm_rod" material="arm_rod_material"/>
+        <geom type="mesh" class="collision" pos="-0.0095 -1.15648e-18 0.345432" quat="7.23671e-17 -0.707107 0 0.707107" mesh="arm_rod" material="arm_rod_material"/>
         <!-- Part cf_rod___leg_2 -->
-        <geom type="mesh" class="visual" pos="0.9239 2.64694e-16 -0.154383" quat="1.12285e-16 0.707107 0 -0.707107" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
-        <geom type="mesh" class="collision" pos="0.9239 2.64694e-16 -0.154383" quat="1.12285e-16 0.707107 0 -0.707107" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
+        <geom type="mesh" class="visual" pos="0.9239 2.03484e-16 -0.154383" quat="1.19221e-16 0.707107 1.11022e-16 -0.707107" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
+        <geom type="mesh" class="collision" pos="0.9239 2.03484e-16 -0.154383" quat="1.19221e-16 0.707107 1.11022e-16 -0.707107" mesh="cf_rod___leg" material="cf_rod___leg_material"/>
         <!-- Part simplified_motor___arm_rod_2 -->
-        <geom type="mesh" class="visual" pos="5.94935e-19 5.78241e-19 -0.28432" quat="1 -0 -1.38778e-17 -3.44234e-16" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
-        <geom type="mesh" class="collision" pos="5.94935e-19 5.78241e-19 -0.28432" quat="1 -0 -1.38778e-17 -3.44234e-16" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
-        <!-- Part footstl_scaled_v4_2 -->
-        <geom name="left_foot_2" type="mesh" class="visual" pos="0.9239 -0.029 -0.201383" quat="0.707107 -7.95006e-17 -0.707107 8.88178e-16" mesh="footstl_scaled_v4__2" material="footstl_scaled_v4__2_material"/>
-        <geom name="left_foot_2_col" type="mesh" class="collision" pos="0.9239 -0.029 -0.201383" quat="0.707107 -7.95006e-17 -0.707107 8.88178e-16" mesh="footstl_scaled_v4__2" material="footstl_scaled_v4__2_material"/>
+        <geom type="mesh" class="visual" pos="5.94935e-19 5.78241e-19 -0.28432" quat="1 -0 -0 2.2693e-16" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
+        <geom type="mesh" class="collision" pos="5.94935e-19 5.78241e-19 -0.28432" quat="1 -0 -0 2.2693e-16" mesh="simplified_motor___arm_rod" material="simplified_motor___arm_rod_material"/>
+        <!-- Part footstl_scaled_v4 -->
+        <geom name="left_foot_1" type="mesh" class="visual" pos="0.9239 -0.0274398 -0.183871" quat="0.707107 7.13756e-17 -0.707107 2.22045e-16" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
+        <geom name="left_foot_1_col" type="mesh" class="collision" pos="0.9239 -0.0274398 -0.183871" quat="0.707107 7.13756e-17 -0.707107 2.22045e-16" mesh="footstl_scaled_v4" material="footstl_scaled_v4_material"/>
         <!-- Part battery_2 -->
-        <geom type="mesh" class="visual" pos="0.4405 -3.85167e-17 0.345432" quat="0.707107 3.55655e-17 -0.707107 -2.22045e-16" mesh="battery" material="battery_material"/>
-        <geom type="mesh" class="collision" pos="0.4405 -3.85167e-17 0.345432" quat="0.707107 3.55655e-17 -0.707107 -2.22045e-16" mesh="battery" material="battery_material"/>
+        <geom type="mesh" class="visual" pos="0.4405 -3.95747e-17 0.345432" quat="0.707107 -1.00983e-16 -0.707107 1.11022e-16" mesh="battery" material="battery_material"/>
+        <geom type="mesh" class="collision" pos="0.4405 -3.95747e-17 0.345432" quat="0.707107 -1.00983e-16 -0.707107 1.11022e-16" mesh="battery" material="battery_material"/>
         <!-- Part exo_hip_rod_2 -->
-        <geom type="mesh" class="visual" pos="0.3093 7.25444e-17 -0.02" quat="6.26055e-17 0.707107 1.11022e-16 -0.707107" mesh="exo_hip_rod" material="exo_hip_rod_material"/>
-        <geom type="mesh" class="collision" pos="0.3093 7.25444e-17 -0.02" quat="6.26055e-17 0.707107 1.11022e-16 -0.707107" mesh="exo_hip_rod" material="exo_hip_rod_material"/>
-        <!-- Part footstl_scaled_v4_3 -->
-        <geom name="left_foot_3" type="mesh" class="visual" pos="0.9239 -0.029 -0.201383" quat="0.707107 -3.85645e-16 -0.707107 1.66533e-15" mesh="footstl_scaled_v4__3" material="footstl_scaled_v4__3_material"/>
-        <geom name="left_foot_3_col" type="mesh" class="collision" pos="0.9239 -0.029 -0.201383" quat="0.707107 -3.85645e-16 -0.707107 1.66533e-15" mesh="footstl_scaled_v4__3" material="footstl_scaled_v4__3_material"/>
+        <geom type="mesh" class="visual" pos="0.3093 5.53225e-17 -0.02" quat="6.05456e-17 0.707107 1.11022e-16 -0.707107" mesh="exo_hip_rod" material="exo_hip_rod_material"/>
+        <geom type="mesh" class="collision" pos="0.3093 5.53225e-17 -0.02" quat="6.05456e-17 0.707107 1.11022e-16 -0.707107" mesh="exo_hip_rod" material="exo_hip_rod_material"/>
       </body>
     </body>
   </worldbody>
   <asset>
-    <mesh file="footstl_scaled_v4_mirrored.stl"/>
-    <mesh file="footstl_scaled_v4_mirrored__2.stl"/>
-    <mesh file="footstl_scaled_v4.stl"/>
-    <mesh file="raspberry_pi___battery___motor_cover.stl"/>
-    <mesh file="exo_hip_rod.stl"/>
-    <mesh file="footstl_scaled_v4__2.stl"/>
-    <mesh file="footstl_scaled_v4__3.stl"/>
-    <mesh file="cf_rod___leg.stl"/>
-    <mesh file="arm_rod.stl"/>
-    <mesh file="footstl_scaled_v4_mirrored__3.stl"/>
-    <mesh file="simplified_motor___arm_rod.stl"/>
     <mesh file="battery.stl"/>
+    <mesh file="footstl_scaled_v4_mirrored.stl"/>
+    <mesh file="raspberry_pi___battery___motor_cover.stl"/>
+    <mesh file="cf_rod___leg.stl"/>
     <mesh file="motor.stl"/>
+    <mesh file="arm_rod.stl"/>
+    <mesh file="footstl_scaled_v4.stl"/>
+    <mesh file="exo_hip_rod.stl"/>
     <mesh file="hip_inner_right.stl"/>
+    <mesh file="simplified_motor___arm_rod.stl"/>
     <material name="simplified_motor___arm_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
-    <material name="footstl_scaled_v4_mirrored_material" rgba="0.627451 0.627451 0.627451 1"/>
     <material name="cf_rod___leg_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="raspberry_pi___battery___motor_cover_material" rgba="0.615686 0.811765 0.929412 1"/>
-    <material name="footstl_scaled_v4_mirrored__2_material" rgba="0.627451 0.627451 0.627451 1"/>
-    <material name="footstl_scaled_v4_mirrored__3_material" rgba="0.627451 0.627451 0.627451 1"/>
+    <material name="footstl_scaled_v4_mirrored_material" rgba="0.627451 0.627451 0.627451 1"/>
     <material name="arm_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="exo_hip_rod_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="hip_inner_right_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="motor_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="battery_material" rgba="0.615686 0.811765 0.929412 1"/>
     <material name="footstl_scaled_v4_material" rgba="0.627451 0.627451 0.627451 1"/>
-    <material name="footstl_scaled_v4__2_material" rgba="0.627451 0.627451 0.627451 1"/>
-    <material name="footstl_scaled_v4__3_material" rgba="0.627451 0.627451 0.627451 1"/>
   </asset>
   <actuator>
-    <motor class="Bigfoot" name="hip" joint="hip" ctrlrange="-25.0 25.0"/>
+    <motor class="Bigfoot" name="hip" joint="hip" ctrlrange = "-25.0 25.0"/>
   </actuator>
   <equality/>
 </mujoco>
