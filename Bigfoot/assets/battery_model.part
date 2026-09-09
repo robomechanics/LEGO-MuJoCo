@@ -1,12 +1,12 @@
 {
     "configuration": "default",
     "documentId": "17c5c8d07f4ec308269aab5c",
-    "documentMicroversion": "13cb2023f3b1957d116e7b79",
-    "elementId": "69369a742acdbe1a95ac94ec",
+    "documentMicroversion": "c2d0edd0c93967768efc9347",
+    "elementId": "63f544213b8051e94c725bab",
     "fullConfiguration": "default",
     "id": "Me9lzb6S0Sr73WpV4",
     "isStandardContent": false,
-    "name": "Battery <2>",
+    "name": "Battery Model <1>",
     "partId": "JHD",
     "suppressed": false,
     "type": "Part"
