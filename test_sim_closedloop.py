@@ -1,29 +1,88 @@
+import argparse
+import subprocess
+import tempfile
+from pathlib import Path
+
 import mujoco
 import mujoco.viewer
 import numpy as np
 import time
 import pickle as pkl
 
-from coordinate_frame import public_to_mujoco_vec
-from control_waveform import DEFAULT_WAVEFORM, startup_sine_reference
+# ═══════════════════════════════════════════════════════════════════════════════
+# CLI — video recording
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Bigfoot closed-loop sim (optional video record)")
+    parser.add_argument("-r", "--record", action="store_true", help="Record an offscreen tracking video")
+    parser.add_argument(
+        "-n",
+        "--name",
+        type=str,
+        default="closedloop_sim",
+        help="Video title / filename stem (saved under data/videos/)",
+    )
+    parser.add_argument("-vdir", "--video_dir", type=str, default="data/videos", help="Directory for videos")
+    parser.add_argument("-vfps", "--video_fps", type=int, default=30, help="Recorded video FPS")
+    parser.add_argument("--width", type=int, default=1280, help="Recorded video width")
+    parser.add_argument("--height", type=int, default=720, help="Recorded video height")
+    parser.add_argument(
+        "-settle",
+        "--settle",
+        action="store_true",
+        help="On viewer close, print averaged torso quaternion from the last settle window",
+    )
+    parser.add_argument(
+        "--settle-window",
+        type=float,
+        default=2.0,
+        help="Seconds of trailing quaternion samples to average when using -settle",
+    )
+    return parser.parse_args()
+
+
+ARGS = parse_args()
+RECORD = bool(ARGS.record)
+SETTLE = bool(ARGS.settle)
+SETTLE_WINDOW_S = float(ARGS.settle_window)
+VIDEO_NAME = ARGS.name
+VIDEO_DIR = Path(ARGS.video_dir)
+VIDEO_FPS = int(ARGS.video_fps)
+VIDEO_WIDTH = int(ARGS.width)
+VIDEO_HEIGHT = int(ARGS.height)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS — match these directly to motorwave.py for hardware replication
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Motor / control ───────────────────────────────────────────────────────────
-KP           = 90.0 
-KD           = 7.0
+KP           = 29.1
+KD           = 8.2
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-WAVEFORM = DEFAULT_WAVEFORM
+HIP_OMEGA       = 0.524 * 2 * np.pi
+LEG_AMP_DEG     = 48.4
+T_WAIT          = 3.0
+START_FREQ_MULT = 1.93
+START_AMP_MULT  = 1.31
 
-# FOOT OFFSETS
-# Public frame: +x forward, +y robot-left, +z down.
-# MuJoCo frame: +x forward, +y robot-left, +z up.
-RIGHT_FOOT_OFFSET = np.array([0.0, -0.0, 0.0])
-LEFT_FOOT_OFFSET = np.array([0.0, -0.0, 0.0])
+# FOOT OFFSETS — Bigfoot single-piece STLs (right_foot_1 / left_foot_1)
+# Same mapping as test_sim_sweep.apply_foot_offsets.
+# CAD foot placement is already baked into robot.xml; leave these at 0 unless
+# you intentionally shift stance.
+#
+# FOOT_X : positive = shift feet inward (toward robot midline)
+# FOOT_Y : positive = shift feet forward
+# FOOT_Z : positive = shift feet up (right parent frame +Z)
+#
+# Right foot lives on body "motor"; left on "simplified_motor___arm_rod".
+#   right geom delta = [ FOOT_X,  FOOT_Y,  FOOT_Z ]
+#   left  geom delta = [ FOOT_Z, -FOOT_Y,  FOOT_X ]  # == sweep [0,-fy,fx] when Z=0
+FOOT_X = 0.004
+FOOT_Y = -0.023
+FOOT_Z = 0.0
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Gain ramp ─────────────────────────────────────────────────────────────────
@@ -33,67 +92,74 @@ RAMP_TIME = 2.0
 # ── CAN latency simulation ────────────────────────────────────────────────────
 CMD_DELAY_STEPS = 1
 
+# Automatic stance stabilizer: hold hip at 0 with PD, average freejoint lean,
+# yaw-lock, then hard-reset and start the gait at t=0.
+STARTUP_SETTLE_S = 8.0
+STARTUP_SETTLE_AVG_S = 2.0
+STARTUP_SETTLE_KP = 45.0
+STARTUP_SETTLE_KD = 7.0
 # ═══════════════════════════════════════════════════════════════════════════════
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path("Bigfoot/scene.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
 arm_id   = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "simplified_motor___arm_rod")
 
-#=========
+# Bigfoot CAD export: one visual + one collision geom per foot.
+RIGHT_FOOT_GEOMS = ("right_foot_1", "right_foot_1_col")
+LEFT_FOOT_GEOMS  = ("left_foot_1", "left_foot_1_col")
 
-# 1. Store clean baseline arrays
-original_geom_pos = np.array(model.geom_pos)
-original_body_ipos = np.array(model.body_ipos)
-##"Mirrored" foot is the right foot
-# Map visual/collision geoms to public-frame offsets.
-geom_offsets = {
-    "right_foot_1":     RIGHT_FOOT_OFFSET, "right_foot_2":     RIGHT_FOOT_OFFSET, "right_foot_3":     RIGHT_FOOT_OFFSET,
-    "left_foot_1":      LEFT_FOOT_OFFSET,  "left_foot_2":      LEFT_FOOT_OFFSET,  "left_foot_3":      LEFT_FOOT_OFFSET,
-    "right_foot_1_col": RIGHT_FOOT_OFFSET, "right_foot_2_col": RIGHT_FOOT_OFFSET, "right_foot_3_col": RIGHT_FOOT_OFFSET,
-    "left_foot_1_col":  LEFT_FOOT_OFFSET,  "left_foot_2_col":  LEFT_FOOT_OFFSET,  "left_foot_3_col":  LEFT_FOOT_OFFSET,
+delta_right_geom = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
+delta_left_geom  = np.array([FOOT_Z, -FOOT_Y, FOOT_X], dtype=float)
+# Parent-body CoM shifts (world-ish on motor; mirrored lateral on arm link).
+delta_right_body = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
+delta_left_body  = np.array([-FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
+
+original_geom_pos = {
+    name: model.geom_pos[gid].copy()
+    for name in (*RIGHT_FOOT_GEOMS, *LEFT_FOOT_GEOMS)
+    if (gid := mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)) != -1
+}
+original_body_ipos = {
+    bid: model.body_ipos[bid].copy()
+    for bid in (motor_id, arm_id)
+    if bid != -1
 }
 
-def public_offset_to_body_frame(public_offset, parent_bid):
-    """Convert public/world-frame offset into this geom body's local coordinates."""
-    body_rot = data.xmat[parent_bid].reshape(3, 3)
-    return body_rot.T @ public_to_mujoco_vec(public_offset)
+for name in RIGHT_FOOT_GEOMS:
+    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
+    if geom_id != -1:
+        model.geom_pos[geom_id] = original_geom_pos[name] + delta_right_geom
 
+for name in LEFT_FOOT_GEOMS:
+    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
+    if geom_id != -1:
+        model.geom_pos[geom_id] = original_geom_pos[name] + delta_left_geom
 
-# Initialize body frames before converting public offsets into body-local deltas.
+if motor_id != -1:
+    model.body_ipos[motor_id] = original_body_ipos[motor_id] + delta_right_body
+if arm_id != -1:
+    model.body_ipos[arm_id] = original_body_ipos[arm_id] + delta_left_body
+
+mujoco.mj_setConst(model, data)
 mujoco.mj_forward(model, data)
 
-# 2. Shift the visual/collision boxes in their parent body's local frame.
-for name, public_offset in geom_offsets.items():
-    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
-    if geom_id != -1:
-        parent_bid = model.geom_bodyid[geom_id]
-        delta = public_offset_to_body_frame(public_offset, parent_bid)
-        model.geom_pos[geom_id] = original_geom_pos[geom_id] + delta
-
-# 3. Shift the unique parent body inertias using the same local-frame conversion.
-unique_body_shifts = {}
-for name in geom_offsets.keys():
-    geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
-    if geom_id != -1:
-        parent_bid = model.geom_bodyid[geom_id]
-        unique_body_shifts[parent_bid] = public_offset_to_body_frame(
-            RIGHT_FOOT_OFFSET if "right" in name else LEFT_FOOT_OFFSET,
-            parent_bid,
-        )
-
-for bid, delta in unique_body_shifts.items():
-    model.body_ipos[bid] = original_body_ipos[bid] + delta
-
-
-
+print(
+    f"Closed-loop trial  amp={LEG_AMP_DEG:.1f}° sam={START_AMP_MULT:.2f} "
+    f"sfm={START_FREQ_MULT:.2f} Kp={KP:.1f} Kd={KD:.1f} "
+    f"freq={HIP_OMEGA / (2 * np.pi):.3f} Hz"
+)
+print(
+    f"Foot offsets: FOOT_X={FOOT_X:.4f} FOOT_Y={FOOT_Y:.4f} FOOT_Z={FOOT_Z:.4f} | "
+    f"right_geom={delta_right_geom} left_geom={delta_left_geom}"
+)
 print(f"Whole-robot CoM: {data.subtree_com[motor_id].round(4)}")
 print(f"Total mass:      {sum(model.body_mass[i] for i in range(model.nbody)):.3f} kg")
-
 # ── Derived constants ─────────────────────────────────────────────────────────
+leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 cmd_buffer  = [0.0] * CMD_DELAY_STEPS
 
 
@@ -118,20 +184,147 @@ def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
  
     return np.column_stack([roll, pitch, yaw])
 
+
+def average_quaternions(quats: np.ndarray) -> np.ndarray:
+    """Component-wise mean of (N,4) wxyz quats, flipped to one hemisphere, then renormalized."""
+    q = np.asarray(quats, dtype=float)
+    if q.ndim != 2 or q.shape[1] != 4 or len(q) == 0:
+        raise ValueError(f"Expected non-empty (N,4) quats, got {getattr(q, 'shape', None)}")
+    aligned = q.copy()
+    dots = aligned @ aligned[0]
+    aligned[dots < 0.0] *= -1.0
+    mean = aligned.mean(axis=0)
+    norm = np.linalg.norm(mean)
+    if norm < 1e-12:
+        raise RuntimeError("Quaternion average collapsed to zero.")
+    return mean / norm
+
+
+def rpy_to_quat(roll: float, pitch: float, yaw: float) -> np.ndarray:
+    cr, sr = np.cos(roll * 0.5), np.sin(roll * 0.5)
+    cp, sp = np.cos(pitch * 0.5), np.sin(pitch * 0.5)
+    cy, sy = np.cos(yaw * 0.5), np.sin(yaw * 0.5)
+    return np.array(
+        [
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        ],
+        dtype=float,
+    )
+
+
+def lock_quat_yaw(settled_quat: np.ndarray, yaw_reference_quat: np.ndarray) -> np.ndarray:
+    settled_rpy = np.ravel(quat_to_rpy(settled_quat))
+    ref_rpy = np.ravel(quat_to_rpy(yaw_reference_quat))
+    return rpy_to_quat(float(settled_rpy[0]), float(settled_rpy[1]), float(ref_rpy[2]))
+
+
+def startup_settle_orientation() -> np.ndarray:
+    """Zero-amp settle then hard-reset freejoint lean (yaw-locked), matching ES trials."""
+    spawn_xyz = data.qpos[0:3].copy()
+    spawn_quat = data.qpos[3:7].copy()
+    dt = float(model.opt.timestep)
+    n_steps = int(np.ceil(STARTUP_SETTLE_S / dt))
+    avg_start_t = STARTUP_SETTLE_S - STARTUP_SETTLE_AVG_S
+    free_quats: list[np.ndarray] = []
+
+    print(
+        f"Startup settle {STARTUP_SETTLE_S:.1f}s "
+        f"(avg last {STARTUP_SETTLE_AVG_S:.1f}s, yaw locked)..."
+    )
+    for _ in range(n_steps):
+        pos = data.qpos[hip_qpos_adr]
+        vel = data.qvel[hip_qvel_adr]
+        tau = STARTUP_SETTLE_KP * (0.0 - pos) + STARTUP_SETTLE_KD * (0.0 - vel)
+        data.ctrl[0] = float(np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT))
+        mujoco.mj_step(model, data)
+        if data.time >= avg_start_t:
+            free_quats.append(data.qpos[3:7].copy())
+
+    if not free_quats:
+        raise RuntimeError("Startup settle collected no quaternion samples.")
+
+    mean_free = lock_quat_yaw(average_quaternions(np.asarray(free_quats)), spawn_quat)
+    hip_qpos = float(data.qpos[hip_qpos_adr])
+    mujoco.mj_resetData(model, data)
+    data.qpos[0:3] = spawn_xyz
+    data.qpos[3:7] = mean_free
+    data.qpos[hip_qpos_adr] = hip_qpos
+    data.qvel[:] = 0.0
+    data.ctrl[:] = 0.0
+    mujoco.mj_forward(model, data)
+    rpy = np.ravel(np.rad2deg(quat_to_rpy(mean_free)))
+    print(
+        f"Startup settle done: quat="
+        f"{mean_free[0]:.5f} {mean_free[1]:.5f} {mean_free[2]:.5f} {mean_free[3]:.5f} | "
+        f"RPY(deg)=[{rpy[0]:.2f}, {rpy[1]:.2f}, {rpy[2]:.2f}]"
+    )
+    return mean_free
+
+
+def print_settle_quaternion(times: np.ndarray, body_quats: np.ndarray, window_s: float) -> None:
+    """Average trailing body quaternions and print XML-ready settle pose."""
+    if len(times) == 0 or len(body_quats) == 0:
+        print("Settle requested, but no quaternion samples were recorded.")
+        return
+
+    t_end = float(times[-1])
+    t_start = max(float(times[0]), t_end - window_s)
+    mask = times >= t_start
+    samples = body_quats[mask]
+    if len(samples) == 0:
+        print("Settle requested, but no samples fell inside the settle window.")
+        return
+
+    mean_body = average_quaternions(samples)
+    rpy_body = np.rad2deg(quat_to_rpy(mean_body))
+    free_q = np.asarray(data.qpos[3:7], dtype=float)
+    free_q = free_q / max(np.linalg.norm(free_q), 1e-12)
+    rpy_free = np.rad2deg(quat_to_rpy(free_q))
+
+    print("\n=== Settled average quaternion (-settle) ===")
+    print(f"Samples: {len(samples)}  (t = [{t_start:.2f}, {t_end:.2f}] s)")
+    print(
+        "Body xquat (w x y z): "
+        f"{mean_body[0]:.8f} {mean_body[1]:.8f} {mean_body[2]:.8f} {mean_body[3]:.8f}"
+    )
+    print(
+        "Freejoint qpos[3:7] (final): "
+        f"{free_q[0]:.8f} {free_q[1]:.8f} {free_q[2]:.8f} {free_q[3]:.8f}"
+    )
+    print(f"Body RPY (deg):      roll={rpy_body[0]:.3f}  pitch={rpy_body[1]:.3f}  yaw={rpy_body[2]:.3f}")
+    print(f"Freejoint RPY (deg): roll={rpy_free[0]:.3f}  pitch={rpy_free[1]:.3f}  yaw={rpy_free[2]:.3f}")
+    print("\nXML-ready body quat attribute:")
+    print(f'quat="{mean_body[0]:.6f} {mean_body[1]:.6f} {mean_body[2]:.6f} {mean_body[3]:.6f}"')
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # TRAJECTORY — direct port of motorwave.py calculate_sine_reference
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def calculate_sine_reference(t):
-    return startup_sine_reference(
-        t=t,
-        hip_omega=WAVEFORM.hip_omega,
-        leg_amp_rad=WAVEFORM.leg_amp_rad,
-        t_wait=WAVEFORM.t_wait,
-        start_amp_mult=WAVEFORM.start_amp_mult,
-        start_freq_mult=WAVEFORM.start_freq_mult,
-        ramp_time=WAVEFORM.startup_ramp_time,
-    )
+    w1           = HIP_OMEGA * START_FREQ_MULT
+    w2           = HIP_OMEGA
+    t0           = T_WAIT
+    At           = START_AMP_MULT * leg_amp_rad
+    As           = leg_amp_rad
+    t_transition = t0 + np.pi / w1
+
+    if t <= t0:
+        position, velocity = 0.0, 0.0
+
+    elif t < t_transition:
+        phase    = w1 * (t - t0)
+        position = At * np.sin(phase)
+        velocity = At * w1 * np.cos(phase)      # true derivative
+
+    else:
+        phase    = w2 * (t - t_transition)
+        position = -As * np.sin(phase)
+        velocity = -As * w2 * np.cos(phase)     # true derivative
+
+    return position, velocity
 
 for i in range(model.njnt):
     name = model.joint(i).name
@@ -197,8 +390,69 @@ def record_contacts_in_body_frame(model, data, contact_geoms, con_dict):
                 timed_p_body = np.hstack([data.time, p_body])
                 con_dict[name]['t_coords'].append(timed_p_body)
 
-my_collision_geoms = ['right_foot_1_col', 'right_foot_2_col', 'right_foot_3_col']
+my_collision_geoms = ["right_foot_1_col", "left_foot_1_col"]
 contact_geoms, con_dict = init_geom_to_body_tracking(model, my_collision_geoms)
+
+def build_tracking_camera(
+    distance: float = 2.4,
+    azimuth: float = 145.0,
+    elevation: float = -18.0,
+) -> mujoco.MjvCamera:
+    camera = mujoco.MjvCamera()
+    camera.type = mujoco.mjtCamera.mjCAMERA_TRACKING
+    camera.trackbodyid = motor_id
+    camera.distance = distance
+    camera.azimuth = azimuth
+    camera.elevation = elevation
+    return camera
+
+
+def save_video_h264(frames: list[np.ndarray], output_path: Path, fps: int) -> None:
+    """Write RGB frames to an H.264 mp4 (Cursor/browser-friendly)."""
+    if not frames:
+        print("No frames captured; skipping video write.")
+        return
+
+    output_path = output_path if output_path.suffix else output_path.with_suffix(".mp4")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    height, width = frames[0].shape[:2]
+
+    with tempfile.TemporaryDirectory(prefix="closedloop_vid_") as tmp:
+        tmp_dir = Path(tmp)
+        for i, frame in enumerate(frames):
+            # PPM is trivial to write without extra image deps.
+            path = tmp_dir / f"frame_{i:06d}.ppm"
+            rgb = np.asarray(frame, dtype=np.uint8)
+            header = f"P6\n{width} {height}\n255\n".encode("ascii")
+            path.write_bytes(header + rgb.tobytes())
+
+        pattern = str(tmp_dir / "frame_%06d.ppm")
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-framerate",
+            str(fps),
+            "-i",
+            pattern,
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-preset",
+            "medium",
+            "-crf",
+            "20",
+            "-movflags",
+            "+faststart",
+            str(output_path),
+        ]
+        subprocess.run(cmd, check=True)
+
+    print(f"Saved video ({len(frames)} frames @ {fps} fps) to {output_path}")
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SIMULATION LOOP
@@ -207,6 +461,28 @@ contact_geoms, con_dict = init_geom_to_body_tracking(model, my_collision_geoms)
 
 mujoco.mj_setConst(model, data)
 mujoco.mj_forward(model, data)
+
+video_frames: list[np.ndarray] = []
+next_frame_time = 0.0
+frame_interval = 1.0 / VIDEO_FPS if RECORD else None
+renderer = None
+record_camera = None
+
+if RECORD:
+    model.vis.global_.offwidth = max(int(model.vis.global_.offwidth), VIDEO_WIDTH)
+    model.vis.global_.offheight = max(int(model.vis.global_.offheight), VIDEO_HEIGHT)
+    renderer = mujoco.Renderer(model, VIDEO_HEIGHT, VIDEO_WIDTH)
+    record_camera = build_tracking_camera()
+    video_out = VIDEO_DIR / VIDEO_NAME
+    if video_out.suffix.lower() not in {".mp4", ".mov", ".mkv"}:
+        video_out = video_out.with_suffix(".mp4")
+    print(f"Recording enabled → {video_out} ({VIDEO_WIDTH}x{VIDEO_HEIGHT} @ {VIDEO_FPS} fps)")
+
+if SETTLE:
+    print(f"Settle mode on: will average last {SETTLE_WINDOW_S:.1f}s of body quaternion when viewer closes")
+
+if STARTUP_SETTLE_S > 0:
+    startup_settle_orientation()
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
     #data.qpos[2] = 1.2
@@ -229,7 +505,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         targetVelocity_history.append(target_vel_rad)
         quat_history.append(data.xquat[motor_id].copy())
         #torqueCommand_history.append(data.qfrc_actuator[0])
-        if t > WAVEFORM.t_wait:
+        if t > T_WAIT:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
 
 
@@ -248,8 +524,27 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         data.ctrl[0] = cmd_buffer.pop(0)
 
         mujoco.mj_step(model, data)
+
+        if RECORD and renderer is not None and record_camera is not None and frame_interval is not None:
+            while data.time >= next_frame_time:
+                renderer.update_scene(data, camera=record_camera)
+                video_frames.append(renderer.render().copy())
+                next_frame_time += frame_interval
+
         viewer.sync()
         time.sleep(model.opt.timestep)
+
+if renderer is not None:
+    renderer.close()
+
+if RECORD:
+    video_out = VIDEO_DIR / VIDEO_NAME
+    if video_out.suffix.lower() not in {".mp4", ".mov", ".mkv"}:
+        video_out = video_out.with_suffix(".mp4")
+    try:
+        save_video_h264(video_frames, video_out, VIDEO_FPS)
+    except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        print(f"Failed to encode video with ffmpeg: {exc}")
 
 # ===========
 # PLOTTING
@@ -270,6 +565,9 @@ targetVelocity_history = np.array(targetVelocity_history)
 quat_history = np.array(quat_history)                 # (N,4) [w,x,y,z]
 rpy_history = np.rad2deg(quat_to_rpy(quat_history))    # (N,3) degrees
 roll_history, pitch_history, yaw_history = rpy_history[:, 0], rpy_history[:, 1], rpy_history[:, 2]
+
+if SETTLE:
+    print_settle_quaternion(time_history, quat_history, SETTLE_WINDOW_S)
 
 # Note: If you add a positionCommand_history later, convert it here too:
 # positionCommand_history = np.array(positionCommand_history)
