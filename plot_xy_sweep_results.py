@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Plot X/Y mesh sweep success rates from the combined sweep CSV."""
+"""Plot sweep results as a simple 2D or 3D scatter plot."""
 
 import argparse
 import csv
 import math
 import os
-from collections import defaultdict
+import sys
 from pathlib import Path
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
@@ -15,7 +15,15 @@ import matplotlib
 matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import LinearSegmentedColormap
+
+from sweep_axis_utils import (
+    axis_percent_label,
+    axis_short_label,
+    infer_base,
+    percentage_difference,
+    resolve_sweep_axes,
+    validate_sweep_columns,
+)
 
 
 def default_input_csv() -> Path:
@@ -33,69 +41,19 @@ def parse_bool(value: str) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "y"}
 
 
-def trunc_sig(value: float, sig_digits: int = 3) -> str:
-    if value is None or not math.isfinite(value):
-        return "nan"
-    if value == 0:
-        return "0"
-
-    sign = -1 if value < 0 else 1
-    value_abs = abs(value)
-    exponent = math.floor(math.log10(value_abs))
-    scale = 10 ** (exponent - sig_digits + 1)
-    truncated = sign * math.floor(value_abs / scale) * scale
-    return f"{truncated:.{sig_digits}g}"
-
-
-def percentage_difference(value: float, base: float) -> float:
-    return 100.0 * (value / base - 1.0)
-
-
-def infer_base(values: list[float], config_name: str) -> float:
-    try:
-        import xy_sweep_config as config
-
-        return float(getattr(config, config_name))
-    except (ImportError, AttributeError, TypeError, ValueError):
-        return float(np.median(values))
-
-
-def configured_percent_centers(values: list[float], base_name: str, values_name: str) -> list[float]:
-    try:
-        import xy_sweep_config as config
-
-        base = float(getattr(config, base_name))
-        configured_values = getattr(config, values_name)
-        return sorted(round(percentage_difference(float(value), base), 6) for value in configured_values)
-    except (ImportError, AttributeError, TypeError, ValueError):
-        return values
-
-
-def cell_edges(centers: list[float]) -> np.ndarray:
-    centers_array = np.array(sorted(centers), dtype=float)
-    if len(centers_array) == 1:
-        half_width = 1.0
-        return np.array([centers_array[0] - half_width, centers_array[0] + half_width])
-
-    midpoints = (centers_array[:-1] + centers_array[1:]) / 2.0
-    first = centers_array[0] - (midpoints[0] - centers_array[0])
-    last = centers_array[-1] + (centers_array[-1] - midpoints[-1])
-    return np.concatenate([[first], midpoints, [last]])
-
-
 def load_rows(csv_path: Path, filter_min_distance: float | None = None) -> list[dict]:
     with csv_path.open(newline="") as f:
         reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
         rows = list(reader)
 
-    required = {"Mesh_X", "Mesh_Y", "Gait_Quality_Pass", "Distance_Traversed"}
-    missing = required - set(reader.fieldnames or [])
-    if missing:
-        missing_list = ", ".join(sorted(missing))
+    try:
+        validate_sweep_columns(fieldnames)
+    except ValueError as exc:
         raise ValueError(
-            f"{csv_path} is missing required column(s): {missing_list}. "
-            "Use the combined CSV produced by run_xy_sweep.py."
-        )
+            f"{csv_path}: {exc}. "
+            "Use the combined CSV produced by run_sweep.py."
+        ) from exc
 
     if not rows:
         raise ValueError(f"{csv_path} has no data rows.")
@@ -113,119 +71,202 @@ def load_rows(csv_path: Path, filter_min_distance: float | None = None) -> list[
     return rows
 
 
-def finite_mean(values: list[float]) -> float:
-    finite_values = [value for value in values if math.isfinite(value)]
-    if not finite_values:
-        return float("nan")
-    return float(np.mean(finite_values))
+def parse_axis_list(values: list[str] | None) -> list[str]:
+    axes: list[str] = []
+    for value in values or []:
+        axes.extend(axis.strip() for axis in value.split(",") if axis.strip())
+    return axes
 
 
-def build_grid(
-    rows: list[dict],
-    min_distance: float,
-) -> tuple[list[float], list[float], np.ndarray, dict]:
-    mesh_x_values = [float(row["Mesh_X"]) for row in rows]
-    mesh_y_values = [float(row["Mesh_Y"]) for row in rows]
-    base_x = infer_base(mesh_x_values, "BASE_X")
-    base_y = infer_base(mesh_y_values, "BASE_Y")
+def prompt_for_ignored_axes(axis_names: tuple[str, ...], already_ignored: set[str]) -> set[str]:
+    ignored_axes = set(already_ignored)
+    while len(axis_names) - len(ignored_axes) > 3:
+        remaining = [axis_name for axis_name in axis_names if axis_name not in ignored_axes]
+        required = len(remaining) - 3
+        print("CSV has more than 3 sweep axes.", file=sys.stderr)
+        print("Axes:", ", ".join(axis_names), file=sys.stderr)
+        print(
+            f"Enter at least {required} axis name(s) to ignore. "
+            "Ignored axes are filtered to their default/base value.",
+            file=sys.stderr,
+        )
+        response = input("Ignore axis/axes: ")
+        selected = {axis.strip() for axis in response.split(",") if axis.strip()}
+        invalid = selected - set(axis_names)
+        if invalid:
+            print(f"Unknown axis name(s): {', '.join(sorted(invalid))}", file=sys.stderr)
+            continue
+        ignored_axes.update(selected)
+    return ignored_axes
 
-    grouped = defaultdict(list)
+
+def resolve_active_axes(axis_names: tuple[str, ...], ignored_axes: list[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    ignored_set = set(ignored_axes)
+    invalid = ignored_set - set(axis_names)
+    if invalid:
+        raise ValueError(f"Cannot ignore unknown sweep axis/axes: {', '.join(sorted(invalid))}")
+
+    if len(axis_names) - len(ignored_set) > 3:
+        if not sys.stdin.isatty():
+            needed = len(axis_names) - 3
+            raise ValueError(
+                f"CSV has {len(axis_names)} sweep axes. Pass at least {needed} "
+                "axis name(s) with --ignore-axis so only 2 or 3 axes remain."
+            )
+        ignored_set = prompt_for_ignored_axes(axis_names, ignored_set)
+
+    active_axes = tuple(axis_name for axis_name in axis_names if axis_name not in ignored_set)
+    if len(active_axes) not in {2, 3}:
+        raise ValueError(
+            f"Expected 2 or 3 active axes after filtering, got {len(active_axes)}: "
+            f"{', '.join(active_axes) or 'none'}"
+        )
+    return active_axes, tuple(axis_name for axis_name in axis_names if axis_name in ignored_set)
+
+
+def axis_column(axis_spec, axis_name: str) -> str:
+    try:
+        return axis_spec.value_columns[axis_spec.axis_names.index(axis_name)]
+    except ValueError as exc:
+        raise ValueError(f"Unknown sweep axis: {axis_name}") from exc
+
+
+def numeric_values(rows: list[dict], column: str) -> list[float]:
+    values = []
     for row in rows:
-        x_pct = round(percentage_difference(float(row["Mesh_X"]), base_x), 6)
-        y_pct = round(percentage_difference(float(row["Mesh_Y"]), base_y), 6)
-        grouped[(x_pct, y_pct)].append(row)
+        try:
+            value = float(row[column])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if math.isfinite(value):
+            values.append(value)
+    return values
 
-    x_centers = configured_percent_centers(sorted({key[0] for key in grouped}), "BASE_X", "X_VALUES")
-    y_centers = configured_percent_centers(sorted({key[1] for key in grouped}), "BASE_Y", "Y_VALUES")
-    x_index = {value: idx for idx, value in enumerate(x_centers)}
-    y_index = {value: idx for idx, value in enumerate(y_centers)}
 
-    success_grid = np.full((len(y_centers), len(x_centers)), np.nan)
-    labels = {}
+def filter_default_axis_values(rows: list[dict], axis_spec, ignored_axes: tuple[str, ...]) -> list[dict]:
+    filtered_rows = rows
+    for axis_name in ignored_axes:
+        column = axis_column(axis_spec, axis_name)
+        observed_values = numeric_values(filtered_rows, column)
+        if not observed_values:
+            raise ValueError(f"No finite values found for ignored axis {axis_name}.")
 
-    for (x_pct, y_pct), group_rows in grouped.items():
-        successes = [
-            parse_bool(row["Gait_Quality_Pass"]) and float(row["Distance_Traversed"]) >= min_distance
-            for row in group_rows
+        base = infer_base(observed_values, axis_name)
+        nearest_value = min(observed_values, key=lambda value: abs(value - base))
+        tolerance = max(1e-9, abs(nearest_value) * 1e-6)
+        before_count = len(filtered_rows)
+        filtered_rows = [
+            row for row in filtered_rows
+            if math.isclose(float(row[column]), nearest_value, rel_tol=1e-6, abs_tol=tolerance)
         ]
-        successful_distances = [
-            float(row["Distance_Traversed"])
-            for row, is_success in zip(group_rows, successes)
-            if is_success
-        ]
-        success_count = sum(successes)
-        total_count = len(group_rows)
-        mean_success_distance = finite_mean(successful_distances)
-
-        row_idx = y_index[y_pct]
-        col_idx = x_index[x_pct]
-        if math.isfinite(mean_success_distance):
-            success_grid[row_idx, col_idx] = 100.0 * success_count / total_count
-        labels[(row_idx, col_idx)] = (
-            f"d={trunc_sig(mean_success_distance)}\n"
-            f"pass={success_count}/{total_count}"
+        print(
+            f"Ignored {axis_name}: kept default/base slice {nearest_value:g} "
+            f"({before_count} -> {len(filtered_rows)} rows)."
         )
 
-    return x_centers, y_centers, success_grid, labels
+    if not filtered_rows:
+        raise ValueError("No rows remain after filtering ignored axes to default/base values.")
+    return filtered_rows
 
 
-def plot_grid(
-    x_centers: list[float],
-    y_centers: list[float],
-    success_grid: np.ndarray,
-    labels: dict,
+def axis_percent_values(rows: list[dict], axis_spec, axis_name: str) -> list[float]:
+    column = axis_column(axis_spec, axis_name)
+    values = numeric_values(rows, column)
+    if not values:
+        raise ValueError(f"No finite values found for active axis {axis_name}.")
+    base = infer_base(values, axis_name)
+    return [percentage_difference(float(row[column]), base) for row in rows]
+
+
+def row_distance(row: dict) -> float:
+    try:
+        value = float(row["Distance_Traversed"])
+    except (KeyError, TypeError, ValueError):
+        return float("nan")
+    return value if math.isfinite(value) else float("nan")
+
+
+def row_success(row: dict, min_distance: float) -> bool:
+    distance = row_distance(row)
+    return parse_bool(row.get("Gait_Quality_Pass", "")) and math.isfinite(distance) and distance >= min_distance
+
+
+def plot_scatter(
+    rows: list[dict],
+    axis_spec,
+    active_axes: tuple[str, ...],
+    min_distance: float,
     output_path: Path,
 ) -> None:
-    x_edges = cell_edges(x_centers)
-    y_edges = cell_edges(y_centers)
+    axis_values = [axis_percent_values(rows, axis_spec, axis_name) for axis_name in active_axes]
+    distances = np.array([row_distance(row) for row in rows], dtype=float)
+    successes = np.array([row_success(row, min_distance) for row in rows], dtype=bool)
+    successful_distances = distances[successes]
 
-    cmap = LinearSegmentedColormap.from_list("success_red_green", ["#c62828", "#f9d65c", "#2e7d32"])
-    cmap.set_bad("#d0d0d0")
+    if len(active_axes) == 3:
+        fig = plt.figure(figsize=(9, 7), constrained_layout=True)
+        ax = fig.add_subplot(111, projection="3d")
+        ax.scatter(
+            np.array(axis_values[0])[~successes],
+            np.array(axis_values[1])[~successes],
+            np.array(axis_values[2])[~successes],
+            c="#bdbdbd",
+            marker="x",
+            s=18,
+            alpha=0.35,
+            linewidths=0.8,
+            label="Failed",
+        )
+        scatter = ax.scatter(
+            np.array(axis_values[0])[successes],
+            np.array(axis_values[1])[successes],
+            np.array(axis_values[2])[successes],
+            c=successful_distances,
+            cmap="viridis",
+            s=28,
+            alpha=0.85,
+            edgecolors="black",
+            linewidths=0.25,
+            label="Successful",
+        )
+        ax.set_zlabel(axis_percent_label(active_axes[2]))
+    else:
+        fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
+        ax.scatter(
+            np.array(axis_values[0])[~successes],
+            np.array(axis_values[1])[~successes],
+            c="#bdbdbd",
+            marker="x",
+            s=22,
+            alpha=0.35,
+            linewidths=0.8,
+            label="Failed",
+        )
+        scatter = ax.scatter(
+            np.array(axis_values[0])[successes],
+            np.array(axis_values[1])[successes],
+            c=successful_distances,
+            cmap="viridis",
+            s=34,
+            alpha=0.85,
+            edgecolors="black",
+            linewidths=0.25,
+            label="Successful",
+        )
+        ax.set_aspect("equal", adjustable="box")
 
-    fig_width = max(8, len(x_centers) * 0.85)
-    fig_height = max(6, len(y_centers) * 0.75)
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height), constrained_layout=True)
-
-    mesh = ax.pcolormesh(
-        x_edges,
-        y_edges,
-        np.ma.masked_invalid(success_grid),
-        cmap=cmap,
-        vmin=0,
-        vmax=100,
-        edgecolors="white",
-        linewidth=1.0,
-        shading="flat",
+    ax.set_xlabel(axis_percent_label(active_axes[0]))
+    ax.set_ylabel(axis_percent_label(active_axes[1]))
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="best")
+    ax.set_title(
+        f"{' vs '.join(axis_short_label(axis_name) for axis_name in active_axes)} "
+        f"Scatter ({successes.sum()}/{len(rows)} successful, min distance {min_distance:g} m)"
     )
 
-    for row_idx, y_value in enumerate(y_centers):
-        for col_idx, x_value in enumerate(x_centers):
-            label = labels.get((row_idx, col_idx))
-            if label is None:
-                continue
-            success_rate = success_grid[row_idx, col_idx]
-            text_color = "white" if math.isfinite(success_rate) and success_rate < 35 else "black"
-            ax.text(
-                x_value,
-                y_value,
-                label,
-                ha="center",
-                va="center",
-                fontsize=8,
-                color=text_color,
-            )
-
-    ax.set_xlabel("X difference (%)")
-    ax.set_ylabel("Y difference (%)")
-    ax.set_xticks(x_centers)
-    ax.set_yticks(y_centers)
-    ax.set_xticklabels([f"{value:g}" for value in x_centers])
-    ax.set_yticklabels([f"{value:g}" for value in y_centers])
-    ax.set_aspect("equal", adjustable="box")
-    ax.set_title("X/Y Mesh Sweep Success Rate")
-
-    colorbar = fig.colorbar(mesh, ax=ax)
-    colorbar.set_label("Successful trials (%)")
+    if successful_distances.size:
+        colorbar = fig.colorbar(scatter, ax=ax)
+        colorbar.set_label("Distance Traversed (m)")
 
     fig.savefig(output_path, dpi=200)
     plt.close(fig)
@@ -247,11 +288,30 @@ def main() -> None:
         default=None,
         help="Drop CSV rows with Distance_Traversed below this threshold before plotting.",
     )
+    parser.add_argument(
+        "--ignore-axis",
+        action="append",
+        default=[],
+        help=(
+            "Sweep axis to ignore when the CSV has more than 3 axes. "
+            "Can be passed multiple times or as comma-separated names. "
+            "Ignored axes are filtered to their default/base value."
+        ),
+    )
+    parser.add_argument(
+        "--ignore-axes",
+        action="append",
+        default=[],
+        help="Comma-separated alias for --ignore-axis.",
+    )
     args = parser.parse_args()
 
     rows = load_rows(args.csv, args.filter_min_distance)
-    x_centers, y_centers, success_grid, labels = build_grid(rows, args.min_distance)
-    plot_grid(x_centers, y_centers, success_grid, labels, args.out)
+    axis_spec = resolve_sweep_axes(rows, list(rows[0].keys()))
+    ignored_axes = parse_axis_list(args.ignore_axis + args.ignore_axes)
+    active_axes, ignored_axes_tuple = resolve_active_axes(axis_spec.axis_names, ignored_axes)
+    rows = filter_default_axis_values(rows, axis_spec, ignored_axes_tuple)
+    plot_scatter(rows, axis_spec, active_axes, args.min_distance, args.out)
     print(f"Wrote plot to {args.out}")
 
 

@@ -16,13 +16,13 @@ args = vars(parser.parse_args())
 
 # ---------------------------------------------------------------------------
 # Y-OFFSET MAP
-# Shifts specific geoms along the Y-axis in the visualization so that all
+# Shifts specific geoms along the +Y-left axis in the visualization so that all
 # three foot parts sit side-by-side in the combined plot.
 # This is purely for visual clarity and does not affect the underlying body-frame coordinates.
 # ---------------------------------------------------------------------------
 Y_OFFSETS: dict[str, float] = {
-    "right_foot_1_col": 0.0,   # shift 5 cm in +Y  ← adjust as needed
-    "right_foot_2_col": 0.0,   # shift 5 cm in -Y  ← adjust as needed
+    "right_foot_1_col": 0.0,   # display shift along +Y/left; adjust as needed
+    "right_foot_2_col": 0.0,   # display shift along +Y/left; adjust as needed
 }
 
 # 1. Load your simulated data dictionary

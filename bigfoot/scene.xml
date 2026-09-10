@@ -1,4 +1,5 @@
 <mujoco model="scene">
+    <!-- MuJoCo boundary file: +x forward, +y robot-left, +z up internally. -->
     <include file="robot.xml" />
     <option solver="Newton" timestep="0.002" iterations="100"/>
     <visual>

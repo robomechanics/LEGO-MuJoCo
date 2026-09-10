@@ -54,14 +54,19 @@ PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injecti
 SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
+# Public convention in this repo:
+#   +X = forward / walking direction
+#   +Y = robot-left / lateral
+#   +Z = down in public docs; MuJoCo/OpenSCAD mesh generation remains z-up/down
+#        internally as needed.
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78
-Y     = 0.83
+X     = 0.78       # forward curvature scale
+Y     = 0.83       # lateral curvature scale
 Z     = 0.35      #foot thickness scales ~linearly with Z; 
-BOX_X = 0.667      # total foot length
-BOX_Y = 0.24     # total foot width
+BOX_X = 0.667      # total forward length
+BOX_Y = 0.24     # total lateral width
 FN    = 80       # OpenSCAD sphere facet resolution (higher = smoother, slower)
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm (fixed, this is the length of middle foot part)  
 
@@ -79,8 +84,7 @@ RIGHT_CORRECTION = "z:90;x:180"
 # OFFSET_FRAME = "local": dx/dy/dz applied in the foot's own (rotated) axes.
 OFFSET_FRAME = "body"
 
-# Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
-# Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
+# Offsets are applied in MuJoCo body/local coordinates: +x forward, +y left, +z up.
 LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])    # centered reference: [0.0, 0.0, 0.113667]
 RIGHT_OFFSET = np.array([0.07, -0.0105 , 0.0])    # centered reference: [0.113667, 0.0, 0.0]
 

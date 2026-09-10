@@ -35,6 +35,8 @@ import numpy as np
 import mujoco
 import mujoco.viewer
 
+from coordinate_frame import public_to_mujoco_vec
+
 
 def _env_flag(name: str, default: bool = True) -> bool:
     value = os.environ.get(name)
@@ -61,17 +63,22 @@ REPO_ROOT = Path(__file__).resolve().parent
 # ── File paths ────────────────────────────────────────────────────────────
 OPENSCAD_PATH = "/usr/bin/openscad"  # adjust if needed
 SCAD_DIR = REPO_ROOT
-ENTRY_XML = REPO_ROOT / "bigfoot" / "scene.xml"
+ENTRY_XML = REPO_ROOT / "Bigfoot" / "scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
-# Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
-# inside the ellipsoid -- checked automatically, with a clear error if not).
-# Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78       # Current Robot: 0.78
-Y     = 0.936      # Current Robot: 0.936
+# Public convention in this repo:
+#   +X = forward / walking direction
+#   +Y = robot-left / lateral
+#   +Z = down in public docs; MuJoCo/OpenSCAD mesh generation remains z-up/down
+#        internally as needed.
+# Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1.
+# Constraint: BOX_X must be > 0.25 because forward length is sliced into
+# front/middle/back sections.
+X     = 0.936       # forward curvature scale
+Y     = 0.78      # lateral curvature scale
 Z     = 0.35      # foot thickness scales ~linearly with Z, use ~.35-.4
-BOX_X = 0.667      # total foot length, Current Robot: 0.667
-BOX_Y = 0.24       # total foot width, Current Robot: 0.24
+BOX_X = 0.667      # total forward length
+BOX_Y = 0.24       # total lateral width
 FN    = 100         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 #Recommended Range of 90-110 for FN
 
@@ -80,11 +87,14 @@ FN    = 100         # OpenSCAD sphere facet resolution (higher = smoother, slowe
 # Sets thickness of the shell - Baseline: 0.02, but modify based on the weight you see as necessary
 WALL_THICKNESS = 0.02
 
-# Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
-# Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
-# Y Value set here (0.027, -0.027) is to mimic the baseline for PHYSICAL robot (this sets it over the second slot)
-LEFT_OFFSET  = np.array([0.0, 0.027, 0.113])    # centered reference: [0.0, 0.0, 0.113667]
-RIGHT_OFFSET = np.array([0.113, -0.027, 0.0])    # centered reference: [0.113667, 0.0, 0.0]
+# Public [y, x, z] offsets: +x forward, +y outwards, +z down.
+# apply_offset() converts these once before applying them to MuJoCo's z-up frame.
+LEFT_OFFSET  = np.array([-0.027, 0.113, 0.0])
+RIGHT_OFFSET = np.array([-0.027, 0.113, 0.0])
+
+# correcting offsets by flipping y-axis
+LEFT_OFFSET[0], LEFT_OFFSET[1], LEFT_OFFSET[2] = LEFT_OFFSET[2], -LEFT_OFFSET[0], -LEFT_OFFSET[1]
+RIGHT_OFFSET[0], RIGHT_OFFSET[1] = RIGHT_OFFSET[1], RIGHT_OFFSET[0]
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ADDITIONAL PARAMETERS (Likely do not change)
@@ -179,14 +189,24 @@ def quat_to_rotmat(q: np.ndarray) -> np.ndarray:
 
 
 def apply_offset(pos: np.ndarray, quat: np.ndarray, offset: np.ndarray, frame: str) -> np.ndarray:
-    """Applies a position offset either in body frame (direct add) or in the
-    mesh's local frame (rotated by quat first)."""
+    """Apply a public [x,y,z-down] offset to a MuJoCo z-up geom position."""
+    offset_mujoco = public_to_mujoco_vec(offset)
     if frame == "body":
-        return pos + offset
+        return pos + offset_mujoco
     elif frame == "local":
-        return pos + quat_to_rotmat(quat) @ offset
+        return pos + quat_to_rotmat(quat) @ offset_mujoco
     else:
         raise ValueError(f"Unknown frame '{frame}', expected 'body' or 'local'.")
+
+
+def to_generator_axis_order(
+    curve_x: float,
+    curve_y: float,
+    box_x: float,
+    box_y: float,
+) -> tuple[float, float, float, float]:
+    """Return generator values using the repo convention: x=forward, y=left."""
+    return curve_x, curve_y, box_x, box_y
 
 
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm, per spec
@@ -213,7 +233,7 @@ def validate_ellipsoid_box_fit(X: float, Y: float, Z: float, box_x: float, box_y
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Section geometry
+# Foot geometry
 # ═══════════════════════════════════════════════════════════════════════════
 
 def compute_section_bounds(box_x: float, swap_front_back: bool = False) -> dict:
@@ -277,6 +297,20 @@ def compute_section_masses(sections: dict) -> dict:
             density = SUFFIX_TO_DENSITY[suffix]
             volume_m3 = compute_mesh_volume_m3(str(path))
             masses[side][section] = volume_m3 * density
+    return masses
+
+
+def compute_foot_masses(feet: dict) -> dict:
+    """
+    Mass (kg) of each generated one-piece foot mesh.
+    Shape matches `feet`: {"right": {"full": kg}, "left": {"full": kg}}.
+    """
+    masses = {"right": {}, "left": {}}
+    density = SUFFIX_TO_DENSITY["1"]
+    for side in ["right", "left"]:
+        path = feet[side]["full"]
+        volume_m3 = compute_mesh_volume_m3(str(path))
+        masses[side]["full"] = volume_m3 * density
     return masses
 
 
@@ -364,6 +398,34 @@ def generate_all_sections(
     return results
 
 
+def generate_full_feet(
+    scad_file: Path,
+    out_dir: Path,
+    X: float, Y: float, Z: float,
+    box_x: float, box_y: float, fn: int,
+    shell_thickness: float | None = None,
+) -> dict:
+    """
+    Generates one full hollow-shell mesh per foot.
+    Returns dict: {"right": {"full": path}, "left": {"full": path}}.
+    """
+    validate_ellipsoid_box_fit(X, Y, Z, box_x, box_y)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    results = {"right": {}, "left": {}}
+    foot_flags = {"right": -1, "left": 1}
+    for side, flag in foot_flags.items():
+        out_path = out_dir / f"{side}_foot_full.stl"
+        generate_foot_section_obj(
+            scad_file, out_path, X, Y, Z, box_x, box_y, fn,
+            left_foot_flag=flag, slice_x0=-box_x / 2, slice_x1=box_x / 2,
+            shell_thickness=shell_thickness,
+        )
+        results[side]["full"] = out_path
+
+    return results
+
+
 def generate_all_sections_shell(
     scad_file: Path,
     out_dir: Path,
@@ -401,6 +463,7 @@ def build_preview_mjcf(sections: dict, spacing: float = 0.4) -> str:
         "front": "0.9 0.3 0.2 1",
         "middle": "0.3 0.9 0.3 1",
         "back": "0.2 0.4 0.9 1",
+        "full": "0.9 0.3 0.2 1",
     }
 
     assets = []
@@ -441,7 +504,7 @@ def launch_preview(sections: dict) -> None:
     xml = build_preview_mjcf(sections)
     model = mujoco.MjModel.from_xml_string(xml)
     data = mujoco.MjData(model)
-    vprint("Launching preview viewer... red=front, green=middle, blue=back. "
+    vprint("Launching preview viewer... red=front/full, green=middle, blue=back. "
            "Close the window to continue.")
     mujoco.viewer.launch(model, data)
 
@@ -450,9 +513,9 @@ def launch_preview(sections: dict) -> None:
 # Injection into the full robot model via mjSpec
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Maps existing geom-name suffixes to the section labels generated.
-# Convention: _1=front, _2=middle, _3=back.
-SUFFIX_TO_SECTION = {"1": "front", "2": "middle", "3": "back"}
+# Maps existing geom-name suffixes to generated mesh labels.
+# New Bigfoot XML uses one full-foot geom per side: right_foot_1/left_foot_1.
+SUFFIX_TO_SECTION = {"1": "full"}
 
 def _get_geom_transform(spec: "mujoco.MjSpec", geom_name: str) -> Tuple[list, list]:
     """Read pos/quat off an existing geom in the spec, by name."""
@@ -624,18 +687,25 @@ def main():
 
     out_dir = Path(OUT_DIR).resolve()
 
-    sections = generate_all_sections_shell(
-        scad_file, out_dir,
-        X, Y, Z, BOX_X, BOX_Y, FN,
+    curve_x, curve_y, box_x, box_y = to_generator_axis_order(
+        X, Y, BOX_X, BOX_Y
+    )
+    sections = generate_full_feet(
+        scad_file,
+        out_dir,
+        curve_x,
+        curve_y,
+        Z,
+        box_x,
+        box_y,
+        FN,
         shell_thickness=WALL_THICKNESS,
-        swap_front_back=SWAP_FRONT_BACK,
     )
 
-    section_masses = compute_section_masses(sections)
-    vprint("Section masses (density-based):")
+    section_masses = compute_foot_masses(sections)
+    vprint("Foot masses (density-based):")
     for side in ["right", "left"]:
-        for section in ["front", "middle", "back"]:
-            vprint(f"  [{side}] {section}: {section_masses[side][section]*1000:.2f} g")
+        vprint(f"  [{side}] full: {section_masses[side]['full']*1000:.2f} g")
         vprint(f"  [{side}] total: {sum(section_masses[side].values()):.4f} kg")
 
     if PREVIEW_ONLY or ENTRY_XML is None:

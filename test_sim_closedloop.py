@@ -4,34 +4,27 @@ import numpy as np
 import time
 import pickle as pkl
 
+from coordinate_frame import public_to_mujoco_vec
+from control_waveform import DEFAULT_WAVEFORM, startup_sine_reference
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS — match these directly to motorwave.py for hardware replication
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Motor / control ───────────────────────────────────────────────────────────
-KP           = 45.0 
+KP           = 90.0 
 KD           = 7.0
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi #natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 35.0
-T_WAIT          = 8.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.2
+WAVEFORM = DEFAULT_WAVEFORM
 
 # FOOT OFFSETS
-#If Right = [a, b, c], then left = [-c, -b, a]
-# for right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
-# For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
-#Notes: Position of Y shift @0.0 reflects the second slot pretty well, but not perfectly 
-foot_position_deltaRight = np.array([-0.05, 0.0 , 0.0])
-foot_position_deltaLeft  = np.array([0.0, -foot_position_deltaRight[1], -0.05])
+# Public frame: +x forward, +y robot-left, +z down.
+# MuJoCo frame: +x forward, +y robot-left, +z up.
+RIGHT_FOOT_OFFSET = np.array([0.0, -0.0, 0.0])
+LEFT_FOOT_OFFSET = np.array([0.0, -0.0, 0.0])
 # ═══════════════════════════════════════════════════════════════════════════════
-
-# True spatial mirroring: invert X (lateral), keep Y (forward) identical, keep Z (vertical) 0
-body_deltaRight = np.array([foot_position_deltaRight[0], foot_position_deltaRight[1], foot_position_deltaRight[2]])
-body_deltaLeft  = np.array([-foot_position_deltaRight[0], foot_position_deltaRight[1], foot_position_deltaRight[2]]) # Symmetrical world shift
 
 # ── Gain ramp ─────────────────────────────────────────────────────────────────
 USE_RAMP  = False
@@ -44,7 +37,7 @@ CMD_DELAY_STEPS = 1
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
-model = mujoco.MjModel.from_xml_path("modified_model_v2.xml")
+model = mujoco.MjModel.from_xml_path("modified_model.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
@@ -56,31 +49,41 @@ arm_id   = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "simplified_motor_
 original_geom_pos = np.array(model.geom_pos)
 original_body_ipos = np.array(model.body_ipos)
 ##"Mirrored" foot is the right foot
-# Map visual geoms to their rotated offsets
+# Map visual/collision geoms to public-frame offsets.
 geom_offsets = {
-    "right_foot_1":     foot_position_deltaRight, "right_foot_2":     foot_position_deltaRight, "right_foot_3":     foot_position_deltaRight,
-    "left_foot_1":      foot_position_deltaLeft,  "left_foot_2":      foot_position_deltaLeft,  "left_foot_3":      foot_position_deltaLeft,
-    "right_foot_1_col": foot_position_deltaRight, "right_foot_2_col": foot_position_deltaRight, "right_foot_3_col": foot_position_deltaRight,
-    "left_foot_1_col":  foot_position_deltaLeft,  "left_foot_2_col":  foot_position_deltaLeft,  "left_foot_3_col":  foot_position_deltaLeft,
+    "right_foot_1":     RIGHT_FOOT_OFFSET, "right_foot_2":     RIGHT_FOOT_OFFSET, "right_foot_3":     RIGHT_FOOT_OFFSET,
+    "left_foot_1":      LEFT_FOOT_OFFSET,  "left_foot_2":      LEFT_FOOT_OFFSET,  "left_foot_3":      LEFT_FOOT_OFFSET,
+    "right_foot_1_col": RIGHT_FOOT_OFFSET, "right_foot_2_col": RIGHT_FOOT_OFFSET, "right_foot_3_col": RIGHT_FOOT_OFFSET,
+    "left_foot_1_col":  LEFT_FOOT_OFFSET,  "left_foot_2_col":  LEFT_FOOT_OFFSET,  "left_foot_3_col":  LEFT_FOOT_OFFSET,
 }
 
-# 2. Shift the visual/collision boxes using your custom mesh rotations
-for name, delta in geom_offsets.items():
+def public_offset_to_body_frame(public_offset, parent_bid):
+    """Convert public/world-frame offset into this geom body's local coordinates."""
+    body_rot = data.xmat[parent_bid].reshape(3, 3)
+    return body_rot.T @ public_to_mujoco_vec(public_offset)
+
+
+# Initialize body frames before converting public offsets into body-local deltas.
+mujoco.mj_forward(model, data)
+
+# 2. Shift the visual/collision boxes in their parent body's local frame.
+for name, public_offset in geom_offsets.items():
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if geom_id != -1:
+        parent_bid = model.geom_bodyid[geom_id]
+        delta = public_offset_to_body_frame(public_offset, parent_bid)
         model.geom_pos[geom_id] = original_geom_pos[geom_id] + delta
 
-# 3. Shift the unique parent bodies using clean, non-rotated world coordinates
+# 3. Shift the unique parent body inertias using the same local-frame conversion.
 unique_body_shifts = {}
 for name in geom_offsets.keys():
     geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
     if geom_id != -1:
         parent_bid = model.geom_bodyid[geom_id]
-        # Assign world-aligned body offsets depending on if it's a left or right link
-        if "right" in name:
-            unique_body_shifts[parent_bid] = body_deltaRight
-        else:
-            unique_body_shifts[parent_bid] = body_deltaLeft
+        unique_body_shifts[parent_bid] = public_offset_to_body_frame(
+            RIGHT_FOOT_OFFSET if "right" in name else LEFT_FOOT_OFFSET,
+            parent_bid,
+        )
 
 for bid, delta in unique_body_shifts.items():
     model.body_ipos[bid] = original_body_ipos[bid] + delta
@@ -91,7 +94,6 @@ print(f"Whole-robot CoM: {data.subtree_com[motor_id].round(4)}")
 print(f"Total mass:      {sum(model.body_mass[i] for i in range(model.nbody)):.3f} kg")
 
 # ── Derived constants ─────────────────────────────────────────────────────────
-leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 cmd_buffer  = [0.0] * CMD_DELAY_STEPS
 
 
@@ -121,27 +123,15 @@ def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def calculate_sine_reference(t):
-    w1           = HIP_OMEGA * START_FREQ_MULT
-    w2           = HIP_OMEGA
-    t0           = T_WAIT
-    At           = START_AMP_MULT * leg_amp_rad
-    As           = leg_amp_rad
-    t_transition = t0 + np.pi / w1
-
-    if t <= t0:
-        position, velocity = 0.0, 0.0
-
-    elif t < t_transition:
-        phase    = w1 * (t - t0)
-        position = At * np.sin(phase)
-        velocity = At * w1 * np.cos(phase)      # true derivative
-
-    else:
-        phase    = w2 * (t - t_transition)
-        position = -As * np.sin(phase)
-        velocity = -As * w2 * np.cos(phase)     # true derivative
-
-    return position, velocity
+    return startup_sine_reference(
+        t=t,
+        hip_omega=WAVEFORM.hip_omega,
+        leg_amp_rad=WAVEFORM.leg_amp_rad,
+        t_wait=WAVEFORM.t_wait,
+        start_amp_mult=WAVEFORM.start_amp_mult,
+        start_freq_mult=WAVEFORM.start_freq_mult,
+        ramp_time=WAVEFORM.startup_ramp_time,
+    )
 
 for i in range(model.njnt):
     name = model.joint(i).name
@@ -239,7 +229,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         targetVelocity_history.append(target_vel_rad)
         quat_history.append(data.xquat[motor_id].copy())
         #torqueCommand_history.append(data.qfrc_actuator[0])
-        if t > T_WAIT:
+        if t > WAVEFORM.t_wait:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
 
 

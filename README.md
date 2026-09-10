@@ -4,6 +4,17 @@ LEGO Project MuJoCo simulation framework with data recording.
 
 Works in WSL Ubuntu-20.04, Conda environment with Python 3.10.16
 
+## Coordinate Convention
+
+Repo-facing parameters and analysis use:
+
+- `+x`: forward walking direction
+- `+y`: robot-left / lateral
+- `+z`: down into the ground
+
+MuJoCo model files and runtime APIs remain in MuJoCo's usual z-up frame. Code
+that crosses that boundary should convert explicitly with `coordinate_frame.py`.
+
 ## Installation
 Clone the repository and install dependencies.
 

@@ -60,18 +60,22 @@ SCAD_DIR = REPO_ROOT                    # dir containing feet_generator.scad
 ENTRY_XML = REPO_ROOT / "bigfoot" / "scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
-# Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
-# inside the ellipsoid -- checked automatically, with a clear error if not).
-# Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78       # Current Robot: 0.78
-Y     = 0.936      # Current Robot: 0.936
+# Public convention in this repo:
+#   +X = forward / walking direction
+#   +Y = robot-left / lateral
+#   +Z = down in public docs; MuJoCo/OpenSCAD mesh generation remains z-up/down
+#        internally as needed.
+# Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1.
+# Constraint: BOX_X must be > 0.25 because forward length is sliced into
+# front/middle/back sections.
+X     = 0.78       # forward curvature scale
+Y     = 0.936      # lateral curvature scale
 Z     = 0.35       # foot thickness scales ~linearly with Z, use ~.35-.4
-BOX_X = 0.667      # total foot length, Current Robot: 0.667
-BOX_Y = 0.24       # total foot width, Current Robot: 0.24
+BOX_X = 0.667      # total forward length
+BOX_Y = 0.24       # total lateral width
 FN    = 80         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 
-# Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
-# Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
+# Offsets are applied in MuJoCo body/local coordinates: +x forward, +y left, +z up.
 LEFT_OFFSET  = np.array([0.0, 0.0, 0.113])    # centered reference: [0.0, 0.0, 0.113667]
 RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0.0, 0.0]
 
@@ -157,6 +161,16 @@ def apply_offset(pos: np.ndarray, quat: np.ndarray, offset: np.ndarray, frame: s
         return pos + quat_to_rotmat(quat) @ offset
     else:
         raise ValueError(f"Unknown frame '{frame}', expected 'body' or 'local'.")
+
+
+def to_generator_axis_order(
+    curve_x: float,
+    curve_y: float,
+    box_x: float,
+    box_y: float,
+) -> tuple[float, float, float, float]:
+    """Return generator values using the repo convention: x=forward, y=left."""
+    return curve_x, curve_y, box_x, box_y
 
 
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm, per spec
@@ -483,9 +497,18 @@ def main():
 
     out_dir = Path(OUT_DIR).resolve()
 
+    curve_x, curve_y, box_x, box_y = to_generator_axis_order(
+        X, Y, BOX_X, BOX_Y
+    )
     sections = generate_all_sections(
-        scad_file, out_dir,
-        X, Y, Z, BOX_X, BOX_Y, FN,
+        scad_file,
+        out_dir,
+        curve_x,
+        curve_y,
+        Z,
+        box_x,
+        box_y,
+        FN,
         swap_front_back=SWAP_FRONT_BACK,
     )
 

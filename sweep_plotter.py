@@ -26,8 +26,12 @@ class MetricSpec:
 
 
 METRIC_SPECS: tuple[MetricSpec, ...] = (
-    MetricSpec("Foot X", ("Foot_X",)),
-    MetricSpec("Foot Y", ("Foot_Y",)),
+    MetricSpec("Curve X Forward", ("Curve_X", "Mesh_X")),
+    MetricSpec("Curve Y Left", ("Curve_Y", "Mesh_Y")),
+    MetricSpec("Box X Forward", ("Box_X",)),
+    MetricSpec("Box Y Left", ("Box_Y",)),
+    MetricSpec("Foot X Forward", ("Foot_X",)),
+    MetricSpec("Foot Y Left", ("Foot_Y",)),
     MetricSpec("Kp", ("Kp",)),
     MetricSpec("Kd", ("Kd",)),
     MetricSpec("Start Amp", ("Start_Amp_Mult",)),
@@ -249,10 +253,23 @@ class SweepPlotterApp:
         self.y_combo["values"] = labels
 
         if self.x_metric_var.get() not in self.available_metrics:
-            self.x_metric_var.set("Foot X" if "Foot X" in self.available_metrics else labels[0])
+            if "Curve X Forward" in self.available_metrics:
+                self.x_metric_var.set("Curve X Forward")
+            elif "Box X Forward" in self.available_metrics:
+                self.x_metric_var.set("Box X Forward")
+            elif "Foot X Forward" in self.available_metrics:
+                self.x_metric_var.set("Foot X Forward")
+            else:
+                self.x_metric_var.set(labels[0])
         if self.y_metric_var.get() not in self.available_metrics:
-            preferred_y = "Foot Y" if "Foot Y" in self.available_metrics else labels[min(1, len(labels) - 1)]
-            self.y_metric_var.set(preferred_y)
+            if "Curve Y Left" in self.available_metrics:
+                self.y_metric_var.set("Curve Y Left")
+            elif "Box Y Left" in self.available_metrics:
+                self.y_metric_var.set("Box Y Left")
+            elif "Foot Y Left" in self.available_metrics:
+                self.y_metric_var.set("Foot Y Left")
+            else:
+                self.y_metric_var.set(labels[min(1, len(labels) - 1)])
 
         self.csv_path_var.set(str(csv_path))
         self.status_var.set(

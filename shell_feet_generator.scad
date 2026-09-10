@@ -1,6 +1,9 @@
 // =================================================================
 // Parameters
 // =================================================================
+// Coordinate convention: +X forward, +Y robot-left/lateral. Z is the mesh's
+// local vertical thickness axis; Python wrappers document public +Z as down
+// and convert at MuJoCo boundaries when needed.
 X = 0.78;
 Y = 0.936;
 Z = 0.35;

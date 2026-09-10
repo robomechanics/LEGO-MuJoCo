@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interactive X/Y sweep plot with scroll-wheel min-distance control."""
+"""Interactive 2D geometry sweep plot with scroll-wheel min-distance control."""
 
 import argparse
 import csv
@@ -14,6 +14,17 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+
+from sweep_axis_utils import (
+    axis_percent_label,
+    axis_short_label,
+    configured_percent_centers,
+    finite_mean,
+    infer_base,
+    percentage_difference,
+    resolve_sweep_axes,
+    validate_sweep_columns,
+)
 
 
 def default_input_csv() -> Path:
@@ -41,37 +52,6 @@ def trunc_sig(value: float, sig_digits: int = 3) -> str:
     return f"{truncated:.{sig_digits}g}"
 
 
-def finite_mean(values: list[float]) -> float:
-    finite_values = [value for value in values if math.isfinite(value)]
-    if not finite_values:
-        return float("nan")
-    return float(np.mean(finite_values))
-
-
-def percentage_difference(value: float, base: float) -> float:
-    return 100.0 * (value / base - 1.0)
-
-
-def infer_base(values: list[float], config_name: str) -> float:
-    try:
-        import xy_sweep_config as config
-
-        return float(getattr(config, config_name))
-    except (ImportError, AttributeError, TypeError, ValueError):
-        return float(np.median(values))
-
-
-def configured_percent_centers(values: list[float], base_name: str, values_name: str) -> list[float]:
-    try:
-        import xy_sweep_config as config
-
-        base = float(getattr(config, base_name))
-        configured_values = getattr(config, values_name)
-        return sorted(round(percentage_difference(float(value), base), 6) for value in configured_values)
-    except (ImportError, AttributeError, TypeError, ValueError):
-        return values
-
-
 def cell_edges(centers: list[float]) -> np.ndarray:
     centers_array = np.array(sorted(centers), dtype=float)
     if len(centers_array) == 1:
@@ -87,16 +67,16 @@ def cell_edges(centers: list[float]) -> np.ndarray:
 def load_rows(csv_path: Path) -> list[dict]:
     with csv_path.open(newline="") as f:
         reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
         rows = list(reader)
 
-    required = {"Mesh_X", "Mesh_Y", "Gait_Quality_Pass", "Distance_Traversed"}
-    missing = required - set(reader.fieldnames or [])
-    if missing:
-        missing_list = ", ".join(sorted(missing))
+    try:
+        validate_sweep_columns(fieldnames)
+    except ValueError as exc:
         raise ValueError(
-            f"{csv_path} is missing required column(s): {missing_list}. "
-            "Use the combined CSV produced by run_xy_sweep.py."
-        )
+            f"{csv_path}: {exc}. "
+            "Use the combined CSV produced by run_sweep.py."
+        ) from exc
 
     if not rows:
         raise ValueError(f"{csv_path} has no data rows.")
@@ -116,22 +96,25 @@ class PlotData:
     x_centers: list[float]
     y_centers: list[float]
     cells: list[GroupedCell]
+    axis_x_name: str
+    axis_y_name: str
 
 
 def prepare_plot_data(rows: list[dict]) -> PlotData:
-    mesh_x_values = [float(row["Mesh_X"]) for row in rows]
-    mesh_y_values = [float(row["Mesh_Y"]) for row in rows]
-    base_x = infer_base(mesh_x_values, "BASE_X")
-    base_y = infer_base(mesh_y_values, "BASE_Y")
+    axis_spec = resolve_sweep_axes(rows, list(rows[0].keys()))
+    axis_x_values = [float(row[axis_spec.x_value_column]) for row in rows]
+    axis_y_values = [float(row[axis_spec.y_value_column]) for row in rows]
+    base_x = infer_base(axis_x_values, axis_spec.axis_x_name)
+    base_y = infer_base(axis_y_values, axis_spec.axis_y_name)
 
     grouped = defaultdict(list)
     for row in rows:
-        x_pct = round(percentage_difference(float(row["Mesh_X"]), base_x), 6)
-        y_pct = round(percentage_difference(float(row["Mesh_Y"]), base_y), 6)
+        x_pct = round(percentage_difference(float(row[axis_spec.x_value_column]), base_x), 6)
+        y_pct = round(percentage_difference(float(row[axis_spec.y_value_column]), base_y), 6)
         grouped[(x_pct, y_pct)].append(row)
 
-    x_centers = configured_percent_centers(sorted({key[0] for key in grouped}), "BASE_X", "X_VALUES")
-    y_centers = configured_percent_centers(sorted({key[1] for key in grouped}), "BASE_Y", "Y_VALUES")
+    x_centers = configured_percent_centers(sorted({key[0] for key in grouped}), axis_spec.axis_x_name)
+    y_centers = configured_percent_centers(sorted({key[1] for key in grouped}), axis_spec.axis_y_name)
     x_index = {value: idx for idx, value in enumerate(x_centers)}
     y_index = {value: idx for idx, value in enumerate(y_centers)}
 
@@ -144,7 +127,13 @@ def prepare_plot_data(rows: list[dict]) -> PlotData:
         for (x_pct, y_pct), group_rows in grouped.items()
     ]
 
-    return PlotData(x_centers=x_centers, y_centers=y_centers, cells=cells)
+    return PlotData(
+        x_centers=x_centers,
+        y_centers=y_centers,
+        cells=cells,
+        axis_x_name=axis_spec.axis_x_name,
+        axis_y_name=axis_spec.axis_y_name,
+    )
 
 
 def build_grid(plot_data: PlotData, min_distance: float) -> tuple[np.ndarray, dict[tuple[int, int], str]]:
@@ -242,14 +231,18 @@ class InteractiveSweepPlot:
                     color=text_color,
                 )
 
-        self.ax.set_xlabel("X difference (%)")
-        self.ax.set_ylabel("Y difference (%)")
+        self.ax.set_xlabel(axis_percent_label(self.plot_data.axis_x_name))
+        self.ax.set_ylabel(axis_percent_label(self.plot_data.axis_y_name))
         self.ax.set_xticks(self.plot_data.x_centers)
         self.ax.set_yticks(self.plot_data.y_centers)
         self.ax.set_xticklabels([f"{value:g}" for value in self.plot_data.x_centers])
         self.ax.set_yticklabels([f"{value:g}" for value in self.plot_data.y_centers])
         self.ax.set_aspect("equal", adjustable="box")
-        self.ax.set_title(f"X/Y Mesh Sweep Success Rate | Min Distance: {self.min_distance:.2f} m")
+        self.ax.set_title(
+            f"{axis_short_label(self.plot_data.axis_x_name)} vs "
+            f"{axis_short_label(self.plot_data.axis_y_name)} Success Rate | "
+            f"Min Distance: {self.min_distance:.2f} m"
+        )
 
         if self.colorbar is None:
             self.colorbar = self.fig.colorbar(self.mesh, ax=self.ax)

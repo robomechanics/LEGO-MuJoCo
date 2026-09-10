@@ -100,11 +100,11 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate and preview foot geometry in the MuJoCo viewer."
     )
-    parser.add_argument("--X", type=float, default=0.24, help="Ellipsoid full width (X)")
-    parser.add_argument("--Y", type=float, default=0.24, help="Ellipsoid full depth (Y)")
-    parser.add_argument("--Z", type=float, default=0.24, help="Ellipsoid full height (Z)")
-    parser.add_argument("--box_x", type=float, default=0.101, help="Clipping box full X dimension")
-    parser.add_argument("--box_y", type=float, default=0.0527, help="Clipping box full Y dimension")
+    parser.add_argument("--X", type=float, default=0.24, help="Ellipsoid full forward dimension (X)")
+    parser.add_argument("--Y", type=float, default=0.24, help="Ellipsoid full left/lateral dimension (Y)")
+    parser.add_argument("--Z", type=float, default=0.24, help="Ellipsoid full vertical thickness dimension (Z)")
+    parser.add_argument("--box_x", type=float, default=0.101, help="Clipping box full forward X dimension")
+    parser.add_argument("--box_y", type=float, default=0.0527, help="Clipping box full left/lateral Y dimension")
     parser.add_argument("--fn", type=int, default=100, help="OpenSCAD sphere facet resolution")
     parser.add_argument(
         "--scad-dir", type=str, required=True,

@@ -40,18 +40,22 @@ SCAD_DIR      = "/Users/benmatthews/Downloads"          # dir containing feet_ge
 ENTRY_XML  = "/Users/benmatthews/Desktop/Work/Research/LEGO-MuJoCo/bigfoot/scene.xml"
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
+# Public convention in this repo:
+#   +X = forward / walking direction
+#   +Y = robot-left / lateral
+#   +Z = down in public docs; MuJoCo/OpenSCAD mesh generation remains z-up/down
+#        internally as needed.
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
 # inside the ellipsoid -- checked automatically, with a clear error if not).
 # Constraint: BOX_X must be > 0.25 (the fixed 250mm middle section length).
-X     = 0.78       #Current Robot: 0.78
-Y     = 0.936      # Current Robot: 0.936
+X     = 0.78       # forward curvature scale
+Y     = 0.936      # lateral curvature scale
 Z     = 0.35       # foot thickness scales ~linearly with Z, Use ~.35-.4
-BOX_X = 0.667      # total foot length, Current Robot: 0.667
-BOX_Y = 0.24       # total foot width, Current Robot: 0.24
+BOX_X = 0.667      # total forward length
+BOX_Y = 0.24       # total lateral width
 FN    = 80       # OpenSCAD sphere facet resolution (higher = smoother, slower)
 
-# Left:  [Down/Up (positive = down), Forward/Backward, Right/Left]
-# Right: [Left/Right (positive = left), Backward/Forward, Up/Down]
+# Offsets are applied in MuJoCo body/local coordinates: +x forward, +y left, +z up.
 LEFT_OFFSET  = np.array([0.0, 0.0, 0.113])    # centered reference: [0.0, 0.0, 0.113667]
 RIGHT_OFFSET = np.array([0.113, 0.0, 0.0])    # centered reference: [0.113667, 0.0, 0.0]
 

@@ -3,6 +3,9 @@ import json
 import mujoco
 import numpy as np
 
+from coordinate_frame import public_to_mujoco_vec
+from control_waveform import startup_sine_reference
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # USER CONFIGURATION & CONSTANTS — Matched to single simulation / hardware
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -19,6 +22,7 @@ TORQUE_LIMIT = 32.0       # Max torque in Nm
 T_WAIT          = 1.0
 START_FREQ_MULT = 1.5
 START_AMP_MULT  = 1.4
+STARTUP_RAMP_TIME = 0.0
 
 USE_RAMP           = False
 RAMP_TIME          = 1.0
@@ -33,10 +37,12 @@ amplitudes  = np.arange(5, 38 + 1, 1)
 results     = []
 
 # Foot Offsets
-# For right: [Pos = shift left (inward), Pos = shift forward, pos = shift up]
-# For left: [Pos = down, Pos = shift backward, pos = shift right (inward)]
-foot_position_deltaRight = np.array([0.0, -0.01, 0.0])
-foot_position_deltaLeft  = np.array([0.0, 0.01, 0.0])
+# Public frame: +x forward, +y robot-left, +z down.
+# MuJoCo frame: +x forward, +y robot-left, +z up.
+right_foot_offset_public = np.array([0.0, -0.01, 0.0])
+left_foot_offset_public = np.array([0.0, 0.01, 0.0])
+foot_position_deltaRight = public_to_mujoco_vec(right_foot_offset_public)
+foot_position_deltaLeft = public_to_mujoco_vec(left_foot_offset_public)
 foot_geom_offsets = {
     "right_foot_1": foot_position_deltaRight, "right_foot_2": foot_position_deltaRight, "right_foot_3": foot_position_deltaRight,
     "left_foot_1": foot_position_deltaLeft,   "left_foot_2": foot_position_deltaLeft,   "left_foot_3": foot_position_deltaLeft,
@@ -88,30 +94,15 @@ mujoco.mj_setConst(model, data)
 # HELPER FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 def calculate_sine_reference(t, hip_omega, leg_amp_rad):
-    """Generates target profiles dynamically per-iteration based on grid settings."""
-    steady_sine = lambda w, t, t0: np.sin(w * (t - t0)) if t > t0 else 0.0
-    trans_sine  = lambda w, t, t0: (np.sin(w * (t - t0)) if abs(w * (t0 - t) + np.pi / 2) < np.pi / 2 and t > t0 else 0.0)
-    composite   = lambda A, w1, w2, t, t0: (A * trans_sine(w1, t, t0) - steady_sine(w2, t, t0 + np.pi / w1))
-    
-    A  = START_AMP_MULT
-    w1 = hip_omega * START_FREQ_MULT
-    w2 = hip_omega
-    t0 = T_WAIT
-
-    position = leg_amp_rad * composite(A, w1, w2, t, t0)
-
-    At = START_AMP_MULT * leg_amp_rad
-    As = leg_amp_rad
-    if t <= t0:
-        velocity = 0.0
-    elif t < t0 + np.pi / (2 * w1):
-        velocity = (At * w1) * np.sin(2 * w1 * (t - t0))
-    elif t < t0 + np.pi / w1:
-        velocity = (As * w2) * np.cos(w1 * (t - t0))
-    else:
-        velocity = -As * w2 * np.cos(w2 * (t - t0 - np.pi / w1))
-
-    return position, velocity
+    return startup_sine_reference(
+        t=t,
+        hip_omega=hip_omega,
+        leg_amp_rad=leg_amp_rad,
+        t_wait=T_WAIT,
+        start_amp_mult=START_AMP_MULT,
+        start_freq_mult=START_FREQ_MULT,
+        ramp_time=STARTUP_RAMP_TIME,
+    )
 
 def check_has_fallen(model, data, body_id, height_threshold=0.3, angle_threshold_deg=45.0):
     """Evaluates torso spatial metrics to classify falls."""

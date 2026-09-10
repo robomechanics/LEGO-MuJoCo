@@ -1,3 +1,6 @@
+// Coordinate convention: +X forward, +Y robot-left/lateral. Z is the mesh's
+// local vertical thickness axis; Python wrappers document public +Z as down
+// and convert at MuJoCo boundaries when needed.
 // Variables X, Y, Z, box_x, box_y, left_foot, and fn are now passed via command line.
 // slice_x0/slice_x1 optionally passed to cut the foot into a sub-section along
 // the local X axis (same axis box_x measures). Defaults span far beyond any

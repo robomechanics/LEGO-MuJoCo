@@ -32,6 +32,8 @@ import numpy as np
 import mujoco
 import mujoco.viewer
 
+from control_waveform import DEFAULT_WAVEFORM, startup_sine_reference
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # USER PARAMETERS
@@ -55,16 +57,21 @@ PREVIEW_ONLY    = False   # True: only generate + preview the feet, skip injecti
 SWAP_FRONT_BACK = False   # True: flip which end is labeled front/back
 
 # ── Foot ellipsoid / footprint geometry ──────────────────────────────────
-# Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1 (footprint must fit
-# inside the ellipsoid -- checked automatically, with a clear error if not).
-# Constraint: BOX_X must be > MIDDLE_SECTION_LENGTH.
-X     = 0.78       #Current Robot: 0.78
-Y     = 0.936      # Current Robot: 0.936
+# Public convention in this repo:
+#   +X = forward / walking direction
+#   +Y = robot-left / lateral
+#   +Z = down in public docs; MuJoCo/OpenSCAD mesh generation remains z-up/down
+#        internally as needed.
+# Constraint: BOX_X must be > MIDDLE_SECTION_LENGTH because forward length is
+# sliced into front/middle/back sections.
+X     = 0.78       # forward curvature scale
+Y     = 0.936      # lateral curvature scale
 Z     = 0.35       # foot thickness scales ~linearly with Z, Use ~.35-.4
-BOX_X = 0.667      # total foot length, Current Robot: 0.667
-BOX_Y = 0.24       # total foot width, Current Robot: 0.24
+BOX_X = 0.667      # total forward length
+BOX_Y = 0.24       # total lateral width
 FN    = 80         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 MIDDLE_SECTION_LENGTH = 0.25  # 250mm (fixed length of the middle foot part)
+# Offsets are applied in MuJoCo body/local coordinates: +x forward, +y left, +z up.
 LEFT_OFFSET  = np.array([0.0, 0.0105, 0.07])
 RIGHT_OFFSET = np.array([0.07, -0.0105, 0.0])
 
@@ -75,11 +82,7 @@ KD           = 6.7
 TORQUE_LIMIT = 25.0       # Nm -- Torque Limit for AK80-8
 
 # ── Trajectory ──────────────────────────────────────────────────────────────
-HIP_OMEGA       = 0.57 * 2 * np.pi   # natural freq should be 0.52 Hz
-LEG_AMP_DEG     = 37.5
-T_WAIT          = 3.0
-START_FREQ_MULT = 0.9
-START_AMP_MULT  = 1.3
+WAVEFORM = DEFAULT_WAVEFORM
 
 # ── Per-foot rotation corrections ────────────────────────────────────────
 # Semicolon-separated "axis:degrees" tokens, applied (in order, left to
@@ -102,9 +105,6 @@ CMD_DELAY_STEPS = 1
 # ── Output files ──────────────────────────────────────────────────────────────
 TELEMETRY_PLOT_FILE   = 'joint_telemetry_plot.png'
 ORIENTATION_PLOT_FILE = 'orientation_telemetry_plot.png'
-
-# ── Derived constants ─────────────────────────────────────────────────────
-leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Quaternion / offset utilities
@@ -159,6 +159,16 @@ def quat_to_rotmat(q: np.ndarray) -> np.ndarray:
         [2*(x*y + z*w),         1 - 2*(x*x + z*z),   2*(y*z - x*w)],
         [2*(x*z - y*w),         2*(y*z + x*w),       1 - 2*(x*x + y*y)],
     ])
+
+
+def to_generator_axis_order(
+    curve_x: float,
+    curve_y: float,
+    box_x: float,
+    box_y: float,
+) -> tuple[float, float, float, float]:
+    """Return generator values using the repo convention: x=forward, y=left."""
+    return curve_x, curve_y, box_x, box_y
 
 
 def apply_offset(pos: np.ndarray, quat: np.ndarray, offset: np.ndarray, frame: str) -> np.ndarray:
@@ -508,27 +518,15 @@ def inject_feet_into_model(
 # ═══════════════════════════════════════════════════════════════════════════
 
 def calculate_sine_reference(t):
-    w1           = HIP_OMEGA * START_FREQ_MULT
-    w2           = HIP_OMEGA
-    t0           = T_WAIT
-    At           = START_AMP_MULT * leg_amp_rad
-    As           = leg_amp_rad
-    t_transition = t0 + np.pi / w1
-
-    if t <= t0:
-        position, velocity = 0.0, 0.0
-
-    elif t < t_transition:
-        phase    = w1 * (t - t0)
-        position = At * np.sin(phase)
-        velocity = At * w1 * np.cos(phase)
-
-    else:
-        phase    = w2 * (t - t_transition)
-        position = -As * np.sin(phase)
-        velocity = -As * w2 * np.cos(phase)
-
-    return position, velocity
+    return startup_sine_reference(
+        t=t,
+        hip_omega=WAVEFORM.hip_omega,
+        leg_amp_rad=WAVEFORM.leg_amp_rad,
+        t_wait=WAVEFORM.t_wait,
+        start_amp_mult=WAVEFORM.start_amp_mult,
+        start_freq_mult=WAVEFORM.start_freq_mult,
+        ramp_time=WAVEFORM.startup_ramp_time,
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -542,9 +540,18 @@ def main():
 
     out_dir = Path(OUT_DIR).resolve()
 
+    curve_x, curve_y, box_x, box_y = to_generator_axis_order(
+        X, Y, BOX_X, BOX_Y
+    )
     sections = generate_all_sections(
-        scad_file, out_dir,
-        X, Y, Z, BOX_X, BOX_Y, FN,
+        scad_file,
+        out_dir,
+        curve_x,
+        curve_y,
+        Z,
+        box_x,
+        box_y,
+        FN,
         swap_front_back=SWAP_FRONT_BACK,
     )
 
