@@ -74,12 +74,12 @@ ENTRY_XML = REPO_ROOT / "Bigfoot" / "scene.xml"
 # Constraint: (BOX_X/X)^2 + (BOX_Y/Y)^2 must be < 1.
 # Constraint: BOX_X must be > 0.25 because forward length is sliced into
 # front/middle/back sections.
-X     = 0.936       # forward curvature scale
-Y     = 0.78      # lateral curvature scale
+X     = 0.78       # forward curvature scale
+Y     = 0.936      # lateral curvature scale
 Z     = 0.35      # foot thickness scales ~linearly with Z, use ~.35-.4
 BOX_X = 0.667      # total forward length
 BOX_Y = 0.24       # total lateral width
-FN    = 100         # OpenSCAD sphere facet resolution (higher = smoother, slower)
+FN    = 110         # OpenSCAD sphere facet resolution (higher = smoother, slower)
 #Recommended Range of 90-110 for FN
 
 # ── Foot shell wall thickness ────────────────────────────────────────────
@@ -87,14 +87,10 @@ FN    = 100         # OpenSCAD sphere facet resolution (higher = smoother, slowe
 # Sets thickness of the shell - Baseline: 0.02, but modify based on the weight you see as necessary
 WALL_THICKNESS = 0.02
 
-# Public [y, x, z] offsets: +x forward, +y outwards, +z down.
-# apply_offset() converts these once before applying them to MuJoCo's z-up frame.
-LEFT_OFFSET  = np.array([-0.027, 0.113, 0.0])
-RIGHT_OFFSET = np.array([-0.027, 0.113, 0.0])
-
-# correcting offsets by flipping y-axis
-LEFT_OFFSET[0], LEFT_OFFSET[1], LEFT_OFFSET[2] = LEFT_OFFSET[2], -LEFT_OFFSET[0], -LEFT_OFFSET[1]
-RIGHT_OFFSET[0], RIGHT_OFFSET[1] = RIGHT_OFFSET[1], RIGHT_OFFSET[0]
+# Public [x, y, z] offsets: +x forward, +y robot-left, +z down.
+# Zero keeps generated feet at the exact placement already baked into Bigfoot/robot.xml.
+LEFT_OFFSET = np.array([0.0, 0.0, 0.0])
+RIGHT_OFFSET = np.array([0.0, 0.0, 0.0])
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ADDITIONAL PARAMETERS (Likely do not change)
@@ -590,11 +586,13 @@ def inject_feet_into_model(
     right_offset: np.ndarray,
     offset_frame: str,
 ) -> "mujoco.MjModel":
+    reference_model = mujoco.MjModel.from_xml_path(str(robot_xml_path))
     spec = mujoco.MjSpec.from_file(str(robot_xml_path))
     absolutize_all_mesh_paths(spec, robot_xml_path.parent)
 
     corrections = {"right": right_correction, "left": left_correction}
     offsets = {"right": right_offset, "left": left_offset}
+    desired_compiled_pos = {}
 
     for side in ["right", "left"]:
         for suffix, section in SUFFIX_TO_SECTION.items():
@@ -603,9 +601,17 @@ def inject_feet_into_model(
 
             pos, quat = _get_geom_transform(spec, visual_name)
             corrected_quat = quat_multiply(np.array(quat), corrections[side])
+            offset = np.asarray(offsets[side], dtype=float)
             corrected_pos = apply_offset(
-                np.array(pos), corrected_quat, offsets[side], offset_frame
+                np.array(pos), corrected_quat, offset, offset_frame
             )
+            offset_mujoco = public_to_mujoco_vec(offset)
+            if offset_frame == "body":
+                compiled_offset = offset_mujoco
+            elif offset_frame == "local":
+                compiled_offset = quat_to_rotmat(corrected_quat) @ offset_mujoco
+            else:
+                raise ValueError(f"Unknown frame '{offset_frame}', expected 'body' or 'local'.")
 
             visual_geom = spec.geom(visual_name)
             body = visual_geom.parent
@@ -659,7 +665,26 @@ def inject_feet_into_model(
             vprint(f"  {collision_name}: mass={section_mass_kg*1000:.2f} g "
                    f"(density={section_density:.2f} kg/m^3)")
 
+            for geom_name in (visual_name, collision_name):
+                reference_geom_id = mujoco.mj_name2id(
+                    reference_model, mujoco.mjtObj.mjOBJ_GEOM, geom_name
+                )
+                if reference_geom_id == -1:
+                    raise ValueError(f"Could not find reference geom '{geom_name}' in {robot_xml_path}.")
+                desired_compiled_pos[geom_name] = (
+                    reference_model.geom_pos[reference_geom_id].copy() + compiled_offset
+                )
+
             vprint(f"Replaced {visual_name}/{collision_name} -> {new_mesh_name}")
+
+    model = spec.compile()
+    for geom_name, target_pos in desired_compiled_pos.items():
+        geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom_name)
+        if geom_id == -1:
+            raise ValueError(f"Could not find generated geom '{geom_name}' after compile.")
+        compiled_delta = target_pos - model.geom_pos[geom_id]
+        spec_geom = spec.geom(geom_name)
+        spec_geom.pos = list(np.asarray(spec_geom.pos, dtype=float) + compiled_delta)
 
     model = spec.compile()
 

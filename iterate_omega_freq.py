@@ -4,6 +4,7 @@ import mujoco
 import numpy as np
 
 from coordinate_frame import public_to_mujoco_vec
+from control_waveform import DEFAULT_KP as KP, DEFAULT_KD as KD, DEFAULT_TORQUE_LIMIT as TORQUE_LIMIT
 from control_waveform import startup_sine_reference
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -14,9 +15,6 @@ JOINT_NAME      = "hip"  # <--- Replace with your actual XML joint name
 TORSO_BODY_NAME = "motor"               # Main root body for fall detection
 
 # Motor / control (Direct SI units)
-KP           = 27.0       # Nm/rad
-KD           = 5.0        # Nm/(rad/s)
-TORQUE_LIMIT = 32.0       # Max torque in Nm
 
 # Trajectory Timing / Tweaks
 T_WAIT          = 1.0

@@ -114,10 +114,10 @@ RIGHT_FOOT_GEOMS = ("right_foot_1", "right_foot_1_col")
 LEFT_FOOT_GEOMS  = ("left_foot_1", "left_foot_1_col")
 
 delta_right_geom = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
-delta_left_geom  = np.array([-FOOT_Z, -FOOT_Y, FOOT_X], dtype=float)
+delta_left_geom  = np.array([-FOOT_Z, FOOT_Y, FOOT_X], dtype=float)
 # Parent-body CoM shifts (world-ish on motor; mirrored lateral on arm link).
-delta_right_body = np.array([0,0,0], dtype=float)
-delta_left_body  = np.array([0,0,0], dtype=float)
+delta_right_body = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
+delta_left_body  = np.array([-FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
 
 original_geom_pos = {
     name: model.geom_pos[gid].copy()

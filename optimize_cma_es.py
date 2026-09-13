@@ -45,6 +45,7 @@ except ImportError:  # pragma: no cover - runtime dependency check
 import run_sweep as sweep_runner
 import test_sim_sweep as sim_sweep
 import sweep_config
+from control_waveform import DEFAULT_KP, DEFAULT_KD, DEFAULT_TORQUE_LIMIT
 
 
 GEOMETRY_PARAM_NAMES = {"curve_x", "curve_y", "box_x", "box_y"}
@@ -126,8 +127,8 @@ def build_param_library() -> dict[str, ParamSpec]:
     fixed = dict(sweep_config.FIXED_TRIAL_PARAMS)
     geometry_base = dict(sweep_config.GEOMETRY_BASE)
 
-    kp_low, kp_high, kp_mean = _distribution_bound("Kp", 20.0, 45.0, float(fixed.get("Kp", 45.0)))
-    kd_low, kd_high, kd_mean = _distribution_bound("Kd", 2.0, 15.0, float(fixed.get("Kd", 7.0)))
+    kp_low, kp_high, kp_mean = _distribution_bound("Kp", 20.0, 45.0, float(fixed.get("Kp", DEFAULT_KP)))
+    kd_low, kd_high, kd_mean = _distribution_bound("Kd", 2.0, 15.0, float(fixed.get("Kd", DEFAULT_KD)))
     sam_low, sam_high, sam_mean = _distribution_bound("start_amp_mult", 0.8, 1.8, float(fixed.get("start_amp_mult", 1.2)))
     sfm_low, sfm_high, sfm_mean = _distribution_bound("start_freq_mult", 0.7, 1.4, float(fixed.get("start_freq_mult", 0.9)))
     ramp_low, ramp_high, ramp_mean = _distribution_bound("ramp_time", 0.0, 3.0, float(fixed.get("ramp_time", 0.0)))
@@ -166,7 +167,7 @@ def build_param_library() -> dict[str, ParamSpec]:
         "ramp_time": ParamSpec("ramp_time", ramp_low, ramp_high, ramp_mean),
         "foot_x": ParamSpec("foot_x", -0.08, 0.08, float(fixed.get("foot_x", 0.0))),
         "foot_y": ParamSpec("foot_y", -0.08, 0.08, float(fixed.get("foot_y", 0.0))),
-        "torque_limit": ParamSpec("torque_limit", 5.0, 25.0, float(fixed.get("torque_limit", 25.0))),
+        "torque_limit": ParamSpec("torque_limit", 5.0, DEFAULT_TORQUE_LIMIT, float(fixed.get("torque_limit", DEFAULT_TORQUE_LIMIT))),
     }
     return library
 

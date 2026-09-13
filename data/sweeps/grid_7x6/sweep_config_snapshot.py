@@ -57,7 +57,7 @@ SWEEP_BASE = {
     **ACTUATION_BASE,
 }
 
-def linear_values(low: float, high: float, count: int = 10) -> list[float]:
+def linear_values(low: float, high: float, count: int = 7) -> list[float]:
     return [round(low + (high - low) * i / (count - 1), 9) for i in range(count)]
 
 
@@ -65,7 +65,7 @@ def scaled_values(base_value: float, percent_deltas: list[float]) -> list[float]
     return [round(base_value * (1.0 + pct / 100.0), 9) for pct in percent_deltas]
 
 
-PERCENT_DELTAS = linear_values(-30.0, 30.0)
+PERCENT_DELTAS = linear_values(-20.0, 20.0)
 SWEEP_VALUES = {
     axis_name: scaled_values(base_value, PERCENT_DELTAS)
     for axis_name, base_value in SWEEP_BASE.items()
@@ -73,7 +73,7 @@ SWEEP_VALUES = {
 SWEEP_VALUES.update({
     "foot_x": linear_values(-0.05, 0.04),
     "foot_y": linear_values(-0.05, 0.02),
-    "amp_deg": linear_values(35.0, 50.0),
+    "amp_deg": linear_values(30.0, 50.0),
     "start_freq_mult": linear_values(0.8, 2.2),
 })
 

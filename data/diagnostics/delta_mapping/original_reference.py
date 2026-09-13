@@ -9,13 +9,6 @@ import numpy as np
 import time
 import pickle as pkl
 
-from control_waveform import DEFAULT_WAVEFORM, startup_sine_reference
-from settle_utils import (
-    print_settle_quaternion as _print_settle_quaternion,
-    quat_to_rpy,
-    startup_settle_orientation as _startup_settle_orientation,
-)
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # CLI — video recording
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -69,7 +62,11 @@ KD           = 8.2
 TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
-WAVEFORM = DEFAULT_WAVEFORM
+HIP_OMEGA       = 0.524 * 2 * np.pi
+LEG_AMP_DEG     = 48.4
+T_WAIT          = 3.0
+START_FREQ_MULT = 1.93
+START_AMP_MULT  = 1.31
 
 # FOOT OFFSETS — Bigfoot single-piece STLs (right_foot_1 / left_foot_1)
 # Same mapping as test_sim_sweep.apply_foot_offsets.
@@ -82,7 +79,7 @@ WAVEFORM = DEFAULT_WAVEFORM
 #
 # Right foot lives on body "motor"; left on "simplified_motor___arm_rod".
 #   right geom delta = [ FOOT_X,  FOOT_Y,  FOOT_Z ]
-#   left  geom delta = [ -FOOT_Z, -FOOT_Y,  FOOT_X ]  # == sweep [0,-fy,fx] when Z=0
+#   left  geom delta = [ FOOT_Z, -FOOT_Y,  FOOT_X ]  # == sweep [0,-fy,fx] when Z=0
 FOOT_X = 0.004
 FOOT_Y = -0.023
 FOOT_Z = 0.0
@@ -95,15 +92,17 @@ RAMP_TIME = 2.0
 # ── CAN latency simulation ────────────────────────────────────────────────────
 CMD_DELAY_STEPS = 1
 
-# Prepare and validate a supported rest state with the same PD as the gait.
+# Automatic stance stabilizer: hold hip at 0 with PD, average freejoint lean,
+# yaw-lock, then hard-reset and start the gait at t=0.
 STARTUP_SETTLE_S = 8.0
 STARTUP_SETTLE_AVG_S = 2.0
+STARTUP_SETTLE_KP = 45.0
+STARTUP_SETTLE_KD = 7.0
 # ═══════════════════════════════════════════════════════════════════════════════
 # SETUP
 # ═══════════════════════════════════════════════════════════════════════════════
 
 model = mujoco.MjModel.from_xml_path("Bigfoot/scene.xml")
-#model = mujoco.MjModel.from_xml_path("modified_model.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
@@ -114,10 +113,10 @@ RIGHT_FOOT_GEOMS = ("right_foot_1", "right_foot_1_col")
 LEFT_FOOT_GEOMS  = ("left_foot_1", "left_foot_1_col")
 
 delta_right_geom = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
-delta_left_geom  = np.array([-FOOT_Z, -FOOT_Y, FOOT_X], dtype=float)
+delta_left_geom  = np.array([FOOT_Z, -FOOT_Y, FOOT_X], dtype=float)
 # Parent-body CoM shifts (world-ish on motor; mirrored lateral on arm link).
-delta_right_body = np.array([0,0,0], dtype=float)
-delta_left_body  = np.array([0,0,0], dtype=float)
+delta_right_body = np.array([FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
+delta_left_body  = np.array([-FOOT_X, FOOT_Y, FOOT_Z], dtype=float)
 
 original_geom_pos = {
     name: model.geom_pos[gid].copy()
@@ -149,9 +148,9 @@ mujoco.mj_setConst(model, data)
 mujoco.mj_forward(model, data)
 
 print(
-    f"Closed-loop trial  amp={WAVEFORM.leg_amp_deg:.1f}° "
-    f"sam={WAVEFORM.start_amp_mult:.2f} sfm={WAVEFORM.start_freq_mult:.2f} "
-    f"Kp={KP:.1f} Kd={KD:.1f} freq={WAVEFORM.hip_freq_hz:.3f} Hz"
+    f"Closed-loop trial  amp={LEG_AMP_DEG:.1f}° sam={START_AMP_MULT:.2f} "
+    f"sfm={START_FREQ_MULT:.2f} Kp={KP:.1f} Kd={KD:.1f} "
+    f"freq={HIP_OMEGA / (2 * np.pi):.3f} Hz"
 )
 print(
     f"Foot offsets: FOOT_X={FOOT_X:.4f} FOOT_Y={FOOT_Y:.4f} FOOT_Z={FOOT_Z:.4f} | "
@@ -160,43 +159,172 @@ print(
 print(f"Whole-robot CoM: {data.subtree_com[motor_id].round(4)}")
 print(f"Total mass:      {sum(model.body_mass[i] for i in range(model.nbody)):.3f} kg")
 # ── Derived constants ─────────────────────────────────────────────────────────
+leg_amp_rad = np.deg2rad(LEG_AMP_DEG)
 cmd_buffer  = [0.0] * CMD_DELAY_STEPS
 
 
-def startup_settle_orientation() -> np.ndarray:
-    """Prepare a supported stance and verify that it stays still before walking."""
-    return _startup_settle_orientation(
-        model=model,
-        data=data,
-        hip_qpos_adr=hip_qpos_adr,
-        hip_qvel_adr=hip_qvel_adr,
-        torque_limit=TORQUE_LIMIT,
-        settle_s=STARTUP_SETTLE_S,
-        avg_s=STARTUP_SETTLE_AVG_S,
-        settle_kp=KP,
-        settle_kd=KD,
-        print_fn=print,
+def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
+    """Vectorized (N,4) quat[w,x,y,z] -> (N,3) [roll, pitch, yaw] in radians."""
+    q = np.atleast_2d(quat_wxyz)
+    w, x, y, z = q[:, 0], q[:, 1], q[:, 2], q[:, 3]
+ 
+    # Roll (x-axis rotation)
+    sinr_cosp = 2.0 * (w * x + y * z)
+    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+    roll = np.arctan2(sinr_cosp, cosr_cosp)
+ 
+    # Pitch (y-axis rotation)
+    sinp = np.clip(2.0 * (w * y - z * x), -1.0, 1.0)
+    pitch = np.arcsin(sinp)
+ 
+    # Yaw (z-axis rotation)
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    yaw = np.arctan2(siny_cosp, cosy_cosp)
+ 
+    return np.column_stack([roll, pitch, yaw])
+
+
+def average_quaternions(quats: np.ndarray) -> np.ndarray:
+    """Component-wise mean of (N,4) wxyz quats, flipped to one hemisphere, then renormalized."""
+    q = np.asarray(quats, dtype=float)
+    if q.ndim != 2 or q.shape[1] != 4 or len(q) == 0:
+        raise ValueError(f"Expected non-empty (N,4) quats, got {getattr(q, 'shape', None)}")
+    aligned = q.copy()
+    dots = aligned @ aligned[0]
+    aligned[dots < 0.0] *= -1.0
+    mean = aligned.mean(axis=0)
+    norm = np.linalg.norm(mean)
+    if norm < 1e-12:
+        raise RuntimeError("Quaternion average collapsed to zero.")
+    return mean / norm
+
+
+def rpy_to_quat(roll: float, pitch: float, yaw: float) -> np.ndarray:
+    cr, sr = np.cos(roll * 0.5), np.sin(roll * 0.5)
+    cp, sp = np.cos(pitch * 0.5), np.sin(pitch * 0.5)
+    cy, sy = np.cos(yaw * 0.5), np.sin(yaw * 0.5)
+    return np.array(
+        [
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        ],
+        dtype=float,
     )
+
+
+def lock_quat_yaw(settled_quat: np.ndarray, yaw_reference_quat: np.ndarray) -> np.ndarray:
+    settled_rpy = np.ravel(quat_to_rpy(settled_quat))
+    ref_rpy = np.ravel(quat_to_rpy(yaw_reference_quat))
+    return rpy_to_quat(float(settled_rpy[0]), float(settled_rpy[1]), float(ref_rpy[2]))
+
+
+def startup_settle_orientation() -> np.ndarray:
+    """Zero-amp settle then hard-reset freejoint lean (yaw-locked), matching ES trials."""
+    spawn_xyz = data.qpos[0:3].copy()
+    spawn_quat = data.qpos[3:7].copy()
+    dt = float(model.opt.timestep)
+    n_steps = int(np.ceil(STARTUP_SETTLE_S / dt))
+    avg_start_t = STARTUP_SETTLE_S - STARTUP_SETTLE_AVG_S
+    free_quats: list[np.ndarray] = []
+
+    print(
+        f"Startup settle {STARTUP_SETTLE_S:.1f}s "
+        f"(avg last {STARTUP_SETTLE_AVG_S:.1f}s, yaw locked)..."
+    )
+    for _ in range(n_steps):
+        pos = data.qpos[hip_qpos_adr]
+        vel = data.qvel[hip_qvel_adr]
+        tau = STARTUP_SETTLE_KP * (0.0 - pos) + STARTUP_SETTLE_KD * (0.0 - vel)
+        data.ctrl[0] = float(np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT))
+        mujoco.mj_step(model, data)
+        if data.time >= avg_start_t:
+            free_quats.append(data.qpos[3:7].copy())
+
+    if not free_quats:
+        raise RuntimeError("Startup settle collected no quaternion samples.")
+
+    mean_free = lock_quat_yaw(average_quaternions(np.asarray(free_quats)), spawn_quat)
+    hip_qpos = float(data.qpos[hip_qpos_adr])
+    mujoco.mj_resetData(model, data)
+    data.qpos[0:3] = spawn_xyz
+    data.qpos[3:7] = mean_free
+    data.qpos[hip_qpos_adr] = hip_qpos
+    data.qvel[:] = 0.0
+    data.ctrl[:] = 0.0
+    mujoco.mj_forward(model, data)
+    rpy = np.ravel(np.rad2deg(quat_to_rpy(mean_free)))
+    print(
+        f"Startup settle done: quat="
+        f"{mean_free[0]:.5f} {mean_free[1]:.5f} {mean_free[2]:.5f} {mean_free[3]:.5f} | "
+        f"RPY(deg)=[{rpy[0]:.2f}, {rpy[1]:.2f}, {rpy[2]:.2f}]"
+    )
+    return mean_free
 
 
 def print_settle_quaternion(times: np.ndarray, body_quats: np.ndarray, window_s: float) -> None:
     """Average trailing body quaternions and print XML-ready settle pose."""
-    _print_settle_quaternion(times, body_quats, window_s, data=data, print_fn=print)
+    if len(times) == 0 or len(body_quats) == 0:
+        print("Settle requested, but no quaternion samples were recorded.")
+        return
+
+    t_end = float(times[-1])
+    t_start = max(float(times[0]), t_end - window_s)
+    mask = times >= t_start
+    samples = body_quats[mask]
+    if len(samples) == 0:
+        print("Settle requested, but no samples fell inside the settle window.")
+        return
+
+    mean_body = average_quaternions(samples)
+    rpy_body = np.rad2deg(quat_to_rpy(mean_body))
+    free_q = np.asarray(data.qpos[3:7], dtype=float)
+    free_q = free_q / max(np.linalg.norm(free_q), 1e-12)
+    rpy_free = np.rad2deg(quat_to_rpy(free_q))
+
+    print("\n=== Settled average quaternion (-settle) ===")
+    print(f"Samples: {len(samples)}  (t = [{t_start:.2f}, {t_end:.2f}] s)")
+    print(
+        "Body xquat (w x y z): "
+        f"{mean_body[0]:.8f} {mean_body[1]:.8f} {mean_body[2]:.8f} {mean_body[3]:.8f}"
+    )
+    print(
+        "Freejoint qpos[3:7] (final): "
+        f"{free_q[0]:.8f} {free_q[1]:.8f} {free_q[2]:.8f} {free_q[3]:.8f}"
+    )
+    print(f"Body RPY (deg):      roll={rpy_body[0]:.3f}  pitch={rpy_body[1]:.3f}  yaw={rpy_body[2]:.3f}")
+    print(f"Freejoint RPY (deg): roll={rpy_free[0]:.3f}  pitch={rpy_free[1]:.3f}  yaw={rpy_free[2]:.3f}")
+    print("\nXML-ready body quat attribute:")
+    print(f'quat="{mean_body[0]:.6f} {mean_body[1]:.6f} {mean_body[2]:.6f} {mean_body[3]:.6f}"')
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TRAJECTORY — direct port of motorwave.py calculate_sine_reference
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def calculate_sine_reference(t):
-    return startup_sine_reference(
-        t=t,
-        hip_omega=WAVEFORM.hip_omega,
-        leg_amp_rad=WAVEFORM.leg_amp_rad,
-        t_wait=WAVEFORM.t_wait,
-        start_amp_mult=WAVEFORM.start_amp_mult,
-        start_freq_mult=WAVEFORM.start_freq_mult,
-        ramp_time=WAVEFORM.startup_ramp_time,
-    )
+    w1           = HIP_OMEGA * START_FREQ_MULT
+    w2           = HIP_OMEGA
+    t0           = T_WAIT
+    At           = START_AMP_MULT * leg_amp_rad
+    As           = leg_amp_rad
+    t_transition = t0 + np.pi / w1
+
+    if t <= t0:
+        position, velocity = 0.0, 0.0
+
+    elif t < t_transition:
+        phase    = w1 * (t - t0)
+        position = At * np.sin(phase)
+        velocity = At * w1 * np.cos(phase)      # true derivative
+
+    else:
+        phase    = w2 * (t - t_transition)
+        position = -As * np.sin(phase)
+        velocity = -As * w2 * np.cos(phase)     # true derivative
+
+    return position, velocity
 
 for i in range(model.njnt):
     name = model.joint(i).name
@@ -355,7 +483,6 @@ if SETTLE:
 
 if STARTUP_SETTLE_S > 0:
     startup_settle_orientation()
-    cmd_buffer[:] = [float(data.ctrl[0])] * CMD_DELAY_STEPS
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
     #data.qpos[2] = 1.2
@@ -378,7 +505,7 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         targetVelocity_history.append(target_vel_rad)
         quat_history.append(data.xquat[motor_id].copy())
         #torqueCommand_history.append(data.qfrc_actuator[0])
-        if t > WAVEFORM.t_wait:
+        if t > T_WAIT:
             record_contacts_in_body_frame(model, data, contact_geoms, con_dict)
 
 

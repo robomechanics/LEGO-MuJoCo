@@ -10,6 +10,10 @@ import numpy as np
 
 from coordinate_frame import mujoco_heading_axes
 from control_waveform import (
+    DEFAULT_KP,
+    DEFAULT_KD,
+    DEFAULT_TORQUE_LIMIT,
+    DEFAULT_GAIN_DISTRIBUTIONS,
     DEFAULT_HIP_FREQ_HZ,
     DEFAULT_LEG_AMP_DEG,
     DEFAULT_START_AMP_MULT,
@@ -18,6 +22,7 @@ from control_waveform import (
     DEFAULT_T_WAIT,
     startup_sine_reference,
 )
+from settle_utils import startup_settle_orientation
 
 
 def _env_flag(name: str, default: bool = True) -> bool:
@@ -37,7 +42,6 @@ def vprint(*args, verbose: bool = True, **kwargs) -> None:
 
 JOINT_NAME = "hip"
 TORSO_BODY_NAME = "motor"
-TORQUE_LIMIT = 25.0
 USE_RAMP = False
 RAMP_TIME = 1.0
 CMD_DELAY_STEPS = 1
@@ -45,13 +49,15 @@ ITERATION_DURATION = 20.0
 MIN_SWING_CLEARANCE = 0.02
 MIN_ALTERNATING_STEPS = 1
 ANALYSIS_STRIDE = 2
+STARTUP_SETTLE_S = 8.0
+STARTUP_SETTLE_AVG_S = 2.0
 
 DEFAULT_FIXED_PARAMS = {
     "foot_x": 0.0,
     "foot_y": 0.0,
-    "torque_limit": TORQUE_LIMIT,
-    "Kp": 45.0,
-    "Kd": 7.0,
+    "torque_limit": DEFAULT_TORQUE_LIMIT,
+    "Kp": DEFAULT_KP,
+    "Kd": DEFAULT_KD,
     "start_amp_mult": DEFAULT_START_AMP_MULT,
     "start_freq_mult": DEFAULT_START_FREQ_MULT,
     "ramp_time": float(os.environ.get("TEST_SIM_STARTUP_RAMP_TIME", str(DEFAULT_STARTUP_RAMP_TIME))),
@@ -60,8 +66,7 @@ DEFAULT_FIXED_PARAMS = {
 }
 
 DEFAULT_NORMAL_DISTRIBUTIONS = {
-    "Kp": {"mean": 45.0, "std": 4.0, "min": 20.0, "max": 45.0},
-    "Kd": {"mean": 7.0, "std": 2.0, "min": 2.0, "max": 15.0},
+    **{name: dict(spec) for name, spec in DEFAULT_GAIN_DISTRIBUTIONS.items()},
     "start_amp_mult": {"mean": DEFAULT_START_AMP_MULT, "std": 0.2, "min": 0.8, "max": 1.8},
     "start_freq_mult": {"mean": DEFAULT_START_FREQ_MULT, "std": 0.15, "min": 0.7, "max": 1.4},
 }
@@ -221,23 +226,26 @@ def apply_foot_offsets(ctx: SimulationContext, foot_x: float, foot_y: float) -> 
     """
     Applies public foot offsets to geoms and body centers of mass.
 
-    Public convention: foot_x is forward, foot_y is robot-left. MuJoCo uses the
-    same horizontal axes, so only z would need conversion; z offsets are not
-    exposed here.
+    Matches closed-loop FOOT_X/FOOT_Y: positive foot_x moves both feet inward;
+    positive foot_y moves both forward. Values are metres. Each foot and its
+    approximate body CoM receive the same displacement in their parent frame.
     """
-    delta_geom = np.array([foot_x, foot_y, 0.0])
-    delta_body = np.array([foot_x, foot_y, 0.0])
+    body_offsets = {
+        "motor": np.array([foot_x, foot_y, 0.0]),
+        "simplified_motor___arm_rod": np.array([0.0, -foot_y, foot_x]),
+    }
 
     for bid in ctx.foot_parent_body_ids:
         body_name = mujoco.mj_id2name(ctx.model, mujoco.mjtObj.mjOBJ_BODY, bid)
         if body_name in {"motor", "simplified_motor___arm_rod"}:
-            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + delta_body
+            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + body_offsets[body_name]
 
     for name in FOOT_GEOM_NAMES:
         geom_id = mujoco.mj_name2id(ctx.model, mujoco.mjtObj.mjOBJ_GEOM, name)
         if geom_id == -1:
             continue
-        ctx.model.geom_pos[geom_id] = ctx.original_geom_pos[name] + delta_geom
+        body_name = ctx.model.body(int(ctx.model.geom_bodyid[geom_id])).name
+        ctx.model.geom_pos[geom_id] = ctx.original_geom_pos[name] + body_offsets[body_name]
 
     mujoco.mj_setConst(ctx.model, ctx.data)
     mujoco.mj_forward(ctx.model, ctx.data)
@@ -346,7 +354,7 @@ def build_replay_params(params: dict) -> dict[str, float]:
     return {
         "foot_x": float(merged["foot_x"]),
         "foot_y": float(merged["foot_y"]),
-        "torque_limit": float(merged.get("torque_limit", TORQUE_LIMIT)),
+        "torque_limit": float(merged.get("torque_limit", DEFAULT_TORQUE_LIMIT)),
         "Kp": float(merged["Kp"]),
         "Kd": float(merged["Kd"]),
         "start_amp_mult": float(merged["start_amp_mult"]),
@@ -357,13 +365,40 @@ def build_replay_params(params: dict) -> dict[str, float]:
     }
 
 
-def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True, viewer=None) -> dict:
+def run_single_trial(
+    ctx: SimulationContext,
+    params: dict,
+    verbose: bool = True,
+    viewer=None,
+    iteration_duration: float | None = None,
+    stop_on_fall: bool = True,
+    frame_callback=None,
+) -> dict:
     mujoco.mj_resetData(ctx.model, ctx.data)
 
     replay_params = build_replay_params(params)
 
     apply_foot_offsets(ctx, replay_params["foot_x"], replay_params["foot_y"])
     mujoco.mj_forward(ctx.model, ctx.data)
+
+    if STARTUP_SETTLE_S > 0:
+        settle_print = (
+            (lambda *args, **kwargs: vprint(*args, verbose=verbose, **kwargs))
+            if verbose
+            else None
+        )
+        startup_settle_orientation(
+            model=ctx.model,
+            data=ctx.data,
+            hip_qpos_adr=ctx.qpos_idx,
+            hip_qvel_adr=ctx.qvel_idx,
+            torque_limit=replay_params["torque_limit"],
+            settle_s=STARTUP_SETTLE_S,
+            avg_s=STARTUP_SETTLE_AVG_S,
+            settle_kp=replay_params["Kp"],
+            settle_kd=replay_params["Kd"],
+            print_fn=settle_print,
+        )
 
     if ctx.debug_geom_id != -1:
         vprint(f"Global Position: {ctx.data.geom_xpos[ctx.debug_geom_id]}", verbose=verbose)
@@ -372,9 +407,10 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
     start_forward_xy, start_left_xy = get_heading_axes(ctx.data.xmat[ctx.torso_body_id])
     hip_omega = replay_params["freq_hz"] * 2 * np.pi
     leg_amp_rad = np.deg2rad(replay_params["amp_deg"])
-    cmd_buffer = [0.0] * CMD_DELAY_STEPS
+    cmd_buffer = [float(ctx.data.ctrl[0])] * CMD_DELAY_STEPS
     fell = False
-    max_steps = int(ITERATION_DURATION / ctx.model.opt.timestep)
+    duration = ITERATION_DURATION if iteration_duration is None else float(iteration_duration)
+    max_steps = int(duration / ctx.model.opt.timestep)
     energy_used = 0.0
     path_length = 0.0
     prev_torso_xy = start_torso_xy.copy()
@@ -443,8 +479,11 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
 
     last_analysis_step = 0
 
+    if frame_callback is not None:
+        frame_callback(ctx)
     for step_idx in range(1, max_steps + 1):
         t = ctx.data.time
+
         target_pos_rad, target_vel_rad = calculate_sine_reference(
             t,
             hip_omega,
@@ -469,6 +508,10 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
         ctx.data.ctrl[0] = cmd_buffer.pop(0)
 
         mujoco.mj_step(ctx.model, ctx.data)
+
+        if frame_callback is not None:
+            frame_callback(ctx)
+
         if viewer is not None:
             if not viewer.is_running():
                 break
@@ -480,7 +523,7 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
             update_gait_metrics()
             last_analysis_step = step_idx
 
-        if check_has_fallen(ctx):
+        if stop_on_fall and check_has_fallen(ctx):
             if not analysis_due:
                 update_gait_metrics()
                 last_analysis_step = step_idx

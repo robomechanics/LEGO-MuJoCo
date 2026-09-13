@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import csv
+import fcntl
+import hashlib
 import itertools
 import json
 import os
@@ -19,7 +21,8 @@ import sweep_config as config
 
 ROOT_DIR = Path(__file__).resolve().parent
 mesh_gen.VERBOSE = False
-PREVIEW_FIRST_TRIAL = True
+PREVIEW_FIRST_TRIAL = False
+PREVIEW_TRIAL_DURATION = 20.0
 
 
 def vprint(*args, **kwargs) -> None:
@@ -40,30 +43,17 @@ def generate_modified_xml(geometry: dict[str, float], output_xml: Path, out_dir:
     # Public geometry convention: +x forward, +y robot-left/lateral.
     # The OpenSCAD local X axis is the front/back slicing axis, so pass the
     # sweep geometry through directly.
-    if hasattr(mesh_gen, "generate_full_feet") and getattr(mesh_gen, "SUFFIX_TO_SECTION", None) == {"1": "full"}:
-        sections = mesh_gen.generate_full_feet(
-            scad_file,
-            out_dir,
-            geometry["curve_x"],
-            geometry["curve_y"],
-            mesh_gen.Z,
-            geometry["box_x"],
-            geometry["box_y"],
-            mesh_gen.FN,
-            shell_thickness=getattr(mesh_gen, "WALL_THICKNESS", None),
-        )
-    else:
-        sections = mesh_gen.generate_all_sections(
-            scad_file,
-            out_dir,
-            geometry["curve_x"],
-            geometry["curve_y"],
-            mesh_gen.Z,
-            geometry["box_x"],
-            geometry["box_y"],
-            mesh_gen.FN,
-            swap_front_back=mesh_gen.SWAP_FRONT_BACK,
-        )
+    sections = mesh_gen.generate_full_feet(
+        scad_file,
+        out_dir,
+        geometry["curve_x"],
+        geometry["curve_y"],
+        mesh_gen.Z,
+        geometry["box_x"],
+        geometry["box_y"],
+        mesh_gen.FN,
+        shell_thickness=mesh_gen.WALL_THICKNESS,
+    )
 
     mesh_gen.inject_feet_into_model(
         Path(mesh_gen.ENTRY_XML),
@@ -75,6 +65,21 @@ def generate_modified_xml(geometry: dict[str, float], output_xml: Path, out_dir:
         right_offset=mesh_gen.RIGHT_OFFSET,
         offset_frame=mesh_gen.OFFSET_FRAME,
     )
+
+
+def cached_modified_xml(geometry: dict[str, float], cache_root: Path) -> Path:
+    """Reuse each mesh shape across offset/actuation trials, including workers."""
+    shape = {key: geometry[key] for key in ("curve_x", "curve_y", "box_x", "box_y")}
+    key = hashlib.sha256(json.dumps(shape, sort_keys=True).encode()).hexdigest()[:20]
+    directory = cache_root / key
+    directory.mkdir(parents=True, exist_ok=True)
+    output_xml = directory / "modified_model.xml"
+    with (directory / "build.lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if not (directory / "ready").exists():
+            generate_modified_xml(geometry, output_xml, directory / "feet")
+            (directory / "ready").touch()
+    return output_xml
 
 
 def build_jobs() -> list[dict]:
@@ -107,6 +112,12 @@ def build_jobs() -> list[dict]:
             if axis_name in trial_axes
         }
         geometry = resolve_geometry(geometry_overrides)
+        # Foot offsets are applied once by the simulator, to both geoms and CoM.
+        # Include unswept defaults too, so placement stays defined by GEOMETRY_BASE.
+        trial_overrides.update({
+            axis_name: geometry[axis_name]
+            for axis_name in config.FOOT_OFFSET_SWEEP_AXES
+        })
         jobs.append(
             {
                 "point_index": point_index,
@@ -304,7 +315,7 @@ def build_metadata(job: dict, run_index: int, num_trials: int) -> dict[str, str]
         "Trials_Per_Pair": str(num_trials),
         "Mesh_Generator": mesh_gen.__name__,
         "Mesh_Generator_Entry_XML": str(mesh_gen.ENTRY_XML),
-        "Mesh_Generator_SCAD": str(Path(mesh_gen.SCAD_DIR) / "feet_generator.scad"),
+        "Mesh_Generator_SCAD": str(Path(mesh_gen.SCAD_DIR) / "shell_feet_generator.scad"),
     }
 
 
@@ -324,7 +335,11 @@ def process_point(
         mesh_out_dir = temp_path / "foot_section_out"
 
         try:
-            generate_modified_xml(geometry, output_xml, mesh_out_dir)
+            cache_root = getattr(config, "GEOMETRY_CACHE_DIR", None)
+            if cache_root:
+                output_xml = cached_modified_xml(geometry, Path(cache_root).resolve())
+            else:
+                generate_modified_xml(geometry, output_xml, mesh_out_dir)
         except (ValueError, RuntimeError) as exc:
             return {
                 "point_index": job["point_index"],
@@ -367,6 +382,39 @@ def process_point(
         }
 
 
+def preview_target_value(axis_name: str, fixed_params: dict, normal_distributions: dict) -> float:
+    if axis_name in config.SWEEP_BASE:
+        return float(config.SWEEP_BASE[axis_name])
+    if axis_name in fixed_params:
+        return float(fixed_params[axis_name])
+    if axis_name in normal_distributions:
+        return float(normal_distributions[axis_name]["mean"])
+    raise KeyError(f"No preview target value found for sweep axis '{axis_name}'.")
+
+
+def select_center_preview_job(
+    jobs: list[dict],
+    fixed_params: dict,
+    normal_distributions: dict,
+) -> dict:
+    def normalized_error(job: dict) -> float:
+        total = 0.0
+        for axis_name, value in job["axis_values"].items():
+            target = preview_target_value(axis_name, fixed_params, normal_distributions)
+            scale = max(abs(target), 1.0)
+            total += ((float(value) - target) / scale) ** 2
+        return total
+
+    return min(jobs, key=normalized_error)
+
+
+def center_trial_params(job: dict, fixed_params: dict, normal_distributions: dict) -> dict:
+    params = {**fixed_params, **job["trial_overrides"]}
+    for key, spec in normal_distributions.items():
+        params[key] = float(spec["mean"])
+    return params
+
+
 def preview_first_trial(
     job: dict,
     num_trials: int,
@@ -379,31 +427,29 @@ def preview_first_trial(
         mesh_out_dir = temp_path / "foot_section_out"
 
         generate_modified_xml(job["geometry"], output_xml, mesh_out_dir)
-        point_fixed_params = {**fixed_params, **job["trial_overrides"]}
-        parameter_rows = sim_sweep.generate_parameter_samples(
-            1,
-            fixed_params=point_fixed_params,
-            normal_distributions=normal_distributions,
-        )
-        if not parameter_rows:
-            vprint("No first-trial parameters were generated; skipping preview.")
-            return
-
-        first_params = parameter_rows[0]
+        first_params = center_trial_params(job, fixed_params, normal_distributions)
         vprint(
-            "Previewing first sweep trial before multiprocessing starts. "
+            "Previewing center sweep trial before multiprocessing starts. "
             f"Point {job['point_index']} ({format_axis_values(job['axis_values'])}), "
             f"params={sim_sweep.build_replay_params(first_params)}. "
             "Close the MuJoCo window to continue the sweep."
         )
         ctx = sim_sweep.load_simulation(output_xml)
         with mujoco.viewer.launch_passive(ctx.model, ctx.data) as viewer:
-            sim_sweep.run_single_trial(ctx, first_params, verbose=True, viewer=viewer)
+            sim_sweep.run_single_trial(
+                ctx,
+                first_params,
+                verbose=True,
+                viewer=viewer,
+                iteration_duration=PREVIEW_TRIAL_DURATION,
+                stop_on_fall=False,
+            )
 
 
 def main() -> None:
     output_xml = Path(config.OUTPUT_XML).resolve()
     results_csv = Path(config.RESULTS_CSV).resolve()
+    results_csv.parent.mkdir(parents=True, exist_ok=True)
 
     if config.OVERWRITE_RESULTS_CSV and results_csv.exists():
         results_csv.unlink()
@@ -432,7 +478,8 @@ def main() -> None:
     )
     vprint(
         f"Trial configuration: {num_trials} trials per geometry point | "
-        f"fixed params={fixed_params} | randomized={sorted(normal_distributions)}"
+        f"fixed params={fixed_params} | randomized={sorted(normal_distributions)} | "
+        f"startup settle={sim_sweep.STARTUP_SETTLE_S:.1f}s"
     )
     vprint(
         f"Worker plan: {point_workers} point worker(s), "
@@ -442,11 +489,14 @@ def main() -> None:
     vprint(f"Writing combined results to: {results_csv}")
 
     if PREVIEW_FIRST_TRIAL and jobs:
-        preview_first_trial(jobs[0], num_trials, fixed_params, normal_distributions)
+        preview_job = select_center_preview_job(jobs, fixed_params, normal_distributions)
+        preview_first_trial(preview_job, num_trials, fixed_params, normal_distributions)
 
     completed_points = 0
     merged_rows = 0
     skipped_points = 0
+    passed_trials = 0
+    nonfallen_trials = 0
     last_successful_job = None
 
     with ProcessPoolExecutor(max_workers=point_workers) as executor:
@@ -465,7 +515,10 @@ def main() -> None:
 
         for future in as_completed(future_to_job):
             job = future_to_job[future]
-            result = future.result()
+            try:
+                result = future.result()
+            except (RuntimeError, ValueError) as exc:
+                result = {"skipped": True, "skip_reason": str(exc)}
             completed_points += 1
             if result.get("skipped"):
                 skipped_points += 1
@@ -477,10 +530,17 @@ def main() -> None:
                 continue
             appended = append_rows(result["rows"], results_csv)
             merged_rows += appended
+            passed_trials += sum(bool(row["Gait_Quality_Pass"]) for row in result["rows"])
+            nonfallen_trials += sum(not bool(row["Fell"]) for row in result["rows"])
+            with results_csv.with_suffix(".status.json").open("w") as status_file:
+                json.dump({"completed_points": completed_points, "total_points": total_points,
+                           "rows": merged_rows, "skipped": skipped_points,
+                           "gait_passes": passed_trials, "nonfallen": nonfallen_trials}, status_file)
             last_successful_job = job
             vprint(
                 f"[{completed_points}/{total_points}] Finished point {job['point_index']} "
-                f"({format_axis_values(job['axis_values'])}) -> merged {appended} row(s)"
+                f"({format_axis_values(job['axis_values'])}) -> merged {appended} row(s); "
+                f"gait passes={passed_trials}, nonfallen={nonfallen_trials}/{merged_rows}"
             )
 
     if last_successful_job is not None:

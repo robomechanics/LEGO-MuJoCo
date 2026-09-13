@@ -8,6 +8,8 @@ import os
 import csv
 
 from control_waveform import (
+    DEFAULT_KP,
+    DEFAULT_KD,
     DEFAULT_START_AMP_MULT,
     DEFAULT_START_FREQ_MULT,
     DEFAULT_STARTUP_RAMP_TIME,
@@ -287,8 +289,8 @@ if __name__ == "__main__":
         motor_type  = 'AK80-8',
         hip_omega   = 0.55 * 2 * np.pi,
         leg_amp_deg = 37.5,
-        Kp          = 35.5,
-        Kd          = 6.5,
+        Kp          = DEFAULT_KP,
+        Kd          = DEFAULT_KD,
         t_wait      = 5.0,
         startup_ramp_time = 0.0,
     )

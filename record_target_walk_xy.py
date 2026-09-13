@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
-"""Search randomized trials, then record the top eligible walks by distance or CoT."""
+"""Record the top saved gait passes from a run_sweep CSV, without resampling.
 
-# example run
-'''
-python3 record_target_walk_xy.py \
-  --x-percent 6 \
-  --y-percent -10 \
-  --attempts 500 \
-  --top-n 5 \
-  --rank-by cot \
-  --video-out data/videos/x6_y-10_cot.mp4
-'''
-
+Example:
+    MUJOCO_GL=egl python3 record_target_walk_xy.py --top-n 5 --rank-by distance
+"""
 import argparse
+import csv
+import hashlib
 import json
 import math
+import os
 import tempfile
 from pathlib import Path
 
@@ -25,7 +20,6 @@ import numpy as np
 import run_sweep as sweep_runner
 import test_sim_sweep as sweep
 import sweep_config
-
 
 def build_tracking_camera(ctx: sweep.SimulationContext, distance: float, azimuth: float, elevation: float) -> mujoco.MjvCamera:
     camera = mujoco.MjvCamera()
@@ -41,118 +35,6 @@ def resolved_record_size(ctx: sweep.SimulationContext, width: int, height: int) 
     max_width = int(ctx.model.vis.global_.offwidth)
     max_height = int(ctx.model.vis.global_.offheight)
     return min(width, max_width), min(height, max_height)
-
-
-def percent_to_value(base: float, percent_delta: float) -> float:
-    return round(base * (1.0 + percent_delta / 100.0), 6)
-
-
-def run_trial(
-    ctx: sweep.SimulationContext,
-    params: dict,
-    video_fps: int | None = None,
-    width: int = 960,
-    height: int = 540,
-    camera_distance: float = 3.5,
-    camera_azimuth: float = 130.0,
-    camera_elevation: float = -15.0,
-) -> tuple[dict, list[np.ndarray]]:
-    mujoco.mj_resetData(ctx.model, ctx.data)
-    replay_params = sweep.build_replay_params(params)
-    sweep.apply_foot_offsets(ctx, replay_params["foot_x"], replay_params["foot_y"])
-    mujoco.mj_forward(ctx.model, ctx.data)
-
-    renderer = None
-    camera = None
-    frames: list[np.ndarray] = []
-    next_frame_time = 0.0
-    output_interval = None if video_fps is None else 1.0 / video_fps
-
-    if video_fps is not None:
-        width, height = resolved_record_size(ctx, width, height)
-        renderer = mujoco.Renderer(ctx.model, height, width)
-        camera = build_tracking_camera(
-            ctx,
-            distance=camera_distance,
-            azimuth=camera_azimuth,
-            elevation=camera_elevation,
-        )
-
-    start_x = ctx.data.xpos[ctx.torso_body_id][0]
-    start_y = ctx.data.xpos[ctx.torso_body_id][1]
-    hip_omega = replay_params["freq_hz"] * 2 * np.pi
-    leg_amp_rad = np.deg2rad(replay_params["amp_deg"])
-    cmd_buffer = [0.0] * sweep.CMD_DELAY_STEPS
-    fell = False
-    max_steps = int(sweep.ITERATION_DURATION / ctx.model.opt.timestep)
-    energy_used = 0.0
-
-    def maybe_record_frame() -> None:
-        nonlocal next_frame_time
-        if renderer is None or output_interval is None or camera is None:
-            return
-        while ctx.data.time >= next_frame_time:
-            renderer.update_scene(ctx.data, camera=camera)
-            frames.append(renderer.render().copy())
-            next_frame_time += output_interval
-
-    maybe_record_frame()
-
-    for _ in range(max_steps):
-        t = ctx.data.time
-        target_pos_rad, target_vel_rad = sweep.calculate_sine_reference(
-            t,
-            hip_omega,
-            leg_amp_rad,
-            replay_params["start_amp_mult"],
-            replay_params["start_freq_mult"],
-            replay_params["ramp_time"],
-        )
-
-        current_pos = ctx.data.qpos[ctx.qpos_idx]
-        current_vel = ctx.data.qvel[ctx.qvel_idx]
-
-        ramp = min(1.0, t / sweep.RAMP_TIME) if sweep.USE_RAMP and sweep.RAMP_TIME > 0 else 1.0
-        tau = (
-            replay_params["Kp"] * ramp * (target_pos_rad - current_pos)
-            + replay_params["Kd"] * ramp * (target_vel_rad - current_vel)
-        )
-        tau = np.clip(tau, -replay_params["torque_limit"], replay_params["torque_limit"])
-        energy_used += abs(tau * current_vel) * ctx.model.opt.timestep
-
-        cmd_buffer.append(tau)
-        ctx.data.ctrl[0] = cmd_buffer.pop(0)
-        mujoco.mj_step(ctx.model, ctx.data)
-        maybe_record_frame()
-
-        if sweep.check_has_fallen(ctx):
-            fell = True
-            break
-
-    final_x = ctx.data.xpos[ctx.torso_body_id][0]
-    final_y = ctx.data.xpos[ctx.torso_body_id][1]
-    distance = float(np.sqrt((final_x - start_x) ** 2 + (final_y - start_y) ** 2))
-    cot = (energy_used / (ctx.total_mass * ctx.gravity * distance)) if distance > 1e-6 else float("inf")
-
-    if renderer is not None:
-        renderer.close()
-
-    result_row = {
-        "Foot_X": round(replay_params["foot_x"], 4),
-        "Foot_Y": round(replay_params["foot_y"], 4),
-        "Torque_Limit": round(replay_params["torque_limit"], 3),
-        "Kp": round(replay_params["Kp"], 2),
-        "Kd": round(replay_params["Kd"], 2),
-        "Start_Amp_Mult": round(replay_params["start_amp_mult"], 3),
-        "Start_Freq_Mult": round(replay_params["start_freq_mult"], 3),
-        "Ramp_Time": round(replay_params["ramp_time"], 3),
-        "Amplitude_Deg": round(replay_params["amp_deg"], 2),
-        "Frequency_Hz": round(replay_params["freq_hz"], 3),
-        "Fell": fell,
-        "Distance_Traversed": round(distance, 4),
-        "CoT": round(cot, 4),
-    }
-    return result_row, frames
 
 
 def export_video(frames: list[np.ndarray], output_path: Path, fps: int) -> None:
@@ -175,215 +57,170 @@ def export_video(frames: list[np.ndarray], output_path: Path, fps: int) -> None:
     writer.release()
 
 
-def trial_matches(result_row: dict, target_distance: float, tolerance: float) -> bool:
-    return (not result_row["Fell"]) and abs(result_row["Distance_Traversed"] - target_distance) <= tolerance
+def run_trial(ctx, params, video_fps=None, width=960, height=540,
+              camera_distance=3.5, camera_azimuth=130.0, camera_elevation=-15.0):
+    """Use precisely the sweep dynamics; the callback only renders frames."""
+    frames = []
+    renderer = None
+    next_frame_time = 0.0
+    try:
+        if video_fps is not None:
+            if video_fps <= 0:
+                raise ValueError("Video FPS must be positive.")
+            width, height = resolved_record_size(ctx, width, height)
+            renderer = mujoco.Renderer(ctx.model, height, width)
+            camera = build_tracking_camera(ctx, camera_distance, camera_azimuth, camera_elevation)
+
+        def record_frame(state):
+            nonlocal next_frame_time
+            if renderer is None:
+                return
+            while state.data.time >= next_frame_time:
+                renderer.update_scene(state.data, camera=camera)
+                frames.append(renderer.render().copy())
+                next_frame_time += 1.0 / video_fps
+
+        result = sweep.run_single_trial(ctx, params, verbose=False, frame_callback=record_frame)
+        return result, frames
+    finally:
+        if renderer is not None:
+            renderer.close()
 
 
-def is_eligible_trial(result_row: dict, target_distance: float | None, tolerance: float) -> bool:
-    if result_row["Fell"]:
-        return False
-    if target_distance is None:
-        return True
-    return trial_matches(result_row, target_distance, tolerance)
+def csv_bool(value):
+    return str(value).strip().lower() in {"true", "1"}
 
 
-def rank_trial_key(result_row: dict, rank_by: str) -> float:
-    if rank_by == "distance":
-        return float(result_row["Distance_Traversed"])
-    cot = float(result_row["CoT"])
-    if not math.isfinite(cot):
-        return float("inf")
-    return cot
+def select_trials(csv_path, top_n, rank_by, target_distance=None, tolerance=0.1):
+    """Read a bounded snapshot of a possibly still-growing result file."""
+    eligible = []
+    metric = {"distance": "Distance_Traversed", "cot": "CoT", "walk_score": "Walk_Score"}[rank_by]
+    with csv_path.open("rb") as handle:
+        size = os.fstat(handle.fileno()).st_size
+
+        def snapshot_lines():
+            while handle.tell() < size:
+                line = handle.readline(size - handle.tell())
+                if not line.endswith(b"\n"):
+                    return  # The sweep has not finished writing this row.
+                yield line.decode("utf-8")
+
+        reader = csv.DictReader(snapshot_lines())
+        for row in reader:
+            if not csv_bool(row.get("Gait_Quality_Pass")) or csv_bool(row.get("Fell")):
+                continue
+            try:
+                score = float(row[metric])
+                distance = float(row["Distance_Traversed"])
+            except (ValueError, TypeError, KeyError):
+                continue  # Incomplete trailing row of an active sweep.
+            if not math.isfinite(score):
+                continue
+            if target_distance is not None and abs(distance - target_distance) > tolerance:
+                continue
+            eligible.append(row)
+    eligible.sort(key=lambda row: float(row[metric]), reverse=rank_by != "cot")
+    return eligible[:top_n]
 
 
-def output_path_for_rank(base_path: Path, rank: int, total: int) -> Path:
+def saved_trial(row):
+    """Never substitute today's defaults for missing historical parameters."""
+    params = json.loads(row["Replay_Params_JSON"])
+    required = {"foot_x", "foot_y", "torque_limit", "Kp", "Kd", "start_amp_mult",
+                "start_freq_mult", "ramp_time", "amp_deg", "freq_hz"}
+    missing = required - params.keys()
+    if missing:
+        raise ValueError(f"Saved trial is missing replay parameters: {sorted(missing)}")
+    params = {name: float(params[name]) for name in required}
+    geometry = {name: float(row[column]) for name, column in
+                (("curve_x", "Curve_X"), ("curve_y", "Curve_Y"), ("box_x", "Box_X"), ("box_y", "Box_Y"))}
+    if not all(math.isfinite(v) for v in (*params.values(), *geometry.values())):
+        raise ValueError("Saved trial contains non-finite parameters.")
+    return geometry, params
+
+
+def resolve_model(geometry, cache_dir, temporary_dir):
+    # Prefer the exact XML and meshes used by the sweep, not current generator defaults.
+    key = hashlib.sha256(json.dumps(geometry, sort_keys=True).encode()).hexdigest()[:20]
+    cached = cache_dir / key / "modified_model.xml"
+    if cached.exists() and (cached.parent / "ready").exists():
+        return cached, "sweep_cache"
+    output = temporary_dir / "modified_model.xml"
+    print("Cached model unavailable; regenerating saved shape with the current generator.")
+    sweep_runner.generate_modified_xml(geometry, output, temporary_dir / "feet")
+    return output, "regenerated"
+
+
+def replay_differences(saved, actual):
+    differences = {}
+    for key in ("Fell", "Gait_Quality_Pass"):
+        if csv_bool(saved[key]) != bool(actual[key]):
+            differences[key] = {"saved": saved[key], "replayed": actual[key]}
+    for key in ("Distance_Traversed", "Forward_Progress", "Walk_Score", "CoT", "Alternating_Steps"):
+        expected, observed = float(saved[key]), float(actual[key])
+        if not math.isclose(expected, observed, rel_tol=1e-7, abs_tol=1e-8):
+            differences[key] = {"saved": expected, "replayed": observed}
+    return differences
+
+
+def output_path_for_rank(base_path, rank, total):
     if total <= 1:
         return base_path
     return base_path.with_name(f"{base_path.stem}_rank{rank:02d}{base_path.suffix}")
 
 
-def main() -> None:
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--x-percent", type=float, required=True, help="Percent change from forward curve_x base.")
-    parser.add_argument("--y-percent", type=float, required=True, help="Percent change from left/lateral curve_y base.")
-    parser.add_argument("--attempts", type=int, default=500, help="Maximum randomized trials to search.")
-    parser.add_argument(
-        "--top-n",
-        type=int,
-        default=1,
-        help="Number of top eligible trials to record.",
-    )
-    parser.add_argument(
-        "--rank-by",
-        choices=("distance", "cot"),
-        default="distance",
-        help="Metric used to rank eligible trials. Distance prefers larger values; CoT prefers smaller values.",
-    )
-    parser.add_argument(
-        "--target-distance",
-        type=float,
-        default=None,
-        help="Desired walking distance in meters. If omitted, all non-falling trials are eligible.",
-    )
-    parser.add_argument("--tolerance", type=float, default=0.1, help="Allowed absolute error around target distance.")
-    parser.add_argument("--video-out", type=Path, default=Path("data/videos/target_walk_xy.mp4"), help="Output video path.")
-    parser.add_argument("--video-fps", type=int, default=30, help="Recorded video FPS.")
-    parser.add_argument("--width", type=int, default=960, help="Recorded video width.")
-    parser.add_argument("--height", type=int, default=540, help="Recorded video height.")
-    parser.add_argument("--camera-distance", type=float, default=3.5, help="Tracking camera distance.")
-    parser.add_argument("--camera-azimuth", type=float, default=130.0, help="Tracking camera azimuth.")
-    parser.add_argument("--camera-elevation", type=float, default=-15.0, help="Tracking camera elevation.")
-    parser.add_argument("--params-out", type=Path, default=None, help="Optional JSON path for the matched trial parameters.")
-    parser.add_argument("--print-every", type=int, default=25, help="Progress print interval during headless search.")
+    parser.add_argument("--results-csv", type=Path, default=Path(sweep_config.RESULTS_CSV))
+    parser.add_argument("--mesh-cache", type=Path, help="Defaults to the results directory's meshes folder.")
+    parser.add_argument("--top-n", type=int, default=5)
+    parser.add_argument("--rank-by", choices=("distance", "cot", "walk_score"), default="distance")
+    parser.add_argument("--target-distance", type=float)
+    parser.add_argument("--tolerance", type=float, default=0.1)
+    parser.add_argument("--video-out", type=Path, default=Path("data/videos/target_walk_xy.mp4"))
+    parser.add_argument("--params-out", type=Path, help="Defaults to the video path with a .json suffix.")
+    parser.add_argument("--video-fps", type=int, default=30)
+    parser.add_argument("--width", type=int, default=960)
+    parser.add_argument("--height", type=int, default=540)
+    parser.add_argument("--camera-distance", type=float, default=3.5)
+    parser.add_argument("--camera-azimuth", type=float, default=130.0)
+    parser.add_argument("--camera-elevation", type=float, default=-15.0)
+    parser.add_argument("--verify-only", action="store_true", help="Replay and compare metrics without rendering videos.")
     args = parser.parse_args()
-    if args.top_n < 1:
-        raise SystemExit("--top-n must be at least 1.")
-
-    curve_x = percent_to_value(sweep_config.BASE_X, args.x_percent)
-    curve_y = percent_to_value(sweep_config.BASE_Y, args.y_percent)
-    parameter_rows = sweep.generate_lhs_samples(args.attempts)
-
-    with tempfile.TemporaryDirectory(prefix="target_walk_xy_") as temp_dir:
-        temp_path = Path(temp_dir)
-        output_xml = temp_path / "modified_model.xml"
-        mesh_out_dir = temp_path / "foot_section_out"
-        geometry = {
-            **sweep_config.GEOMETRY_BASE,
-            "curve_x": curve_x,
-            "curve_y": curve_y,
-        }
-
-        print(
-            f"Generating model for curve pair X={curve_x} ({args.x_percent:+g}%, forward), "
-            f"Y={curve_y} ({args.y_percent:+g}%, left/lateral)"
-        )
-        sweep_runner.generate_modified_xml(geometry, output_xml, mesh_out_dir)
-        ctx = sweep.load_simulation(output_xml)
-
-        attempted_trials: list[dict] = []
-        best_overall_index = None
-        best_overall_result = None
-
-        for idx, params in enumerate(parameter_rows, 1):
-            result_row, _ = run_trial(ctx, params)
-            if idx == 1 or idx % args.print_every == 0:
-                progress_message = (
-                    f"[{idx}/{args.attempts}] dist={result_row['Distance_Traversed']:.4f} "
-                    f"cot={result_row['CoT']:.4f} fell={result_row['Fell']}"
-                )
-                if args.target_distance is not None:
-                    progress_message += (
-                        f" target={args.target_distance:.4f} tol={args.tolerance:.4f}"
-                    )
-                print(progress_message)
-            if (not result_row["Fell"]) and (
-                best_overall_result is None
-                or result_row["Distance_Traversed"] > best_overall_result["Distance_Traversed"]
-            ):
-                best_overall_index = idx
-                best_overall_result = result_row
-            if is_eligible_trial(result_row, args.target_distance, args.tolerance):
-                attempted_trials.append(
-                    {
-                        "attempt_index": idx,
-                        "trial_parameters": params,
-                        "search_result": result_row,
-                    }
-                )
-
-        if not attempted_trials:
-            if best_overall_result is not None and best_overall_index is not None:
-                print(
-                    f"Best non-falling trial was {best_overall_index}/{args.attempts}: "
-                    f"distance={best_overall_result['Distance_Traversed']:.4f}, "
-                    f"CoT={best_overall_result['CoT']:.4f}"
-                )
-            if args.target_distance is None:
-                raise SystemExit(f"No non-falling trial found after {args.attempts} attempts.")
-            raise SystemExit(
-                f"No non-falling trial matched target distance {args.target_distance:.4f} "
-                f"within tolerance {args.tolerance:.4f} after {args.attempts} attempts."
-            )
-
-        reverse_rank = args.rank_by == "distance"
-        ranked_trials = sorted(
-            attempted_trials,
-            key=lambda trial: rank_trial_key(trial["search_result"], args.rank_by),
-            reverse=reverse_rank,
-        )
-        selected_trials = ranked_trials[: args.top_n]
-        if len(selected_trials) < args.top_n:
-            print(
-                f"Only {len(selected_trials)} eligible trials found; recording all of them."
-            )
-
-        selection_label = "matching" if args.target_distance is not None else "eligible"
-        print(
-            f"Selected top {len(selected_trials)} {selection_label} trial(s) ranked by {args.rank_by}."
-        )
-        for rank, trial in enumerate(selected_trials, 1):
-            trial_result = trial["search_result"]
-            print(
-                f"  rank {rank}: attempt {trial['attempt_index']}/{args.attempts} "
-                f"distance={trial_result['Distance_Traversed']:.4f} CoT={trial_result['CoT']:.4f}"
-            )
-
-        print("Re-running selected trial(s) with recording enabled...")
-
-        record_ctx = sweep.load_simulation(output_xml)
-        resolved_width, resolved_height = resolved_record_size(record_ctx, args.width, args.height)
-        print(
-            f"Recording at {resolved_width}x{resolved_height} "
-            f"(model offscreen limit {record_ctx.model.vis.global_.offwidth}x"
-            f"{record_ctx.model.vis.global_.offheight})"
-        )
-
-        recorded_payloads: list[dict] = []
-        for rank, selected_trial in enumerate(selected_trials, 1):
-            trial_video_out = output_path_for_rank(args.video_out, rank, len(selected_trials))
-            print(
-                f"Recording rank {rank}/{len(selected_trials)} "
-                f"from attempt {selected_trial['attempt_index']} to {trial_video_out}"
-            )
-            recorded_result, frames = run_trial(
-                record_ctx,
-                selected_trial["trial_parameters"],
-                video_fps=args.video_fps,
-                width=resolved_width,
-                height=resolved_height,
-                camera_distance=args.camera_distance,
-                camera_azimuth=args.camera_azimuth,
-                camera_elevation=args.camera_elevation,
-            )
-            export_video(frames, trial_video_out, args.video_fps)
-            print(f"Saved video to {trial_video_out}")
-            recorded_payloads.append(
-                {
-                    "rank": rank,
-                    "attempt_index": selected_trial["attempt_index"],
-                    "search_result": selected_trial["search_result"],
-                    "recorded_result": recorded_result,
-                    "trial_parameters": selected_trial["trial_parameters"],
-                    "video_out": str(trial_video_out),
-                }
-            )
-
-        if args.params_out is not None:
-            args.params_out.parent.mkdir(parents=True, exist_ok=True)
-            payload = {
-                "x_percent": args.x_percent,
-                "y_percent": args.y_percent,
-                "mesh_x": mesh_x,
-                "mesh_y": mesh_y,
-                "attempts": args.attempts,
-                "top_n": args.top_n,
-                "rank_by": args.rank_by,
-                "target_distance": args.target_distance,
-                "tolerance": args.tolerance,
-                "recordings": recorded_payloads,
-            }
-            args.params_out.write_text(json.dumps(payload, indent=2))
-            print(f"Saved selected parameters to {args.params_out}")
+    if args.top_n < 1 or args.video_fps <= 0 or min(args.width, args.height) <= 0 or args.tolerance < 0:
+        parser.error("Counts/dimensions must be positive and tolerance nonnegative.")
+    selected = select_trials(args.results_csv, args.top_n, args.rank_by, args.target_distance, args.tolerance)
+    if not selected:
+        raise SystemExit("No saved gait passes match the requested selection.")
+    cache_dir = (args.mesh_cache or args.results_csv.parent / "meshes").resolve()
+    print(f"Selected {len(selected)} saved gait passes ranked by {args.rank_by}.")
+    recordings = []
+    for rank, row in enumerate(selected, 1):
+        geometry, params = saved_trial(row)
+        print(f"Rank {rank}: point {row.get('Point_Index', '?')}, saved distance={row['Distance_Traversed']}")
+        with tempfile.TemporaryDirectory(prefix="record_saved_walk_") as directory:
+            model_path, model_source = resolve_model(geometry, cache_dir, Path(directory))
+            ctx = sweep.load_simulation(model_path)
+            result, frames = run_trial(ctx, params, video_fps=None if args.verify_only else args.video_fps,
+                                       width=args.width, height=args.height, camera_distance=args.camera_distance,
+                                       camera_azimuth=args.camera_azimuth, camera_elevation=args.camera_elevation)
+            differences = replay_differences(row, result)
+            output = output_path_for_rank(args.video_out, rank, len(selected))
+            if not args.verify_only:
+                export_video(frames, output, args.video_fps)
+            print(f"  {'REPLAY MISMATCH: ' + str(differences) if differences else 'Replay matches saved metrics.'}")
+            recordings.append({"rank": rank, "point_index": row.get("Point_Index"),
+                               "geometry": geometry, "trial_parameters": params, "saved_row": row,
+                               "recorded_result": result, "replay_differences": differences,
+                               "model_source": model_source,
+                               "video_out": None if args.verify_only else str(output)})
+    params_out = args.params_out or args.video_out.with_suffix(".json")
+    params_out.parent.mkdir(parents=True, exist_ok=True)
+    params_out.write_text(json.dumps({"results_csv": str(args.results_csv.resolve()),
+                                     "rank_by": args.rank_by, "recordings": recordings}, indent=2))
+    print(f"Saved replay report to {params_out}")
+    if any(recording["replay_differences"] for recording in recordings):
+        raise SystemExit("Saved parameters were replayed, but metrics differ; see the replay report.")
 
 
 if __name__ == "__main__":

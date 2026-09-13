@@ -32,6 +32,7 @@ import numpy as np
 import mujoco
 import mujoco.viewer
 
+from control_waveform import DEFAULT_KP as KP, DEFAULT_KD as KD, DEFAULT_TORQUE_LIMIT as TORQUE_LIMIT
 from control_waveform import DEFAULT_WAVEFORM, startup_sine_reference
 
 
@@ -77,9 +78,6 @@ RIGHT_OFFSET = np.array([0.07, -0.0105, 0.0])
 
 # ── Motor / control -- match these directly to motorwave.py for hardware
 #    replication ─────────────────────────────────────────────────────────
-KP           = 42.0
-KD           = 6.7
-TORQUE_LIMIT = 25.0       # Nm -- Torque Limit for AK80-8
 
 # ── Trajectory ──────────────────────────────────────────────────────────────
 WAVEFORM = DEFAULT_WAVEFORM
