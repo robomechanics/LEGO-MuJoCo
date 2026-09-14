@@ -17,7 +17,7 @@
   </default>
   <worldbody>
     <!-- Link motor -->
-    <body name="motor" pos="0 0 1.2" quat="0.95118425 -0.07896187 -0.02460349 0.29733520" childclass="Bigfoot">
+    <body name="motor" pos="0 0 1.2" quat="0.95118426 -0.07896173 -0.02460767 0.29733485" childclass="Bigfoot">
       <freejoint name="motor_freejoint"/>
       <inertial pos="-0.00509362 0.00733735 -0.369416" mass="4.76" fullinertia="0.792619 0.947738 0.249136 0.000529723 -0.100394 -0.0127721"/>
       <!-- Part simplified_motor___arm_rod -->

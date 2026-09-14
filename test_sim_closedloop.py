@@ -63,7 +63,7 @@ TORQUE_LIMIT = 25.0       # Nm — matches MIT_Params T_max and gear in XML
 
 # ── Trajectory ────────────────────────────────────────────────────────────────
 HIP_OMEGA       = 0.524 * 2 * np.pi
-LEG_AMP_DEG     = 48.4
+LEG_AMP_DEG     = 45
 T_WAIT          = 3.0
 START_FREQ_MULT = 1.93
 START_AMP_MULT  = 1.31

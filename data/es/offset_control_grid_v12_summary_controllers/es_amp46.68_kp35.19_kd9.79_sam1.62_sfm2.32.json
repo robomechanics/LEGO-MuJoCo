@@ -1,0 +1,16 @@
+{
+  "label": "es_amp46.68_kp35.19_kd9.79_sam1.62_sfm2.32",
+  "catalog_id": "C1",
+  "catalog_label": "v12_fit156",
+  "freq_hz": 0.524,
+  "genes": {
+    "amp_deg": 46.68309626523455,
+    "start_amp_mult": 1.6196743167720136,
+    "start_freq_mult": 2.3165318387658003,
+    "Kp": 35.191390494642036,
+    "Kd": 9.790587413956134,
+    "foot_x": 0.005198001880078662,
+    "foot_y": -0.02284166878890382
+  },
+  "note": "Control genes from catalog; feet are the v12 seed snap point."
+}

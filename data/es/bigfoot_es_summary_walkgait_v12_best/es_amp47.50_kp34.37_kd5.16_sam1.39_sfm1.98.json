@@ -1,0 +1,24 @@
+{
+  "label": "es_amp47.50_kp34.37_kd5.16_sam1.39_sfm1.98",
+  "freq_hz": 0.524,
+  "genes": {
+    "amp_deg": 47.497438840523174,
+    "start_amp_mult": 1.3911331916567138,
+    "start_freq_mult": 1.9828274157910322,
+    "Kp": 34.3740334675103,
+    "Kd": 5.155880019309166,
+    "foot_x": 0.0035941994838014396,
+    "foot_y": -0.03906236307224305
+  },
+  "metrics": {
+    "fitness": 66.04511269796497,
+    "survival_s": 29.99999999999425,
+    "distance_m": 5.697603160641702,
+    "forward_m": 0.0,
+    "fell": false,
+    "gait_quality_pass": false,
+    "robust_rate": 1.0,
+    "generation": -1
+  },
+  "source_summary": "data/es/bigfoot_es_summary_walkgait_v12.json"
+}

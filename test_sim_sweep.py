@@ -1,23 +1,12 @@
 import csv
 import json
 import os
-import time
 from dataclasses import dataclass
 from pathlib import Path
 
 import mujoco
 import numpy as np
-
-from coordinate_frame import mujoco_heading_axes
-from control_waveform import (
-    DEFAULT_HIP_FREQ_HZ,
-    DEFAULT_LEG_AMP_DEG,
-    DEFAULT_START_AMP_MULT,
-    DEFAULT_START_FREQ_MULT,
-    DEFAULT_STARTUP_RAMP_TIME,
-    DEFAULT_T_WAIT,
-    startup_sine_reference,
-)
+from scipy.stats import qmc
 
 
 def _env_flag(name: str, default: bool = True) -> bool:
@@ -38,33 +27,49 @@ def vprint(*args, verbose: bool = True, **kwargs) -> None:
 JOINT_NAME = "hip"
 TORSO_BODY_NAME = "motor"
 TORQUE_LIMIT = 25.0
+T_WAIT = 3.0
 USE_RAMP = False
 RAMP_TIME = 1.0
 CMD_DELAY_STEPS = 1
-ITERATION_DURATION = 20.0
+ITERATION_DURATION = 30.0
+FULL_SURVIVAL_S = ITERATION_DURATION - 0.1
 MIN_SWING_CLEARANCE = 0.02
 MIN_ALTERNATING_STEPS = 1
 ANALYSIS_STRIDE = 2
 
-DEFAULT_FIXED_PARAMS = {
-    "foot_x": 0.0,
-    "foot_y": 0.0,
-    "torque_limit": TORQUE_LIMIT,
-    "Kp": 45.0,
-    "Kd": 7.0,
-    "start_amp_mult": DEFAULT_START_AMP_MULT,
-    "start_freq_mult": DEFAULT_START_FREQ_MULT,
-    "ramp_time": float(os.environ.get("TEST_SIM_STARTUP_RAMP_TIME", str(DEFAULT_STARTUP_RAMP_TIME))),
-    "amp_deg": DEFAULT_LEG_AMP_DEG,
-    "freq_hz": DEFAULT_HIP_FREQ_HZ,
+# Fall rule: height collapse is immediate. Brief tips that recover must not kill
+# a trial — require sustained lean before calling it a fall.
+FALL_HEIGHT_M = 0.5
+FALL_TILT_DEG = 55.0
+FALL_TILT_HOLD_S = 0.50
+
+# After applying foot offsets, zero-amp settle then bake freejoint quat before gait.
+# Needed whenever hip/foot offsets change so spawn lean matches stance.
+SETTLE_BEFORE_TRIAL = True
+SETTLE_BEFORE_TRIAL_S = 8.0
+SETTLE_AVG_WINDOW_S = 2.0
+SETTLE_KP = 45.0
+SETTLE_KD = 7.0
+
+RANGES = {
+    "foot_x": (-0.078, 0.078),
+    "foot_y": (-0.065, 0.0),
+    "Kp": (20.0, 90.0),
+    "Kd": (2.0, 15.0),
+    "start_amp_mult": (0.8, 1.8),
+    "start_freq_mult": (0.7, 1.4),
+    "amp_deg": (20.0, 40.0),
+    "freq_hz": (0.4, 0.8),
 }
 
-DEFAULT_NORMAL_DISTRIBUTIONS = {
-    "Kp": {"mean": 45.0, "std": 4.0, "min": 20.0, "max": 45.0},
-    "Kd": {"mean": 7.0, "std": 2.0, "min": 2.0, "max": 15.0},
-    "start_amp_mult": {"mean": DEFAULT_START_AMP_MULT, "std": 0.2, "min": 0.8, "max": 1.8},
-    "start_freq_mult": {"mean": DEFAULT_START_FREQ_MULT, "std": 0.15, "min": 0.7, "max": 1.4},
-}
+# Foot placement for Bigfoot CAD export is already baked into robot.xml.
+# Runtime offsets stay zero unless you intentionally shift feet in scripts.
+FIXED_FOOT_X = 0.0
+FIXED_FOOT_Y = 0.0
+
+
+def fixed_foot_params() -> dict[str, float]:
+    return {"foot_x": FIXED_FOOT_X, "foot_y": FIXED_FOOT_Y}
 
 FOOT_GEOM_NAMES = [
     "right_foot_1",
@@ -110,52 +115,17 @@ class SimulationContext:
     foot_collision_geom_ids: dict[str, tuple[int, ...]]
 
 
-def _json_env(name: str, default: dict | None = None) -> dict | None:
-    value = os.environ.get(name)
-    if value is None:
-        return default
-    return json.loads(value)
-
-
-def _sample_clipped_normal(rng: np.random.Generator, spec: dict, size: int) -> np.ndarray:
-    mean = float(spec["mean"])
-    std = float(spec["std"])
-    low = float(spec.get("min", -np.inf))
-    high = float(spec.get("max", np.inf))
-    if std < 0:
-        raise ValueError(f"Normal distribution std must be non-negative, got {std}.")
-    if std == 0:
-        samples = np.full(size, mean, dtype=float)
-    else:
-        samples = rng.normal(loc=mean, scale=std, size=size)
-    return np.clip(samples, low, high)
-
-
-def generate_parameter_samples(
-    n_trials: int,
-    fixed_params: dict | None = None,
-    normal_distributions: dict | None = None,
-    rng: np.random.Generator | None = None,
-) -> list[dict]:
-    if n_trials < 1:
-        return []
-
-    rng = np.random.default_rng() if rng is None else rng
-    fixed = {**DEFAULT_FIXED_PARAMS, **(fixed_params or {})}
-    sampled = dict(DEFAULT_NORMAL_DISTRIBUTIONS if normal_distributions is None else normal_distributions)
-
-    rows = [dict(fixed) for _ in range(n_trials)]
-    for key, spec in sampled.items():
-        values = _sample_clipped_normal(rng, spec, n_trials)
-        for row, value in zip(rows, values):
-            row[key] = float(value)
-
-    return rows
-
-
 def generate_lhs_samples(n_trials: int) -> list[dict]:
-    """Backward-compatible alias for the new parameter sampler."""
-    return generate_parameter_samples(n_trials)
+    """Latin Hypercube sampler for space coverage."""
+    sampler = qmc.LatinHypercube(d=8)
+    samples = sampler.random(n=n_trials)
+
+    keys = sorted(list(RANGES.keys()))
+    bounds_low = [RANGES[k][0] for k in keys]
+    bounds_high = [RANGES[k][1] for k in keys]
+    scaled = qmc.scale(samples, bounds_low, bounds_high)
+
+    return [dict(zip(keys, row)) for row in scaled]
 
 
 def load_simulation(model_xml_path: str | Path) -> SimulationContext:
@@ -217,58 +187,180 @@ def load_simulation(model_xml_path: str | Path) -> SimulationContext:
     )
 
 
+def average_quaternions(quats: np.ndarray) -> np.ndarray:
+    q = np.asarray(quats, dtype=float)
+    if q.ndim != 2 or q.shape[1] != 4 or len(q) == 0:
+        raise ValueError(f"Expected non-empty (N,4) quats, got {getattr(q, 'shape', None)}")
+    aligned = q.copy()
+    dots = aligned @ aligned[0]
+    aligned[dots < 0.0] *= -1.0
+    mean = aligned.mean(axis=0)
+    norm = np.linalg.norm(mean)
+    if norm < 1e-12:
+        raise RuntimeError("Quaternion average collapsed to zero.")
+    return mean / norm
+
+
+def quat_to_rpy(quat_wxyz: np.ndarray) -> np.ndarray:
+    q = np.asarray(quat_wxyz, dtype=float)
+    w, x, y, z = q
+    roll = np.arctan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y))
+    pitch = np.arcsin(np.clip(2.0 * (w * y - z * x), -1.0, 1.0))
+    yaw = np.arctan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+    return np.array([roll, pitch, yaw], dtype=float)
+
+
+def rpy_to_quat(roll: float, pitch: float, yaw: float) -> np.ndarray:
+    cr, sr = np.cos(roll * 0.5), np.sin(roll * 0.5)
+    cp, sp = np.cos(pitch * 0.5), np.sin(pitch * 0.5)
+    cy, sy = np.cos(yaw * 0.5), np.sin(yaw * 0.5)
+    return np.array(
+        [
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        ],
+        dtype=float,
+    )
+
+
+def lock_quat_yaw(settled_quat: np.ndarray, yaw_reference_quat: np.ndarray) -> np.ndarray:
+    """Keep settled roll/pitch, but preserve yaw from the reference spawn quat."""
+    settled_rpy = quat_to_rpy(settled_quat)
+    ref_rpy = quat_to_rpy(yaw_reference_quat)
+    return rpy_to_quat(float(settled_rpy[0]), float(settled_rpy[1]), float(ref_rpy[2]))
+
+
+def settle_spawn_orientation(
+    ctx: SimulationContext,
+    *,
+    settle_s: float = SETTLE_BEFORE_TRIAL_S,
+    avg_window_s: float = SETTLE_AVG_WINDOW_S,
+    kp: float = SETTLE_KP,
+    kd: float = SETTLE_KD,
+) -> np.ndarray:
+    """Hold hip at 0, average freejoint quat, reset time with settled lean at spawn xyz.
+
+    Yaw is locked to the pre-settle heading — contact torques otherwise spin the
+    freejoint during settle and produce unreproducible spawn leans.
+    """
+    spawn_xyz = ctx.data.qpos[0:3].copy()
+    spawn_quat = ctx.data.qpos[3:7].copy()
+    dt = float(ctx.model.opt.timestep)
+    n_steps = int(np.ceil(settle_s / dt))
+    avg_start_t = settle_s - avg_window_s
+    free_quats: list[np.ndarray] = []
+
+    for _ in range(n_steps):
+        pos = ctx.data.qpos[ctx.qpos_idx]
+        vel = ctx.data.qvel[ctx.qvel_idx]
+        tau = kp * (0.0 - pos) + kd * (0.0 - vel)
+        ctx.data.ctrl[0] = float(np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT))
+        mujoco.mj_step(ctx.model, ctx.data)
+        if ctx.data.time >= avg_start_t:
+            free_quats.append(ctx.data.qpos[3:7].copy())
+
+    if not free_quats:
+        raise RuntimeError("Settle collected no quaternion samples.")
+
+    mean_free = lock_quat_yaw(average_quaternions(np.asarray(free_quats)), spawn_quat)
+
+    # Restart gait clock at t=0 with settled orientation (keep spawn translation).
+    hip_qpos = float(ctx.data.qpos[ctx.qpos_idx])
+    mujoco.mj_resetData(ctx.model, ctx.data)
+    ctx.data.qpos[0:3] = spawn_xyz
+    ctx.data.qpos[3:7] = mean_free
+    ctx.data.qpos[ctx.qpos_idx] = hip_qpos
+    ctx.data.qvel[:] = 0.0
+    ctx.data.ctrl[:] = 0.0
+    mujoco.mj_forward(ctx.model, ctx.data)
+    return mean_free
+
+
 def apply_foot_offsets(ctx: SimulationContext, foot_x: float, foot_y: float) -> None:
     """
-    Applies public foot offsets to geoms and body centers of mass.
-
-    Public convention: foot_x is forward, foot_y is robot-left. MuJoCo uses the
-    same horizontal axes, so only z would need conversion; z offsets are not
-    exposed here.
+    Applies foot offsets by correcting geoms and body centers of mass.
     """
-    delta_geom = np.array([foot_x, foot_y, 0.0])
-    delta_body = np.array([foot_x, foot_y, 0.0])
+    delta_right_geom = np.array([foot_x, foot_y, 0.0])
+    delta_left_geom = np.array([0.0, -foot_y, foot_x])
+
+    delta_right_body = np.array([foot_x, foot_y, 0.0])
+    delta_left_body = np.array([-foot_x, foot_y, 0.0])
 
     for bid in ctx.foot_parent_body_ids:
         body_name = mujoco.mj_id2name(ctx.model, mujoco.mjtObj.mjOBJ_BODY, bid)
-        if body_name in {"motor", "simplified_motor___arm_rod"}:
-            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + delta_body
+        if body_name == "motor":
+            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + delta_right_body
+        elif body_name == "simplified_motor___arm_rod":
+            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + delta_left_body
 
     for name in FOOT_GEOM_NAMES:
         geom_id = mujoco.mj_name2id(ctx.model, mujoco.mjtObj.mjOBJ_GEOM, name)
         if geom_id == -1:
             continue
-        ctx.model.geom_pos[geom_id] = ctx.original_geom_pos[name] + delta_geom
+        if "right" in name.lower():
+            ctx.model.geom_pos[geom_id] = ctx.original_geom_pos[name] + delta_right_geom
+        else:
+            ctx.model.geom_pos[geom_id] = ctx.original_geom_pos[name] + delta_left_geom
 
     mujoco.mj_setConst(ctx.model, ctx.data)
     mujoco.mj_forward(ctx.model, ctx.data)
 
 
-def check_has_fallen(ctx: SimulationContext, height_threshold: float = 0.5, angle_threshold_deg: float = 45.0) -> bool:
+def torso_tilt_deg(ctx: SimulationContext) -> float:
+    torso_up_z = ctx.data.xmat[ctx.torso_body_id][8]
+    return float(np.rad2deg(np.arccos(np.clip(torso_up_z, -1.0, 1.0))))
+
+
+def check_has_fallen(
+    ctx: SimulationContext,
+    *,
+    fall_state: dict | None = None,
+    dt: float | None = None,
+    height_threshold: float = FALL_HEIGHT_M,
+    angle_threshold_deg: float = FALL_TILT_DEG,
+    tilt_hold_s: float = FALL_TILT_HOLD_S,
+) -> bool:
+    """True when the robot has actually collapsed.
+
+    Height below threshold is an immediate fall. Lean alone is not — a brief tip
+    that recovers (common at gait startup) must not kill the trial. Lean only
+    counts after it stays above ``angle_threshold_deg`` for ``tilt_hold_s``.
+
+    Pass a mutable ``fall_state`` dict and ``dt`` each step to accumulate lean
+    time. Without state, only the height rule applies (safe default).
+    """
     if ctx.data.xpos[ctx.torso_body_id][2] < height_threshold:
         return True
 
-    torso_up_z = ctx.data.xmat[ctx.torso_body_id][8]
-    tilt_angle_deg = np.rad2deg(np.arccos(np.clip(torso_up_z, -1.0, 1.0)))
-    return tilt_angle_deg > angle_threshold_deg
+    tilt = torso_tilt_deg(ctx)
+    if fall_state is None or dt is None:
+        return False
+
+    if tilt > angle_threshold_deg:
+        fall_state["tilt_hold_s"] = float(fall_state.get("tilt_hold_s", 0.0)) + float(dt)
+    else:
+        fall_state["tilt_hold_s"] = 0.0
+    return fall_state["tilt_hold_s"] >= tilt_hold_s
 
 
-def calculate_sine_reference(
-    t: float,
-    hip_omega: float,
-    leg_amp_rad: float,
-    start_amp_mult: float,
-    start_freq_mult: float,
-    ramp_time: float = 0.0,
-) -> tuple[float, float]:
-    return startup_sine_reference(
-        t=t,
-        hip_omega=hip_omega,
-        leg_amp_rad=leg_amp_rad,
-        t_wait=DEFAULT_T_WAIT,
-        start_amp_mult=start_amp_mult,
-        start_freq_mult=start_freq_mult,
-        ramp_time=ramp_time,
-    )
+def calculate_sine_reference(t: float, hip_omega: float, leg_amp_rad: float, start_amp_mult: float, start_freq_mult: float) -> tuple[float, float]:
+    w1 = hip_omega * start_freq_mult
+    w2 = hip_omega
+    t0 = T_WAIT
+    at = start_amp_mult * leg_amp_rad
+    a_steady = leg_amp_rad
+    t_transition = t0 + np.pi / w1
+
+    if t <= t0:
+        return 0.0, 0.0
+    if t < t_transition:
+        phase = w1 * (t - t0)
+        return at * np.sin(phase), at * w1 * np.cos(phase)
+
+    phase = w2 * (t - t_transition)
+    return -a_steady * np.sin(phase), -a_steady * w2 * np.cos(phase)
 
 
 def normalize_xy(vec: np.ndarray, fallback: np.ndarray) -> np.ndarray:
@@ -280,7 +372,10 @@ def normalize_xy(vec: np.ndarray, fallback: np.ndarray) -> np.ndarray:
 
 
 def get_heading_axes(xmat_flat: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    return mujoco_heading_axes(xmat_flat)
+    rot = np.asarray(xmat_flat, dtype=float).reshape(3, 3)
+    forward_xy = normalize_xy(rot[:, 0], fallback=np.array([1.0, 0.0]))
+    left_xy = np.array([-forward_xy[1], forward_xy[0]])
+    return forward_xy, left_xy
 
 
 def collect_active_contact_geom_ids(data: mujoco.MjData) -> set[int]:
@@ -342,28 +437,33 @@ def compute_walk_score(
 
 
 def build_replay_params(params: dict) -> dict[str, float]:
-    merged = {**DEFAULT_FIXED_PARAMS, **params}
     return {
-        "foot_x": float(merged["foot_x"]),
-        "foot_y": float(merged["foot_y"]),
-        "torque_limit": float(merged.get("torque_limit", TORQUE_LIMIT)),
-        "Kp": float(merged["Kp"]),
-        "Kd": float(merged["Kd"]),
-        "start_amp_mult": float(merged["start_amp_mult"]),
-        "start_freq_mult": float(merged["start_freq_mult"]),
-        "ramp_time": float(merged.get("ramp_time", DEFAULT_STARTUP_RAMP_TIME)),
-        "amp_deg": float(merged["amp_deg"]),
-        "freq_hz": float(merged["freq_hz"]),
+        "foot_x": float(params["foot_x"]),
+        "foot_y": float(params["foot_y"]),
+        "Kp": float(params["Kp"]),
+        "Kd": float(params["Kd"]),
+        "start_amp_mult": float(params["start_amp_mult"]),
+        "start_freq_mult": float(params["start_freq_mult"]),
+        "amp_deg": float(params["amp_deg"]),
+        "freq_hz": float(params["freq_hz"]),
     }
 
 
-def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True, viewer=None) -> dict:
+def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True) -> dict:
     mujoco.mj_resetData(ctx.model, ctx.data)
 
     replay_params = build_replay_params(params)
 
     apply_foot_offsets(ctx, replay_params["foot_x"], replay_params["foot_y"])
     mujoco.mj_forward(ctx.model, ctx.data)
+
+    if SETTLE_BEFORE_TRIAL:
+        settle_quat = settle_spawn_orientation(ctx)
+        vprint(
+            "Settled spawn quat: "
+            f"{settle_quat[0]:.5f} {settle_quat[1]:.5f} {settle_quat[2]:.5f} {settle_quat[3]:.5f}",
+            verbose=verbose,
+        )
 
     if ctx.debug_geom_id != -1:
         vprint(f"Global Position: {ctx.data.geom_xpos[ctx.debug_geom_id]}", verbose=verbose)
@@ -442,6 +542,8 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
             metrics["prev_contact"] = in_contact
 
     last_analysis_step = 0
+    fall_state = {"tilt_hold_s": 0.0}
+    dt = float(ctx.model.opt.timestep)
 
     for step_idx in range(1, max_steps + 1):
         t = ctx.data.time
@@ -451,7 +553,6 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
             leg_amp_rad,
             replay_params["start_amp_mult"],
             replay_params["start_freq_mult"],
-            replay_params["ramp_time"],
         )
 
         current_pos = ctx.data.qpos[ctx.qpos_idx]
@@ -462,30 +563,28 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
             replay_params["Kp"] * ramp * (target_pos_rad - current_pos)
             + replay_params["Kd"] * ramp * (target_vel_rad - current_vel)
         )
-        tau = np.clip(tau, -replay_params["torque_limit"], replay_params["torque_limit"])
+        tau = np.clip(tau, -TORQUE_LIMIT, TORQUE_LIMIT)
         energy_used += abs(tau * current_vel) * ctx.model.opt.timestep
 
         cmd_buffer.append(tau)
         ctx.data.ctrl[0] = cmd_buffer.pop(0)
 
         mujoco.mj_step(ctx.model, ctx.data)
-        if viewer is not None:
-            if not viewer.is_running():
-                break
-            viewer.sync()
-            time.sleep(ctx.model.opt.timestep)
 
         analysis_due = (step_idx % ANALYSIS_STRIDE) == 0
         if analysis_due:
             update_gait_metrics()
             last_analysis_step = step_idx
 
-        if check_has_fallen(ctx):
+        if check_has_fallen(ctx, fall_state=fall_state, dt=dt):
             if not analysis_due:
                 update_gait_metrics()
                 last_analysis_step = step_idx
             vprint(
-                f"   [DEBUG] Fell at t={ctx.data.time:.3f}s. Height={ctx.data.xpos[ctx.torso_body_id][2]:.2f}m",
+                f"   [DEBUG] Fell at t={ctx.data.time:.3f}s. "
+                f"Height={ctx.data.xpos[ctx.torso_body_id][2]:.2f}m "
+                f"tilt={torso_tilt_deg(ctx):.1f}deg "
+                f"tilt_hold={fall_state['tilt_hold_s']:.2f}s",
                 verbose=verbose,
             )
             fell = True
@@ -498,6 +597,9 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
     displacement_xy = final_torso_xy - start_torso_xy
     distance = float(np.linalg.norm(displacement_xy))
     forward_progress = float(np.dot(displacement_xy, start_forward_xy))
+    # Logging-only direction metrics (not used in fitness yet).
+    backward_progress = float(max(0.0, -forward_progress))
+    walked_backward = bool(forward_progress < -0.01)
     lateral_drift = float(abs(np.dot(displacement_xy, start_left_xy)))
     final_forward_xy, _ = get_heading_axes(ctx.data.xmat[ctx.torso_body_id])
     heading_change_rad = float(
@@ -532,22 +634,24 @@ def run_single_trial(ctx: SimulationContext, params: dict, verbose: bool = True,
         min_swing_clearance=min_swing_clearance,
     )
     cot = (energy_used / (ctx.total_mass * ctx.gravity * distance)) if distance > 1e-6 else float("inf")
+    survival_time_s = float(ctx.data.time)
 
     return {
         "Foot_X": replay_params["foot_x"],
         "Foot_Y": replay_params["foot_y"],
-        "Torque_Limit": replay_params["torque_limit"],
         "Kp": replay_params["Kp"],
         "Kd": replay_params["Kd"],
         "Start_Amp_Mult": replay_params["start_amp_mult"],
         "Start_Freq_Mult": replay_params["start_freq_mult"],
-        "Ramp_Time": replay_params["ramp_time"],
         "Amplitude_Deg": replay_params["amp_deg"],
         "Frequency_Hz": replay_params["freq_hz"],
         "Replay_Params_JSON": json.dumps(replay_params, sort_keys=True),
         "Fell": fell,
+        "Survival_Time_s": survival_time_s,
         "Distance_Traversed": distance,
         "Forward_Progress": forward_progress,
+        "Backward_Progress": backward_progress,
+        "Walked_Backward": walked_backward,
         "Lateral_Drift": lateral_drift,
         "Instantaneous_Forward_Progress": instantaneous_forward_progress,
         "Instantaneous_Forward_Absolute": instantaneous_forward_absolute,
@@ -614,12 +718,14 @@ def run_parameter_chunk(
         vprint(
             f"[{trial_idx:>5}/{total_trials}] "
             f"freq={params['freq_hz']:.2f}Hz amp={params['amp_deg']:.1f}° "
-            f"tau_lim={result_row['Torque_Limit']:.1f} "
             f"Kp={params['Kp']:.1f} Kd={params['Kd']:.1f} "
-            f"ramp={result_row['Ramp_Time']:.2f}s "
             f"fx={params['foot_x']:.3f} fy={params['foot_y']:.3f} | "
-            f"fell={result_row['Fell']} dist={result_row['Distance_Traversed']:.2f}m "
-            f"forward={result_row['Forward_Progress']:.2f}m drift={result_row['Lateral_Drift']:.2f}m "
+            f"fell={result_row['Fell']} survival={result_row['Survival_Time_s']:.2f}s "
+            f"dist={result_row['Distance_Traversed']:.2f}m "
+            f"forward={result_row['Forward_Progress']:.2f}m "
+            f"backward={result_row['Backward_Progress']:.2f}m "
+            f"backwards={result_row['Walked_Backward']} "
+            f"drift={result_row['Lateral_Drift']:.2f}m "
             f"inst_fwd={result_row['Instantaneous_Forward_Progress']:.2f}m "
             f"inst_fwd_abs={result_row['Instantaneous_Forward_Absolute']:.2f}m "
             f"inst_lat={result_row['Instantaneous_Lateral_Progress']:.2f}m "
@@ -673,8 +779,6 @@ def main() -> None:
     results_csv = os.environ.get("SWEEP_RESULTS_CSV", "sweep_results.csv")
     append_results = os.environ.get("SWEEP_APPEND_RESULTS", "0") == "1"
     save_all_results = os.environ.get("SWEEP_SAVE_ALL_RESULTS", "0") == "1"
-    fixed_params = _json_env("SWEEP_FIXED_PARAMS_JSON", DEFAULT_FIXED_PARAMS)
-    normal_distributions = _json_env("SWEEP_NORMAL_DISTRIBUTIONS_JSON", DEFAULT_NORMAL_DISTRIBUTIONS)
     metadata = {
         "Mesh_X": os.environ.get("SWEEP_MESH_X"),
         "Mesh_Y": os.environ.get("SWEEP_MESH_Y"),
@@ -687,11 +791,7 @@ def main() -> None:
         "Mesh_Generator_SCAD": os.environ.get("SWEEP_MESH_GENERATOR_SCAD"),
     }
 
-    parameter_rows = generate_parameter_samples(
-        num_trials,
-        fixed_params=fixed_params,
-        normal_distributions=normal_distributions,
-    )
+    parameter_rows = generate_lhs_samples(num_trials)
     results = run_parameter_chunk(
         model_xml_path=model_xml_path,
         parameter_rows=parameter_rows,

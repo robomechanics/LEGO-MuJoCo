@@ -22,9 +22,9 @@ import cv2
 import mujoco
 import numpy as np
 
-import run_sweep as sweep_runner
+import run_xy_sweep as xy_sweep
 import test_sim_sweep as sweep
-import sweep_config
+import xy_sweep_config as sweep_config
 
 
 def build_tracking_camera(ctx: sweep.SimulationContext, distance: float, azimuth: float, elevation: float) -> mujoco.MjvCamera:
@@ -58,8 +58,7 @@ def run_trial(
     camera_elevation: float = -15.0,
 ) -> tuple[dict, list[np.ndarray]]:
     mujoco.mj_resetData(ctx.model, ctx.data)
-    replay_params = sweep.build_replay_params(params)
-    sweep.apply_foot_offsets(ctx, replay_params["foot_x"], replay_params["foot_y"])
+    sweep.apply_foot_offsets(ctx, params["foot_x"], params["foot_y"])
     mujoco.mj_forward(ctx.model, ctx.data)
 
     renderer = None
@@ -80,12 +79,14 @@ def run_trial(
 
     start_x = ctx.data.xpos[ctx.torso_body_id][0]
     start_y = ctx.data.xpos[ctx.torso_body_id][1]
-    hip_omega = replay_params["freq_hz"] * 2 * np.pi
-    leg_amp_rad = np.deg2rad(replay_params["amp_deg"])
+    hip_omega = params["freq_hz"] * 2 * np.pi
+    leg_amp_rad = np.deg2rad(params["amp_deg"])
     cmd_buffer = [0.0] * sweep.CMD_DELAY_STEPS
     fell = False
     max_steps = int(sweep.ITERATION_DURATION / ctx.model.opt.timestep)
     energy_used = 0.0
+    fall_state = {"tilt_hold_s": 0.0}
+    dt = float(ctx.model.opt.timestep)
 
     def maybe_record_frame() -> None:
         nonlocal next_frame_time
@@ -104,9 +105,8 @@ def run_trial(
             t,
             hip_omega,
             leg_amp_rad,
-            replay_params["start_amp_mult"],
-            replay_params["start_freq_mult"],
-            replay_params["ramp_time"],
+            params["start_amp_mult"],
+            params["start_freq_mult"],
         )
 
         current_pos = ctx.data.qpos[ctx.qpos_idx]
@@ -114,10 +114,10 @@ def run_trial(
 
         ramp = min(1.0, t / sweep.RAMP_TIME) if sweep.USE_RAMP and sweep.RAMP_TIME > 0 else 1.0
         tau = (
-            replay_params["Kp"] * ramp * (target_pos_rad - current_pos)
-            + replay_params["Kd"] * ramp * (target_vel_rad - current_vel)
+            params["Kp"] * ramp * (target_pos_rad - current_pos)
+            + params["Kd"] * ramp * (target_vel_rad - current_vel)
         )
-        tau = np.clip(tau, -replay_params["torque_limit"], replay_params["torque_limit"])
+        tau = np.clip(tau, -sweep.TORQUE_LIMIT, sweep.TORQUE_LIMIT)
         energy_used += abs(tau * current_vel) * ctx.model.opt.timestep
 
         cmd_buffer.append(tau)
@@ -125,7 +125,7 @@ def run_trial(
         mujoco.mj_step(ctx.model, ctx.data)
         maybe_record_frame()
 
-        if sweep.check_has_fallen(ctx):
+        if sweep.check_has_fallen(ctx, fall_state=fall_state, dt=dt):
             fell = True
             break
 
@@ -138,16 +138,14 @@ def run_trial(
         renderer.close()
 
     result_row = {
-        "Foot_X": round(replay_params["foot_x"], 4),
-        "Foot_Y": round(replay_params["foot_y"], 4),
-        "Torque_Limit": round(replay_params["torque_limit"], 3),
-        "Kp": round(replay_params["Kp"], 2),
-        "Kd": round(replay_params["Kd"], 2),
-        "Start_Amp_Mult": round(replay_params["start_amp_mult"], 3),
-        "Start_Freq_Mult": round(replay_params["start_freq_mult"], 3),
-        "Ramp_Time": round(replay_params["ramp_time"], 3),
-        "Amplitude_Deg": round(replay_params["amp_deg"], 2),
-        "Frequency_Hz": round(replay_params["freq_hz"], 3),
+        "Foot_X": round(params["foot_x"], 4),
+        "Foot_Y": round(params["foot_y"], 4),
+        "Kp": round(params["Kp"], 2),
+        "Kd": round(params["Kd"], 2),
+        "Start_Amp_Mult": round(params["start_amp_mult"], 3),
+        "Start_Freq_Mult": round(params["start_freq_mult"], 3),
+        "Amplitude_Deg": round(params["amp_deg"], 2),
+        "Frequency_Hz": round(params["freq_hz"], 3),
         "Fell": fell,
         "Distance_Traversed": round(distance, 4),
         "CoT": round(cot, 4),
@@ -204,8 +202,8 @@ def output_path_for_rank(base_path: Path, rank: int, total: int) -> Path:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--x-percent", type=float, required=True, help="Percent change from forward curve_x base.")
-    parser.add_argument("--y-percent", type=float, required=True, help="Percent change from left/lateral curve_y base.")
+    parser.add_argument("--x-percent", type=float, required=True, help="Percent change from BASE_X to generate.")
+    parser.add_argument("--y-percent", type=float, required=True, help="Percent change from BASE_Y to generate.")
     parser.add_argument("--attempts", type=int, default=500, help="Maximum randomized trials to search.")
     parser.add_argument(
         "--top-n",
@@ -239,25 +237,20 @@ def main() -> None:
     if args.top_n < 1:
         raise SystemExit("--top-n must be at least 1.")
 
-    curve_x = percent_to_value(sweep_config.BASE_X, args.x_percent)
-    curve_y = percent_to_value(sweep_config.BASE_Y, args.y_percent)
+    mesh_x = percent_to_value(sweep_config.BASE_X, args.x_percent)
+    mesh_y = percent_to_value(sweep_config.BASE_Y, args.y_percent)
     parameter_rows = sweep.generate_lhs_samples(args.attempts)
 
     with tempfile.TemporaryDirectory(prefix="target_walk_xy_") as temp_dir:
         temp_path = Path(temp_dir)
         output_xml = temp_path / "modified_model.xml"
         mesh_out_dir = temp_path / "foot_section_out"
-        geometry = {
-            **sweep_config.GEOMETRY_BASE,
-            "curve_x": curve_x,
-            "curve_y": curve_y,
-        }
 
         print(
-            f"Generating model for curve pair X={curve_x} ({args.x_percent:+g}%, forward), "
-            f"Y={curve_y} ({args.y_percent:+g}%, left/lateral)"
+            f"Generating model for mesh pair X={mesh_x} ({args.x_percent:+g}%), "
+            f"Y={mesh_y} ({args.y_percent:+g}%)"
         )
-        sweep_runner.generate_modified_xml(geometry, output_xml, mesh_out_dir)
+        xy_sweep.generate_modified_xml(mesh_x, mesh_y, output_xml, mesh_out_dir)
         ctx = sweep.load_simulation(output_xml)
 
         attempted_trials: list[dict] = []

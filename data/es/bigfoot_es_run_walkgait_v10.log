@@ -1,0 +1,143 @@
+Seeding theta_0 from built-in sweep best
+  amp=40.28 sam=1.651 sfm=2.355 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025
+ES start: pop=32, mu=10, generations=100, freq=0.524 Hz, evolving foot_x(-0.078, 0.078) foot_y(-0.065, 0.0)
+Exploration: sigma0=0.20*span, random_inject=20%, rank_select=True, local_refine_on_plateau=True, stagnation_patience=8, wakeup_fit_ratio=0.55
+Gen 000 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=2/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 001 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=3/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 002 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=1/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 003 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=2/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 004 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=1/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 005 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=1/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 006 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=2/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 007 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=3/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+Gen 008 | best_fit=110.78 survival=30.00s dist=8.381m fwd=3.821m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=40.3 sam=1.65 sfm=2.35 Kp=24.8 Kd=5.6 fx=-0.001 fy=-0.025 | steps=21 clr=0.112 slip=0.89 gait_pass=True
+  PLATEAU: stagn=8 best_ever=110.8 → local refine around elite + protected explorers
+Gen 009 | best_fit=112.91 survival=30.00s dist=9.036m fwd=2.250m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=39.8 sam=1.64 sfm=2.39 Kp=22.6 Kd=5.5 fx=0.002 fy=-0.022 | steps=15 clr=0.111 slip=1.46 gait_pass=False
+Gen 010 | best_fit=112.91 survival=30.00s dist=9.036m fwd=2.250m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=39.8 sam=1.64 sfm=2.39 Kp=22.6 Kd=5.5 fx=0.002 fy=-0.022 | steps=15 clr=0.111 slip=1.46 gait_pass=False
+Gen 011 | best_fit=112.91 survival=30.00s dist=9.036m fwd=2.250m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=39.8 sam=1.64 sfm=2.39 Kp=22.6 Kd=5.5 fx=0.002 fy=-0.022 | steps=15 clr=0.111 slip=1.46 gait_pass=False
+Gen 012 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 013 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 014 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=3/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 015 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 016 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 017 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=3/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 018 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 019 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 020 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=8 best_ever=195.4 → local refine around elite + protected explorers
+Gen 021 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 022 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 023 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 024 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 025 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=8/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=13 best_ever=195.4 → local refine around elite + protected explorers
+Gen 026 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 027 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=8/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 028 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=8/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 029 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 030 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=18 best_ever=195.4 → local refine around elite + protected explorers
+Gen 031 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=14/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 032 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=16/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 033 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=16/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 034 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 035 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=23 best_ever=195.4 → local refine around elite + protected explorers
+Gen 036 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 037 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=15/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 038 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 039 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=18/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 040 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=28 best_ever=195.4 → local refine around elite + protected explorers
+Gen 041 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 042 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 043 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 044 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=7/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 045 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=33 best_ever=195.4 → local refine around elite + protected explorers
+Gen 046 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 047 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 048 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 049 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=8/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 050 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=38 best_ever=195.4 → local refine around elite + protected explorers
+Gen 051 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 052 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 053 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 054 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=3/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 055 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=43 best_ever=195.4 → local refine around elite + protected explorers
+Gen 056 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 057 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 058 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 059 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 060 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=7/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=48 best_ever=195.4 → local refine around elite + protected explorers
+Gen 061 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 062 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 063 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 064 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=14/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 065 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=53 best_ever=195.4 → local refine around elite + protected explorers
+Gen 066 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 067 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 068 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 069 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=14/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 070 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=58 best_ever=195.4 → local refine around elite + protected explorers
+Gen 071 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 072 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 073 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 074 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 075 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=2/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=63 best_ever=195.4 → local refine around elite + protected explorers
+Gen 076 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 077 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=14/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 078 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 079 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=16/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 080 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=68 best_ever=195.4 → local refine around elite + protected explorers
+Gen 081 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=9/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 082 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=7/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 083 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=13/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 084 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=6/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 085 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=2/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=73 best_ever=195.4 → local refine around elite + protected explorers
+Gen 086 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 087 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=10/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 088 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 089 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=11/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 090 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=78 best_ever=195.4 → local refine around elite + protected explorers
+Gen 091 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 092 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=7/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 093 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 094 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=7/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 095 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+  PLATEAU: stagn=83 best_ever=195.4 → local refine around elite + protected explorers
+Gen 096 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=8/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 097 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=12/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 098 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=5/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+Gen 099 | best_fit=195.43 survival=30.00s dist=10.480m fwd=7.140m back=0.000m backwards=False fell=False | pop_full_surv=4/32 | amp=42.5 sam=1.61 sfm=2.47 Kp=23.7 Kd=5.0 fx=-0.001 fy=-0.024 | steps=19 clr=0.117 slip=0.49 gait_pass=False
+
+Evaluating robustness on top candidates...
+  #1: fit=195.43 survival=30.00s dist=10.480m | robust_rate=0.80 mean_pert_surv=26.45s
+  #2: fit=159.63 survival=30.00s dist=9.922m | robust_rate=1.00 mean_pert_surv=30.00s
+  #3: fit=119.86 survival=30.00s dist=9.433m | robust_rate=1.00 mean_pert_surv=30.00s
+  #4: fit=54.81 survival=30.00s dist=8.183m | robust_rate=1.00 mean_pert_surv=30.00s
+  #5: fit=43.19 survival=11.59s dist=4.788m | robust_rate=0.20 mean_pert_surv=15.10s
+
+=== ES complete ===
+Best ever fitness: 195.43
+Best ever: survival=30.00s dist=10.480m fell=False
+Promising region (top-k mean ± std):
+  amp_deg         : 40.9641 ± 3.3435  [31.1324, 43.1095]
+  start_amp_mult  : 1.6056 ± 0.0330  [1.5596, 1.6876]
+  start_freq_mult : 2.4605 ± 0.0358  [2.3992, 2.5194]
+  Kp              : 29.4182 ± 19.8367  [20.7830, 88.8498]
+  Kd              : 5.2679 ± 0.9980  [4.4533, 8.1969]
+  foot_x          : -0.0092 ± 0.0105  [-0.0249, 0.0038]
+  foot_y          : -0.0185 ± 0.0076  [-0.0260, 0.0000]
+
+Saved history to data/es/bigfoot_es_history_walkgait_v10.csv
+Saved summary to data/es/bigfoot_es_summary_walkgait_v10.json

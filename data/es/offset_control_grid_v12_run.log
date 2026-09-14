@@ -1,0 +1,840 @@
+Frozen controller catalog (same 5 at every offset):
+  C0 v12_fit284        amp=48.94 sam=1.284 sfm=1.959 Kp=29.2 Kd=8.1
+  C1 v12_fit156        amp=46.68 sam=1.620 sfm=2.317 Kp=35.2 Kd=9.8
+  C2 v12_fit106        amp=41.25 sam=1.532 sfm=1.892 Kp=33.2 Kd=8.5
+  C3 v12_fit96         amp=36.96 sam=1.938 sfm=1.150 Kp=43.1 Kd=8.0
+  C4 v12_fit86         amp=29.49 sam=2.019 sfm=1.428 Kp=78.2 Kd=7.7
+
+Grid: 9×9 = 81 offsets  × 5 controllers = 405 trials
+  preset=v12  heading_max=60deg
+  fx (mm): [-10.0, -5.0, -1.0, 5.2, 10.0, 15.0, 20.0, 25.0, 30.0]
+  fy (mm): [-45.0, -40.0, -37.1, -30.0, -22.8, -20.0, -15.0, -10.0, -5.0]
+  seed snapped to (3,4) fx=5.2mm fy=-22.8mm
+  occupancy island snapped to (2,2) fx=-1.0mm fy=-37.1mm
+  Phase B cross-mm: [3.0] mm on top-5 cells
+
+[1/81] offset fx=-10.0mm fy=-45.0mm
+    C0 v12_fit284       OK   surv=30.0s fwd=0.448m head=27deg gait=True
+    C1 v12_fit156       FAIL surv=9.7s fwd=1.799m head=73deg gait=False
+    C2 v12_fit106       FAIL surv=8.9s fwd=-1.770m head=40deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.532m head=29deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.395m head=63deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.090m  min_surv=4.3s
+
+[2/81] offset fx=-5.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-2.514m head=131deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=1.561m head=142deg gait=True
+    C2 v12_fit106       FAIL surv=9.6s fwd=-2.128m head=69deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.411m head=19deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.428m head=53deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[3/81] offset fx=-1.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-3.623m head=73deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=1.709m head=141deg gait=True
+    C2 v12_fit106       FAIL surv=9.1s fwd=-1.716m head=102deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.688m head=37deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.364m head=39deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[4/81] offset fx=5.2mm fy=-45.0mm
+    C0 v12_fit284       OK   surv=30.0s fwd=-0.512m head=59deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=0.300m head=83deg gait=True
+    C2 v12_fit106       FAIL surv=10.9s fwd=0.663m head=48deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.753m head=35deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.319m head=38deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[5/81] offset fx=10.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=0.415m head=177deg gait=True
+    C1 v12_fit156       OK   surv=30.0s fwd=-2.702m head=2deg gait=True
+    C2 v12_fit106       FAIL surv=9.0s fwd=-1.874m head=81deg gait=False
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.693m head=24deg gait=False
+    C4 v12_fit86        FAIL surv=10.2s fwd=-0.805m head=33deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.1s
+
+[6/81] offset fx=15.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-1.895m head=118deg gait=True
+    C1 v12_fit156       OK   surv=30.0s fwd=0.541m head=10deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=0.725m head=146deg gait=True
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.746m head=26deg gait=False
+    C4 v12_fit86        FAIL surv=4.9s fwd=0.746m head=38deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.108m  min_surv=4.1s
+
+[7/81] offset fx=20.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-1.676m head=63deg gait=True
+    C1 v12_fit156       OK   surv=30.0s fwd=0.362m head=52deg gait=True
+    C2 v12_fit106       OK   surv=30.0s fwd=-1.773m head=42deg gait=True
+    C3 v12_fit96        FAIL surv=4.2s fwd=0.819m head=31deg gait=False
+    C4 v12_fit86        FAIL surv=4.9s fwd=0.488m head=21deg gait=False
+  occupancy=2/5 (40%) heading<=60deg  E[fwd]=0.072m  min_surv=4.2s
+
+[8/81] offset fx=25.0mm fy=-45.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=0.006m head=121deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=0.764m head=136deg gait=True
+    C2 v12_fit106       FAIL surv=12.0s fwd=-2.217m head=96deg gait=False
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.770m head=24deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.510m head=27deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.1s
+
+[9/81] offset fx=30.0mm fy=-45.0mm
+    C0 v12_fit284       FAIL surv=4.9s fwd=-0.467m head=150deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.785m head=127deg gait=False
+    C2 v12_fit106       FAIL surv=4.8s fwd=-0.592m head=141deg gait=False
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.608m head=11deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.693m head=37deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.1s
+
+[10/81] offset fx=-10.0mm fy=-40.0mm
+    C0 v12_fit284       OK   surv=30.0s fwd=-0.244m head=6deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=2.782m head=71deg gait=True
+    C2 v12_fit106       FAIL surv=9.8s fwd=-1.876m head=54deg gait=False
+    C3 v12_fit96        FAIL surv=4.2s fwd=0.659m head=34deg gait=False
+    C4 v12_fit86        FAIL surv=5.0s fwd=0.460m head=35deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.2s
+
+[11/81] offset fx=-5.0mm fy=-40.0mm
+    C0 v12_fit284       FAIL surv=20.3s fwd=-2.820m head=13deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=3.050m head=141deg gait=True
+    C2 v12_fit106       FAIL surv=8.9s fwd=-2.213m head=70deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.555m head=29deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.316m head=59deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[12/81] offset fx=-1.0mm fy=-40.0mm
+    C0 v12_fit284       FAIL surv=6.4s fwd=1.402m head=36deg gait=False
+    C1 v12_fit156       FAIL surv=5.9s fwd=1.265m head=83deg gait=False
+    C2 v12_fit106       FAIL surv=11.9s fwd=0.589m head=113deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.614m head=43deg gait=False
+    C4 v12_fit86        FAIL surv=16.1s fwd=3.618m head=51deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[13/81] offset fx=5.2mm fy=-40.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=0.612m head=156deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=1.923m head=149deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=-0.272m head=177deg gait=True
+    C3 v12_fit96        FAIL surv=4.2s fwd=0.685m head=28deg gait=False
+    C4 v12_fit86        FAIL surv=16.3s fwd=1.932m head=29deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.2s
+
+[14/81] offset fx=10.0mm fy=-40.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=0.106m head=99deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=1.027m head=140deg gait=True
+    C2 v12_fit106       FAIL surv=9.0s fwd=-2.339m head=73deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.751m head=36deg gait=False
+    C4 v12_fit86        FAIL surv=24.0s fwd=2.840m head=66deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[15/81] offset fx=15.0mm fy=-40.0mm
+    C0 v12_fit284       FAIL surv=21.8s fwd=-0.783m head=152deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=0.690m head=39deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=0.543m head=172deg gait=True
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.791m head=37deg gait=False
+    C4 v12_fit86        FAIL surv=9.1s fwd=-0.902m head=163deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.138m  min_surv=4.3s
+
+[16/81] offset fx=20.0mm fy=-40.0mm
+    C0 v12_fit284       FAIL surv=15.8s fwd=-1.116m head=56deg gait=False
+    C1 v12_fit156       FAIL surv=14.8s fwd=-0.445m head=61deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=-0.964m head=139deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.701m head=29deg gait=False
+    C4 v12_fit86        FAIL surv=8.7s fwd=-1.833m head=110deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[17/81] offset fx=25.0mm fy=-40.0mm
+    C0 v12_fit284       FAIL surv=6.5s fwd=1.872m head=86deg gait=False
+    C1 v12_fit156       FAIL surv=5.8s fwd=0.957m head=127deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=0.856m head=78deg gait=True
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.804m head=30deg gait=False
+    C4 v12_fit86        FAIL surv=10.4s fwd=-1.395m head=40deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[18/81] offset fx=30.0mm fy=-40.0mm
+    C0 v12_fit284       OK   surv=30.0s fwd=-2.689m head=27deg gait=True
+    C1 v12_fit156       FAIL surv=6.2s fwd=0.847m head=129deg gait=False
+    C2 v12_fit106       OK   surv=30.0s fwd=-0.555m head=29deg gait=True
+    C3 v12_fit96        FAIL surv=4.2s fwd=0.937m head=38deg gait=False
+    C4 v12_fit86        FAIL surv=5.1s fwd=1.380m head=31deg gait=False
+  occupancy=2/5 (40%) heading<=60deg  E[fwd]=0.000m  min_surv=4.2s
+
+[19/81] offset fx=-10.0mm fy=-37.1mm
+    C0 v12_fit284       OK   surv=30.0s fwd=0.140m head=53deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=4.440m head=114deg gait=True
+    C2 v12_fit106       FAIL surv=9.6s fwd=-0.995m head=30deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.472m head=31deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.361m head=58deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.028m  min_surv=4.3s
+
+[20/81] offset fx=-5.0mm fy=-37.1mm
+    C0 v12_fit284       OK   surv=30.0s fwd=-0.830m head=13deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=2.991m head=70deg gait=True
+    C2 v12_fit106       FAIL surv=9.8s fwd=0.008m head=1deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.359m head=28deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.330m head=56deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[21/81] offset fx=-1.0mm fy=-37.1mm
+    C0 v12_fit284       TURN surv=30.0s fwd=3.311m head=126deg gait=True
+    C1 v12_fit156       FAIL surv=5.6s fwd=-1.013m head=81deg gait=False
+    C2 v12_fit106       FAIL surv=28.7s fwd=-0.327m head=14deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.090m head=11deg gait=False
+    C4 v12_fit86        FAIL surv=6.9s fwd=-1.405m head=63deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[22/81] offset fx=5.2mm fy=-37.1mm
+    C0 v12_fit284       TURN surv=30.0s fwd=2.476m head=172deg gait=True
+    C1 v12_fit156       OK   surv=30.0s fwd=1.281m head=18deg gait=True
+    C2 v12_fit106       FAIL surv=24.1s fwd=-3.685m head=35deg gait=False
+    C3 v12_fit96        FAIL surv=5.2s fwd=-0.153m head=17deg gait=False
+    C4 v12_fit86        FAIL surv=9.8s fwd=2.611m head=168deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.256m  min_surv=5.2s
+
+[23/81] offset fx=10.0mm fy=-37.1mm
+    C0 v12_fit284       TURN surv=30.0s fwd=0.773m head=88deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=0.474m head=165deg gait=True
+    C2 v12_fit106       OK   surv=30.0s fwd=-2.905m head=30deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.592m head=34deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=1.973m head=177deg gait=True
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[24/81] offset fx=15.0mm fy=-37.1mm
+    C0 v12_fit284       FAIL surv=22.4s fwd=-0.204m head=167deg gait=False
+    C1 v12_fit156       FAIL surv=12.3s fwd=0.663m head=104deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=-1.617m head=141deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.860m head=46deg gait=False
+    C4 v12_fit86        FAIL surv=6.7s fwd=-0.473m head=37deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[25/81] offset fx=20.0mm fy=-37.1mm
+    C0 v12_fit284       TURN surv=30.0s fwd=1.032m head=74deg gait=True
+    C1 v12_fit156       FAIL surv=8.0s fwd=2.803m head=104deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=-1.977m head=116deg gait=True
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.799m head=40deg gait=False
+    C4 v12_fit86        FAIL surv=6.2s fwd=-0.333m head=63deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[26/81] offset fx=25.0mm fy=-37.1mm
+    C0 v12_fit284       FAIL surv=5.8s fwd=1.401m head=96deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=0.725m head=47deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=-0.860m head=170deg gait=True
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.829m head=36deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.559m head=31deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.145m  min_surv=4.5s
+
+[27/81] offset fx=30.0mm fy=-37.1mm
+    C0 v12_fit284       FAIL surv=9.3s fwd=0.474m head=68deg gait=False
+    C1 v12_fit156       FAIL surv=6.0s fwd=1.099m head=134deg gait=False
+    C2 v12_fit106       FAIL surv=22.8s fwd=-0.029m head=45deg gait=False
+    C3 v12_fit96        FAIL surv=5.7s fwd=1.483m head=67deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=1.642m head=146deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.7s
+
+[28/81] offset fx=-10.0mm fy=-30.0mm
+    C0 v12_fit284       FAIL surv=12.5s fwd=1.441m head=22deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=0.213m head=71deg gait=True
+    C2 v12_fit106       FAIL surv=9.3s fwd=-1.019m head=22deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.613m head=43deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.337m head=68deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.3s
+
+[29/81] offset fx=-5.0mm fy=-30.0mm
+    C0 v12_fit284       OK   surv=30.0s fwd=4.609m head=58deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=3.745m head=46deg gait=True
+    C2 v12_fit106       FAIL surv=9.7s fwd=0.268m head=9deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.648m head=45deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.349m head=68deg gait=False
+  occupancy=2/5 (40%) heading<=60deg  E[fwd]=1.671m  min_surv=4.4s
+
+[30/81] offset fx=-1.0mm fy=-30.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=2.529m head=82deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=4.605m head=168deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=2.084m head=140deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.643m head=45deg gait=False
+    C4 v12_fit86        FAIL surv=4.9s fwd=0.541m head=44deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[31/81] offset fx=5.2mm fy=-30.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=4.922m head=147deg gait=True
+    C1 v12_fit156       OK   surv=30.0s fwd=3.675m head=59deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=2.413m head=149deg gait=True
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.615m head=47deg gait=False
+    C4 v12_fit86        FAIL surv=6.8s fwd=-0.757m head=24deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.735m  min_surv=4.5s
+
+[32/81] offset fx=10.0mm fy=-30.0mm
+    C0 v12_fit284       FAIL surv=4.5s fwd=-0.763m head=99deg gait=False
+    C1 v12_fit156       FAIL surv=4.6s fwd=-0.969m head=88deg gait=False
+    C2 v12_fit106       FAIL surv=4.5s fwd=-0.787m head=106deg gait=False
+    C3 v12_fit96        OK   surv=30.0s fwd=1.409m head=6deg gait=True
+    C4 v12_fit86        FAIL surv=10.2s fwd=2.527m head=63deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.282m  min_surv=4.5s
+
+[33/81] offset fx=15.0mm fy=-30.0mm
+    C0 v12_fit284       FAIL surv=5.0s fwd=-0.656m head=147deg gait=False
+    C1 v12_fit156       FAIL surv=6.4s fwd=1.916m head=128deg gait=False
+    C2 v12_fit106       FAIL surv=7.3s fwd=0.365m head=91deg gait=False
+    C3 v12_fit96        FAIL surv=9.9s fwd=-0.752m head=95deg gait=False
+    C4 v12_fit86        OK   surv=30.0s fwd=0.264m head=53deg gait=True
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.053m  min_surv=5.0s
+
+[34/81] offset fx=20.0mm fy=-30.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-0.610m head=71deg gait=False
+    C1 v12_fit156       FAIL surv=5.9s fwd=1.461m head=100deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=2.372m head=87deg gait=True
+    C3 v12_fit96        FAIL surv=7.4s fwd=1.587m head=147deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=0.526m head=64deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.9s
+
+[35/81] offset fx=25.0mm fy=-30.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-1.385m head=93deg gait=False
+    C1 v12_fit156       FAIL surv=4.7s fwd=-0.882m head=116deg gait=False
+    C2 v12_fit106       FAIL surv=7.6s fwd=-0.621m head=143deg gait=False
+    C3 v12_fit96        OK   surv=30.0s fwd=2.719m head=19deg gait=True
+    C4 v12_fit86        TURN surv=30.0s fwd=1.363m head=97deg gait=True
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.544m  min_surv=4.7s
+
+[36/81] offset fx=30.0mm fy=-30.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-2.369m head=154deg gait=False
+    C1 v12_fit156       FAIL surv=6.0s fwd=1.509m head=89deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=-0.106m head=114deg gait=True
+    C3 v12_fit96        FAIL surv=5.6s fwd=1.466m head=110deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=1.701m head=174deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.6s
+
+[37/81] offset fx=-10.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=10.4s fwd=-0.866m head=59deg gait=False
+    C1 v12_fit156       FAIL surv=11.5s fwd=2.433m head=57deg gait=False
+    C2 v12_fit106       FAIL surv=9.6s fwd=-0.774m head=39deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.579m head=51deg gait=False
+    C4 v12_fit86        FAIL surv=5.1s fwd=0.577m head=42deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[38/81] offset fx=-5.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=11.2s fwd=-1.451m head=96deg gait=False
+    C1 v12_fit156       FAIL surv=11.9s fwd=3.118m head=16deg gait=False
+    C2 v12_fit106       FAIL surv=9.5s fwd=-0.987m head=47deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.578m head=50deg gait=False
+    C4 v12_fit86        FAIL surv=5.4s fwd=0.697m head=50deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[39/81] offset fx=-1.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=12.7s fwd=-0.137m head=29deg gait=False
+    C1 v12_fit156       FAIL surv=12.2s fwd=3.694m head=56deg gait=False
+    C2 v12_fit106       FAIL surv=16.4s fwd=0.036m head=58deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.605m head=54deg gait=False
+    C4 v12_fit86        FAIL surv=9.6s fwd=-1.661m head=162deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[40/81] offset fx=5.2mm fy=-22.8mm
+    C0 v12_fit284       OK   surv=30.0s fwd=10.905m head=33deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=8.642m head=177deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=4.085m head=165deg gait=True
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.530m head=60deg gait=False
+    C4 v12_fit86        FAIL surv=8.7s fwd=-0.653m head=158deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=2.181m  min_surv=4.6s
+
+[41/81] offset fx=10.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=4.5s fwd=-0.784m head=102deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.953m head=94deg gait=False
+    C2 v12_fit106       FAIL surv=4.6s fwd=-0.788m head=108deg gait=False
+    C3 v12_fit96        FAIL surv=13.1s fwd=1.864m head=152deg gait=False
+    C4 v12_fit86        FAIL surv=9.2s fwd=1.654m head=105deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[42/81] offset fx=15.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=5.2s fwd=-0.905m head=115deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.950m head=100deg gait=False
+    C2 v12_fit106       FAIL surv=5.0s fwd=-0.846m head=117deg gait=False
+    C3 v12_fit96        FAIL surv=13.1s fwd=4.089m head=172deg gait=False
+    C4 v12_fit86        FAIL surv=9.4s fwd=-0.503m head=149deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.8s
+
+[43/81] offset fx=20.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=5.4s fwd=-0.649m head=160deg gait=False
+    C1 v12_fit156       FAIL surv=4.6s fwd=-0.842m head=107deg gait=False
+    C2 v12_fit106       FAIL surv=4.9s fwd=-0.615m head=145deg gait=False
+    C3 v12_fit96        FAIL surv=13.0s fwd=4.011m head=88deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=0.741m head=174deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[44/81] offset fx=25.0mm fy=-22.8mm
+    C0 v12_fit284       TURN surv=30.0s fwd=2.196m head=102deg gait=False
+    C1 v12_fit156       FAIL surv=5.9s fwd=-0.017m head=159deg gait=False
+    C2 v12_fit106       FAIL surv=8.7s fwd=-0.048m head=87deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.435m head=32deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=0.472m head=76deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[45/81] offset fx=30.0mm fy=-22.8mm
+    C0 v12_fit284       FAIL surv=5.7s fwd=1.531m head=89deg gait=False
+    C1 v12_fit156       FAIL surv=5.9s fwd=1.328m head=114deg gait=False
+    C2 v12_fit106       FAIL surv=6.0s fwd=0.361m head=165deg gait=False
+    C3 v12_fit96        FAIL surv=5.4s fwd=-0.098m head=18deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=1.641m head=111deg gait=True
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.4s
+
+[46/81] offset fx=-10.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=10.7s fwd=-0.194m head=21deg gait=False
+    C1 v12_fit156       FAIL surv=11.2s fwd=1.071m head=7deg gait=False
+    C2 v12_fit106       FAIL surv=8.5s fwd=-1.462m head=57deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.569m head=54deg gait=False
+    C4 v12_fit86        FAIL surv=5.6s fwd=0.880m head=58deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.4s
+
+[47/81] offset fx=-5.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=11.2s fwd=-1.358m head=96deg gait=False
+    C1 v12_fit156       FAIL surv=10.9s fwd=0.931m head=46deg gait=False
+    C2 v12_fit106       FAIL surv=9.1s fwd=-1.328m head=67deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.562m head=57deg gait=False
+    C4 v12_fit86        FAIL surv=11.0s fwd=-1.298m head=169deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[48/81] offset fx=-1.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=12.0s fwd=0.565m head=13deg gait=False
+    C1 v12_fit156       FAIL surv=11.9s fwd=3.535m head=26deg gait=False
+    C2 v12_fit106       FAIL surv=9.6s fwd=-0.789m head=46deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.572m head=59deg gait=False
+    C4 v12_fit86        FAIL surv=8.5s fwd=-0.060m head=144deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[49/81] offset fx=5.2mm fy=-20.0mm
+    C0 v12_fit284       TURN surv=30.0s fwd=8.910m head=161deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=10.356m head=163deg gait=False
+    C2 v12_fit106       FAIL surv=11.3s fwd=1.273m head=19deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.452m head=63deg gait=False
+    C4 v12_fit86        FAIL surv=8.7s fwd=0.354m head=150deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[50/81] offset fx=10.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=4.6s fwd=-0.803m head=104deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.950m head=97deg gait=False
+    C2 v12_fit106       FAIL surv=4.6s fwd=-0.794m head=111deg gait=False
+    C3 v12_fit96        OK   surv=30.0s fwd=-1.168m head=52deg gait=True
+    C4 v12_fit86        FAIL surv=7.9s fwd=1.110m head=159deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[51/81] offset fx=15.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=5.5s fwd=-0.812m head=79deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.935m head=101deg gait=False
+    C2 v12_fit106       OK   surv=30.0s fwd=3.289m head=28deg gait=False
+    C3 v12_fit96        FAIL surv=12.4s fwd=2.200m head=165deg gait=False
+    C4 v12_fit86        FAIL surv=8.3s fwd=1.938m head=48deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.658m  min_surv=4.8s
+
+[52/81] offset fx=20.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=4.9s fwd=-0.808m head=122deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=0.120m head=169deg gait=False
+    C2 v12_fit106       FAIL surv=6.8s fwd=1.643m head=158deg gait=False
+    C3 v12_fit96        FAIL surv=12.6s fwd=4.833m head=146deg gait=False
+    C4 v12_fit86        FAIL surv=12.6s fwd=0.880m head=133deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.9s
+
+[53/81] offset fx=25.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=5.7s fwd=1.462m head=66deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=2.634m head=120deg gait=False
+    C2 v12_fit106       OK   surv=30.0s fwd=0.965m head=45deg gait=False
+    C3 v12_fit96        FAIL surv=6.7s fwd=-0.506m head=21deg gait=False
+    C4 v12_fit86        FAIL surv=10.1s fwd=-1.159m head=79deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.193m  min_surv=5.7s
+
+[54/81] offset fx=30.0mm fy=-20.0mm
+    C0 v12_fit284       FAIL surv=5.9s fwd=1.602m head=97deg gait=False
+    C1 v12_fit156       FAIL surv=13.8s fwd=-2.342m head=141deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=1.860m head=96deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.754m head=45deg gait=False
+    C4 v12_fit86        FAIL surv=14.7s fwd=1.500m head=178deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[55/81] offset fx=-10.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=8.9s fwd=-0.732m head=35deg gait=False
+    C1 v12_fit156       FAIL surv=8.7s fwd=0.028m head=78deg gait=False
+    C2 v12_fit106       FAIL surv=9.6s fwd=-1.041m head=24deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.506m head=62deg gait=False
+    C4 v12_fit86        FAIL surv=8.8s fwd=0.518m head=122deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[56/81] offset fx=-5.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=11.1s fwd=-0.384m head=23deg gait=False
+    C1 v12_fit156       FAIL surv=9.1s fwd=0.894m head=30deg gait=False
+    C2 v12_fit106       FAIL surv=9.7s fwd=-1.108m head=16deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.499m head=66deg gait=False
+    C4 v12_fit86        FAIL surv=8.8s fwd=-0.272m head=157deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.5s
+
+[57/81] offset fx=-1.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=10.4s fwd=-0.573m head=56deg gait=False
+    C1 v12_fit156       FAIL surv=11.8s fwd=3.335m head=16deg gait=False
+    C2 v12_fit106       FAIL surv=8.5s fwd=-1.247m head=56deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.468m head=66deg gait=False
+    C4 v12_fit86        FAIL surv=8.9s fwd=-0.066m head=154deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[58/81] offset fx=5.2mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=12.0s fwd=2.309m head=77deg gait=False
+    C1 v12_fit156       FAIL surv=23.3s fwd=11.767m head=112deg gait=False
+    C2 v12_fit106       FAIL surv=11.3s fwd=1.774m head=26deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.430m head=66deg gait=False
+    C4 v12_fit86        FAIL surv=7.9s fwd=0.873m head=145deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[59/81] offset fx=10.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=4.6s fwd=-0.810m head=106deg gait=False
+    C1 v12_fit156       FAIL surv=5.1s fwd=-0.906m head=116deg gait=False
+    C2 v12_fit106       FAIL surv=4.7s fwd=-0.803m head=114deg gait=False
+    C3 v12_fit96        FAIL surv=12.3s fwd=1.086m head=159deg gait=False
+    C4 v12_fit86        FAIL surv=6.6s fwd=-1.048m head=89deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[60/81] offset fx=15.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=5.1s fwd=-0.929m head=96deg gait=False
+    C1 v12_fit156       FAIL surv=4.9s fwd=-0.937m head=103deg gait=False
+    C2 v12_fit106       FAIL surv=5.1s fwd=-0.878m head=98deg gait=False
+    C3 v12_fit96        FAIL surv=12.4s fwd=0.461m head=130deg gait=False
+    C4 v12_fit86        FAIL surv=17.4s fwd=-1.284m head=79deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.9s
+
+[61/81] offset fx=20.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=5.2s fwd=-0.834m head=125deg gait=False
+    C1 v12_fit156       FAIL surv=5.0s fwd=-0.938m head=111deg gait=False
+    C2 v12_fit106       FAIL surv=8.2s fwd=1.887m head=13deg gait=False
+    C3 v12_fit96        FAIL surv=12.1s fwd=4.008m head=128deg gait=False
+    C4 v12_fit86        FAIL surv=11.0s fwd=1.827m head=153deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.0s
+
+[62/81] offset fx=25.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=5.9s fwd=1.650m head=103deg gait=False
+    C1 v12_fit156       FAIL surv=8.8s fwd=0.130m head=50deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=2.472m head=91deg gait=False
+    C3 v12_fit96        FAIL surv=7.4s fwd=1.292m head=172deg gait=False
+    C4 v12_fit86        FAIL surv=14.0s fwd=3.080m head=96deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.9s
+
+[63/81] offset fx=30.0mm fy=-15.0mm
+    C0 v12_fit284       FAIL surv=5.8s fwd=1.438m head=117deg gait=False
+    C1 v12_fit156       FAIL surv=5.8s fwd=1.434m head=109deg gait=False
+    C2 v12_fit106       FAIL surv=7.4s fwd=1.906m head=161deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.525m head=33deg gait=False
+    C4 v12_fit86        FAIL surv=9.0s fwd=2.864m head=100deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[64/81] offset fx=-10.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=8.2s fwd=0.173m head=130deg gait=False
+    C1 v12_fit156       FAIL surv=8.2s fwd=-0.241m head=68deg gait=False
+    C2 v12_fit106       FAIL surv=14.8s fwd=1.627m head=35deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.373m head=68deg gait=False
+    C4 v12_fit86        FAIL surv=8.8s fwd=1.080m head=92deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[65/81] offset fx=-5.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=11.3s fwd=-0.593m head=57deg gait=False
+    C1 v12_fit156       FAIL surv=8.8s fwd=0.364m head=118deg gait=False
+    C2 v12_fit106       FAIL surv=9.6s fwd=0.198m head=8deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.373m head=70deg gait=False
+    C4 v12_fit86        FAIL surv=7.7s fwd=1.022m head=126deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[66/81] offset fx=-1.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=9.4s fwd=-0.038m head=27deg gait=False
+    C1 v12_fit156       FAIL surv=21.4s fwd=4.976m head=13deg gait=False
+    C2 v12_fit106       FAIL surv=9.5s fwd=-0.703m head=17deg gait=False
+    C3 v12_fit96        FAIL surv=5.0s fwd=0.449m head=40deg gait=False
+    C4 v12_fit86        FAIL surv=8.3s fwd=1.405m head=126deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.0s
+
+[67/81] offset fx=5.2mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=9.9s fwd=-1.637m head=76deg gait=False
+    C1 v12_fit156       FAIL surv=11.7s fwd=4.295m head=141deg gait=False
+    C2 v12_fit106       FAIL surv=11.7s fwd=-1.431m head=66deg gait=False
+    C3 v12_fit96        FAIL surv=6.6s fwd=-1.560m head=63deg gait=False
+    C4 v12_fit86        FAIL surv=5.8s fwd=-1.395m head=92deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.8s
+
+[68/81] offset fx=10.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=4.7s fwd=-0.841m head=106deg gait=False
+    C1 v12_fit156       FAIL surv=5.1s fwd=-0.888m head=112deg gait=False
+    C2 v12_fit106       FAIL surv=4.8s fwd=-0.845m head=112deg gait=False
+    C3 v12_fit96        FAIL surv=9.1s fwd=3.158m head=35deg gait=False
+    C4 v12_fit86        FAIL surv=9.1s fwd=2.170m head=101deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.7s
+
+[69/81] offset fx=15.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=6.4s fwd=-1.162m head=22deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.923m head=108deg gait=False
+    C2 v12_fit106       FAIL surv=9.6s fwd=-2.325m head=64deg gait=False
+    C3 v12_fit96        FAIL surv=8.1s fwd=0.604m head=110deg gait=False
+    C4 v12_fit86        FAIL surv=11.8s fwd=0.154m head=87deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.8s
+
+[70/81] offset fx=20.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=5.7s fwd=1.504m head=94deg gait=False
+    C1 v12_fit156       FAIL surv=5.0s fwd=-0.972m head=101deg gait=False
+    C2 v12_fit106       FAIL surv=5.3s fwd=-0.896m head=127deg gait=False
+    C3 v12_fit96        FAIL surv=7.8s fwd=0.661m head=157deg gait=False
+    C4 v12_fit86        FAIL surv=11.9s fwd=2.492m head=125deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.0s
+
+[71/81] offset fx=25.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=7.9s fwd=-0.170m head=103deg gait=False
+    C1 v12_fit156       FAIL surv=5.8s fwd=1.530m head=69deg gait=False
+    C2 v12_fit106       OK   surv=30.0s fwd=3.260m head=57deg gait=False
+    C3 v12_fit96        FAIL surv=5.9s fwd=0.188m head=19deg gait=False
+    C4 v12_fit86        FAIL surv=8.0s fwd=1.704m head=141deg gait=False
+  occupancy=1/5 (20%) heading<=60deg  E[fwd]=0.652m  min_surv=5.8s
+
+[72/81] offset fx=30.0mm fy=-10.0mm
+    C0 v12_fit284       FAIL surv=7.9s fwd=3.059m head=83deg gait=False
+    C1 v12_fit156       FAIL surv=9.0s fwd=-0.057m head=15deg gait=False
+    C2 v12_fit106       FAIL surv=10.0s fwd=3.168m head=140deg gait=False
+    C3 v12_fit96        FAIL surv=6.7s fwd=-1.882m head=90deg gait=False
+    C4 v12_fit86        FAIL surv=9.4s fwd=1.397m head=159deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=6.7s
+
+[73/81] offset fx=-10.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=6.7s fwd=0.766m head=19deg gait=False
+    C1 v12_fit156       FAIL surv=10.5s fwd=-1.488m head=95deg gait=False
+    C2 v12_fit106       FAIL surv=7.5s fwd=-0.493m head=12deg gait=False
+    C3 v12_fit96        FAIL surv=5.0s fwd=0.333m head=33deg gait=False
+    C4 v12_fit86        FAIL surv=6.6s fwd=-1.561m head=97deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.0s
+
+[74/81] offset fx=-5.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=9.2s fwd=-0.662m head=161deg gait=False
+    C1 v12_fit156       FAIL surv=9.8s fwd=-1.479m head=62deg gait=False
+    C2 v12_fit106       FAIL surv=7.5s fwd=-0.481m head=13deg gait=False
+    C3 v12_fit96        FAIL surv=7.2s fwd=-2.110m head=36deg gait=False
+    C4 v12_fit86        FAIL surv=6.1s fwd=-1.491m head=105deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=6.1s
+
+[75/81] offset fx=-1.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=10.1s fwd=-1.801m head=91deg gait=False
+    C1 v12_fit156       FAIL surv=9.5s fwd=-1.368m head=47deg gait=False
+    C2 v12_fit106       FAIL surv=8.0s fwd=-1.225m head=110deg gait=False
+    C3 v12_fit96        FAIL surv=9.1s fwd=1.070m head=101deg gait=False
+    C4 v12_fit86        FAIL surv=5.7s fwd=-1.417m head=85deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.7s
+
+[76/81] offset fx=5.2mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=8.7s fwd=-1.359m head=138deg gait=False
+    C1 v12_fit156       FAIL surv=10.5s fwd=4.803m head=132deg gait=False
+    C2 v12_fit106       FAIL surv=9.8s fwd=-1.472m head=41deg gait=False
+    C3 v12_fit96        FAIL surv=6.1s fwd=-1.224m head=73deg gait=False
+    C4 v12_fit86        FAIL surv=5.6s fwd=-1.245m head=58deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.6s
+
+[77/81] offset fx=10.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=4.8s fwd=-0.854m head=108deg gait=False
+    C1 v12_fit156       FAIL surv=5.4s fwd=-0.848m head=89deg gait=False
+    C2 v12_fit106       FAIL surv=5.0s fwd=-0.862m head=118deg gait=False
+    C3 v12_fit96        FAIL surv=14.8s fwd=1.946m head=2deg gait=False
+    C4 v12_fit86        FAIL surv=8.1s fwd=2.230m head=64deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.8s
+
+[78/81] offset fx=15.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=4.6s fwd=-0.823m head=104deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.935m head=105deg gait=False
+    C2 v12_fit106       FAIL surv=4.7s fwd=-0.855m head=108deg gait=False
+    C3 v12_fit96        FAIL surv=8.3s fwd=3.462m head=118deg gait=False
+    C4 v12_fit86        FAIL surv=7.3s fwd=-0.084m head=108deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.6s
+
+[79/81] offset fx=20.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=5.1s fwd=-0.871m head=115deg gait=False
+    C1 v12_fit156       FAIL surv=5.1s fwd=-0.978m head=108deg gait=False
+    C2 v12_fit106       FAIL surv=7.9s fwd=2.507m head=167deg gait=False
+    C3 v12_fit96        FAIL surv=9.3s fwd=0.717m head=171deg gait=False
+    C4 v12_fit86        FAIL surv=7.2s fwd=1.733m head=124deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.1s
+
+[80/81] offset fx=25.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=4.9s fwd=-0.726m head=125deg gait=False
+    C1 v12_fit156       FAIL surv=5.7s fwd=1.521m head=80deg gait=False
+    C2 v12_fit106       FAIL surv=8.1s fwd=2.924m head=24deg gait=False
+    C3 v12_fit96        FAIL surv=6.5s fwd=0.384m head=46deg gait=False
+    C4 v12_fit86        FAIL surv=9.8s fwd=0.012m head=136deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=4.9s
+
+[81/81] offset fx=30.0mm fy=-5.0mm
+    C0 v12_fit284       FAIL surv=6.5s fwd=0.449m head=59deg gait=False
+    C1 v12_fit156       FAIL surv=7.7s fwd=1.984m head=70deg gait=False
+    C2 v12_fit106       FAIL surv=9.1s fwd=-1.423m head=15deg gait=False
+    C3 v12_fit96        FAIL surv=6.9s fwd=-1.780m head=56deg gait=False
+    C4 v12_fit86        FAIL surv=5.6s fwd=0.445m head=20deg gait=False
+  occupancy=0/5 (0%) heading<=60deg  E[fwd]=0.000m  min_surv=5.6s
+
+=== Top offset cells (heading-gated occupancy, then expected forward) ===
+  #01 fx=  -5.0mm fy= -30.0mm  k=2/5  E[fwd]=1.671m  min_surv=4.4s
+  #02 fx= +20.0mm fy= -45.0mm  k=2/5  E[fwd]=0.072m  min_surv=4.2s
+  #03 fx= +30.0mm fy= -40.0mm  k=2/5  E[fwd]=0.000m  min_surv=4.2s
+  #04 fx=  +5.2mm fy= -22.8mm  k=1/5  E[fwd]=2.181m  min_surv=4.6s
+  #05 fx=  +5.2mm fy= -30.0mm  k=1/5  E[fwd]=0.735m  min_surv=4.5s
+
+Phase B: ±foot noise [3.0] mm on top 5 cells
+
+  cross x+3mm from (-5.0,-30.0) mm
+    C0 v12_fit284       OK   surv=30.0s fwd=1.690m head=22deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=4.964m head=80deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=1.670m head=94deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.651m head=46deg gait=False
+    C4 v12_fit86        FAIL surv=4.9s fwd=0.535m head=44deg gait=False
+    occupancy=1/5 E[fwd]=0.338m
+
+  cross x-3mm from (-5.0,-30.0) mm
+    C0 v12_fit284       FAIL surv=12.5s fwd=1.347m head=22deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=1.195m head=17deg gait=True
+    C2 v12_fit106       FAIL surv=9.2s fwd=-1.040m head=27deg gait=False
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.635m head=44deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.346m head=68deg gait=False
+    occupancy=1/5 E[fwd]=0.239m
+
+  cross y+3mm from (-5.0,-30.0) mm
+    C0 v12_fit284       FAIL surv=12.5s fwd=1.526m head=19deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=4.016m head=35deg gait=True
+    C2 v12_fit106       FAIL surv=9.6s fwd=-0.370m head=10deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.621m head=47deg gait=False
+    C4 v12_fit86        FAIL surv=4.9s fwd=0.490m head=41deg gait=False
+    occupancy=1/5 E[fwd]=0.803m
+
+  cross y-3mm from (-5.0,-30.0) mm
+    C0 v12_fit284       OK   surv=30.0s fwd=1.356m head=13deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=5.074m head=127deg gait=True
+    C2 v12_fit106       OK   surv=30.0s fwd=0.208m head=33deg gait=True
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.626m head=41deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.317m head=60deg gait=False
+    occupancy=2/5 E[fwd]=0.313m
+
+  cross x+3mm from (20.0,-45.0) mm
+    C0 v12_fit284       FAIL surv=7.1s fwd=-0.175m head=13deg gait=False
+    C1 v12_fit156       FAIL surv=12.9s fwd=-2.196m head=6deg gait=False
+    C2 v12_fit106       FAIL surv=4.6s fwd=-0.460m head=132deg gait=False
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.731m head=21deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.755m head=46deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross x-3mm from (20.0,-45.0) mm
+    C0 v12_fit284       OK   surv=30.0s fwd=0.303m head=31deg gait=True
+    C1 v12_fit156       TURN surv=30.0s fwd=-1.413m head=177deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=-1.188m head=154deg gait=True
+    C3 v12_fit96        FAIL surv=4.3s fwd=0.635m head=24deg gait=False
+    C4 v12_fit86        FAIL surv=4.4s fwd=0.503m head=35deg gait=False
+    occupancy=1/5 E[fwd]=0.061m
+
+  cross y+3mm from (20.0,-45.0) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=-2.109m head=83deg gait=True
+    C1 v12_fit156       FAIL surv=10.8s fwd=0.526m head=80deg gait=False
+    C2 v12_fit106       FAIL surv=12.9s fwd=1.867m head=127deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.765m head=36deg gait=False
+    C4 v12_fit86        FAIL surv=20.4s fwd=1.206m head=119deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y-3mm from (20.0,-45.0) mm
+    C0 v12_fit284       FAIL surv=4.7s fwd=-0.432m head=135deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=0.070m head=58deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=0.171m head=65deg gait=True
+    C3 v12_fit96        FAIL surv=4.1s fwd=0.877m head=30deg gait=False
+    C4 v12_fit86        FAIL surv=5.0s fwd=0.589m head=26deg gait=False
+    occupancy=1/5 E[fwd]=0.014m
+
+  cross x+3mm from (30.0,-40.0) mm
+    C0 v12_fit284       FAIL surv=5.8s fwd=1.452m head=93deg gait=False
+    C1 v12_fit156       FAIL surv=5.8s fwd=1.459m head=88deg gait=False
+    C2 v12_fit106       OK   surv=30.0s fwd=-0.186m head=23deg gait=True
+    C3 v12_fit96        FAIL surv=4.2s fwd=0.811m head=26deg gait=False
+    C4 v12_fit86        FAIL surv=4.5s fwd=0.779m head=40deg gait=False
+    occupancy=1/5 E[fwd]=0.000m
+
+  cross x-3mm from (30.0,-40.0) mm
+    C0 v12_fit284       FAIL surv=24.3s fwd=-3.086m head=114deg gait=False
+    C1 v12_fit156       FAIL surv=9.6s fwd=0.023m head=79deg gait=False
+    C2 v12_fit106       FAIL surv=11.1s fwd=-0.247m head=14deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.703m head=27deg gait=False
+    C4 v12_fit86        FAIL surv=5.0s fwd=0.722m head=38deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y+3mm from (30.0,-40.0) mm
+    C0 v12_fit284       FAIL surv=7.8s fwd=2.352m head=105deg gait=False
+    C1 v12_fit156       FAIL surv=6.0s fwd=0.969m head=139deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=0.310m head=82deg gait=True
+    C3 v12_fit96        FAIL surv=6.8s fwd=-0.208m head=9deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=1.980m head=145deg gait=True
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y-3mm from (30.0,-40.0) mm
+    C0 v12_fit284       FAIL surv=4.9s fwd=-0.287m head=157deg gait=False
+    C1 v12_fit156       FAIL surv=4.8s fwd=-0.632m head=134deg gait=False
+    C2 v12_fit106       FAIL surv=11.2s fwd=2.298m head=150deg gait=False
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.733m head=28deg gait=False
+    C4 v12_fit86        FAIL surv=5.6s fwd=1.226m head=73deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross x+3mm from (5.2,-22.8) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=9.794m head=175deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=0.608m head=91deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=3.749m head=88deg gait=True
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.399m head=58deg gait=False
+    C4 v12_fit86        FAIL surv=9.0s fwd=-0.380m head=122deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross x-3mm from (5.2,-22.8) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=5.058m head=99deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=8.881m head=118deg gait=False
+    C2 v12_fit106       FAIL surv=11.6s fwd=0.762m head=14deg gait=False
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.591m head=57deg gait=False
+    C4 v12_fit86        FAIL surv=11.7s fwd=0.047m head=132deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y+3mm from (5.2,-22.8) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=12.111m head=68deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=8.131m head=133deg gait=False
+    C2 v12_fit106       FAIL surv=11.3s fwd=1.234m head=20deg gait=False
+    C3 v12_fit96        FAIL surv=4.6s fwd=0.456m head=63deg gait=False
+    C4 v12_fit86        FAIL surv=8.9s fwd=-0.190m head=153deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y-3mm from (5.2,-22.8) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=9.672m head=162deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=5.909m head=119deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=3.210m head=165deg gait=True
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.591m head=56deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=-0.643m head=88deg gait=True
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross x+3mm from (5.2,-30.0) mm
+    C0 v12_fit284       FAIL surv=9.9s fwd=1.568m head=47deg gait=False
+    C1 v12_fit156       FAIL surv=8.1s fwd=0.055m head=6deg gait=False
+    C2 v12_fit106       TURN surv=30.0s fwd=1.819m head=81deg gait=True
+    C3 v12_fit96        OK   surv=30.0s fwd=1.464m head=47deg gait=True
+    C4 v12_fit86        FAIL surv=10.8s fwd=-0.039m head=131deg gait=False
+    occupancy=1/5 E[fwd]=0.293m
+
+  cross x-3mm from (5.2,-30.0) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=2.358m head=102deg gait=False
+    C1 v12_fit156       TURN surv=30.0s fwd=3.959m head=90deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=2.110m head=175deg gait=True
+    C3 v12_fit96        FAIL surv=4.4s fwd=0.652m head=47deg gait=False
+    C4 v12_fit86        FAIL surv=5.1s fwd=0.604m head=43deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+
+  cross y+3mm from (5.2,-30.0) mm
+    C0 v12_fit284       TURN surv=30.0s fwd=7.340m head=141deg gait=False
+    C1 v12_fit156       OK   surv=30.0s fwd=3.574m head=53deg gait=True
+    C2 v12_fit106       TURN surv=30.0s fwd=3.100m head=175deg gait=True
+    C3 v12_fit96        FAIL surv=4.5s fwd=0.597m head=52deg gait=False
+    C4 v12_fit86        TURN surv=30.0s fwd=-1.256m head=67deg gait=True
+    occupancy=1/5 E[fwd]=0.715m
+
+  cross y-3mm from (5.2,-30.0) mm
+    C0 v12_fit284       FAIL surv=4.5s fwd=-0.666m head=111deg gait=False
+    C1 v12_fit156       FAIL surv=4.4s fwd=-0.845m head=96deg gait=False
+    C2 v12_fit106       FAIL surv=4.7s fwd=-0.695m head=123deg gait=False
+    C3 v12_fit96        TURN surv=30.0s fwd=3.945m head=162deg gait=True
+    C4 v12_fit86        FAIL surv=9.5s fwd=2.408m head=164deg gait=False
+    occupancy=0/5 E[fwd]=0.000m
+  saved catalog controller es_amp48.94_kp29.21_kd8.10_sam1.28_sfm1.96.json
+  saved catalog controller es_amp46.68_kp35.19_kd9.79_sam1.62_sfm2.32.json
+  saved catalog controller es_amp41.25_kp33.21_kd8.46_sam1.53_sfm1.89.json
+  saved catalog controller es_amp36.96_kp43.13_kd7.97_sam1.94_sfm1.15.json
+  saved catalog controller es_amp29.49_kp78.21_kd7.69_sam2.02_sfm1.43.json
+
+Saved trials to data/es/offset_control_grid_v12_trials.csv
+Saved summary to data/es/offset_control_grid_v12_summary.json
+Saved plot to data/es/offset_control_grid_v12.png
