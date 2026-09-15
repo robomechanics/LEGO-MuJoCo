@@ -38,7 +38,7 @@ ACTUAL_AXIS_VALUE_COLUMNS = {
 
 COLORBAR_METRICS = {
     "distance": ("Distance_Traversed", "Distance Traversed (m)"),
-    "velocity": ("Instantaneous_Forward_Velocity", "Instantaneous Forward Velocity (m/s)"),
+    "velocity": ("Average_Distance_Velocity", "Average Distance Velocity (m/s)"),
     "roll": ("Average_Abs_Roll_Deg", "Average Absolute Roll (deg)"),
     "pitch": ("Average_Abs_Pitch_Deg", "Average Absolute Pitch (deg)"),
 }
@@ -244,13 +244,11 @@ def row_instantaneous_forward_velocity(row: dict) -> float:
     motion_time = finite_row_value(row, "Motion_Time")
     if not math.isfinite(progress) or not math.isfinite(motion_time) or motion_time <= 1e-9:
         return float("nan")
-    return progress / motion_time
+    return progress# / motion_time
 
 
 def row_colorbar_value(row: dict, colorbar_metric: str) -> float:
     column, _label = COLORBAR_METRICS[colorbar_metric]
-    if colorbar_metric == "velocity":
-        return row_instantaneous_forward_velocity(row)
     try:
         value = float(row[column])
     except (KeyError, TypeError, ValueError):

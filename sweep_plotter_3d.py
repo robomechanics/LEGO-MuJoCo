@@ -56,7 +56,7 @@ METRIC_OPTIONS: tuple[MetricOption, ...] = (
     MetricOption("forward_progress", "Instantaneous Forward Progress", ("Instantaneous_Forward_Progress",)),
     MetricOption("forward_absolute", "Instantaneous Forward Absolute", ("Instantaneous_Forward_Absolute",)),
     MetricOption("lateral_progress", "Instantaneous Lateral Progress", ("Instantaneous_Lateral_Progress",)),
-    MetricOption("velocity", "Instantaneous Forward Velocity (m/s)", (), derived="velocity"),
+    MetricOption("velocity", "Average Distance Velocity (m/s)", ("Average_Distance_Velocity",)),
     MetricOption("roll", "Average Absolute Roll (deg)", ("Average_Abs_Roll_Deg",)),
     MetricOption("pitch", "Average Absolute Pitch (deg)", ("Average_Abs_Pitch_Deg",)),
     MetricOption("path_length", "Path Length", ("Path_Length",)),
@@ -140,8 +140,6 @@ def metric_column(fieldnames: list[str], option: MetricOption) -> str | None:
 
 
 def derived_metric_available(fieldnames: list[str], option: MetricOption) -> bool:
-    if option.derived == "velocity":
-        return {"Instantaneous_Forward_Progress", "Motion_Time"} <= set(fieldnames)
     return False
 
 
@@ -159,6 +157,8 @@ class SweepPlotter3DApp:
         self.z_var = tk.StringVar()
         self.color_var = tk.StringVar()
         self.min_distance_var = tk.StringVar(value=str(default_success_min_distance()))
+        self.show_stems_var = tk.BooleanVar(value=False)
+        self.show_failures_var = tk.BooleanVar(value=True)
 
         self.rows: list[dict[str, str]] = []
         self.fieldnames: list[str] = []
@@ -210,6 +210,18 @@ class SweepPlotter3DApp:
         min_distance_entry.bind("<Return>", self._selection_changed)
         ttk.Button(controls, text="Redraw", command=self.redraw).grid(row=2, column=2, padx=(12, 0), pady=(10, 0))
         ttk.Button(controls, text="Save PNG", command=self.save_png).grid(row=2, column=3, padx=(12, 0), pady=(10, 0))
+        ttk.Checkbutton(
+            controls,
+            text="Z guide lines",
+            variable=self.show_stems_var,
+            command=self.redraw,
+        ).grid(row=2, column=4, padx=(12, 0), pady=(10, 0), sticky="w")
+        ttk.Checkbutton(
+            controls,
+            text="Show failures",
+            variable=self.show_failures_var,
+            command=self.redraw,
+        ).grid(row=2, column=5, padx=(12, 0), pady=(10, 0), sticky="w")
         ttk.Label(controls, textvariable=self.status_var).grid(
             row=3,
             column=0,
@@ -317,13 +329,6 @@ class SweepPlotter3DApp:
 
     def metric_values(self, label: str) -> tuple[np.ndarray, str]:
         option = self.metric_by_label[label]
-        if option.derived == "velocity":
-            values = np.array(
-                [row_instantaneous_forward_velocity(row) for row in self.rows],
-                dtype=float,
-            )
-            return values, option.label
-
         column = self.column_by_label[label]
         values = np.array([safe_float(row.get(column)) for row in self.rows], dtype=float)
         if option.percent_axis is not None:
@@ -380,18 +385,20 @@ class SweepPlotter3DApp:
         finite_xyz = np.isfinite(x_values) & np.isfinite(y_values) & np.isfinite(z_values)
         failed_mask = finite_xyz & ~successes
         success_mask = finite_xyz & successes
+        z_limits = nice_limits(z_values[finite_xyz])
 
-        self.ax.scatter(
-            x_values[failed_mask],
-            y_values[failed_mask],
-            z_values[failed_mask],
-            c="#bdbdbd",
-            marker="x",
-            s=10,
-            alpha=0.25,
-            linewidths=0.7,
-            label="Failed",
-        )
+        if self.show_failures_var.get():
+            self.ax.scatter(
+                x_values[failed_mask],
+                y_values[failed_mask],
+                z_values[failed_mask],
+                c="#6f6f6f",
+                marker="x",
+                s=12,
+                alpha=0.35,
+                linewidths=0.8,
+                label="Failed",
+            )
 
         if color_label:
             color_mask = success_mask & np.isfinite(color_values)
@@ -425,12 +432,28 @@ class SweepPlotter3DApp:
             )
             plotted_successes = int(success_mask.sum())
 
+        if self.show_stems_var.get() and success_mask.any():
+            stem_mask = success_mask
+            if color_label:
+                stem_mask = stem_mask & np.isfinite(color_values)
+            z_floor = z_limits[0]
+            for x_value, y_value, z_value in zip(x_values[stem_mask], y_values[stem_mask], z_values[stem_mask]):
+                self.ax.plot(
+                    [x_value, x_value],
+                    [y_value, y_value],
+                    [z_floor, z_value],
+                    color="#4f4f4f",
+                    alpha=0.25,
+                    linewidth=0.45,
+                    zorder=0,
+                )
+
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
         self.ax.set_zlabel(z_label)
         self.ax.set_xlim(*nice_limits(x_values[finite_xyz]))
         self.ax.set_ylim(*nice_limits(y_values[finite_xyz]))
-        self.ax.set_zlim(*nice_limits(z_values[finite_xyz]))
+        self.ax.set_zlim(*z_limits)
         self.ax.grid(True, alpha=0.25)
         self.ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1.0), borderaxespad=0.0)
         self.ax.set_title(f"{z_label} vs {y_label} vs {x_label} ({plotted_successes}/{len(self.rows)} successful)")

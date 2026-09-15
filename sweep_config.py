@@ -71,8 +71,8 @@ def scaled_values(base_value: float, percent_deltas: list[float]) -> list[float]
 
 
 SWEEP_RANGE_SPECS = {
-    "curve_x": {"mode": "scaled", "default": GEOMETRY_BASE["curve_x"], "low": -15.0, "high": 10.0, "count": 11},
-    "curve_y": {"mode": "scaled", "default": GEOMETRY_BASE["curve_y"], "low": -10.0, "high": 25.0, "count": 11},
+    "curve_x": {"mode": "scaled", "default": GEOMETRY_BASE["curve_x"], "low": -10.0, "high": 10.0, "count": 11},
+    "curve_y": {"mode": "scaled", "default": GEOMETRY_BASE["curve_y"], "low": -10.0, "high": 10.0, "count": 11},
     "curve_z": {"mode": "scaled", "default": GEOMETRY_BASE["curve_z"], "low": -30.0, "high": 30.0, "count": 11},
     "box_x": {"mode": "scaled", "default": GEOMETRY_BASE["box_x"], "low": -30.0, "high": 80.0, "count": 11},
     "box_y": {"mode": "scaled", "default": GEOMETRY_BASE["box_y"], "low": -30.0, "high": 80.0, "count": 11},
@@ -101,7 +101,7 @@ SWEEP_VALUES = {
 }
 
 # Pick the active geometry sweep axes here. Any non-empty subset is valid.
-SWEEP_AXES = ("curve_x", "box_x")
+SWEEP_AXES = ("curve_x", "curve_y")
 
 RUNS_PER_POINT = 1
 RUNS_PER_PAIR = RUNS_PER_POINT  # Backward-compatible alias.
@@ -115,7 +115,7 @@ MAX_WORKERS = 12
 TRIAL_WORKERS_PER_PAIR = None
 
 OUTPUT_XML = "modified_model.xml"
-FOLDER_NAME = "cxbx0"
+FOLDER_NAME = "cxcy1"
 SWEEP_DIR = f"data/sweeps/{FOLDER_NAME}"
 RESULTS_CSV = f"{SWEEP_DIR}/sweep_results.csv"
 GEOMETRY_CACHE_DIR = f"{SWEEP_DIR}/meshes"
@@ -123,7 +123,7 @@ SAVE_MESH_CACHE = False
 WRITE_FINAL_XML_SNAPSHOT = False
 PLOT_RESULTS_AT_END = True
 PLOT_RESULTS_PATH = f"{SWEEP_DIR}/sweep_results_plot.png"
-PLOT_COLORBAR = "pitch"  # Options: "distance", "velocity", "roll", "pitch".
+PLOT_COLORBAR = "velocity"  # Options: "distance", "velocity", "roll", "pitch".
 PREVIEW_FIRST_TRIAL = False
 OVERWRITE_RESULTS_CSV = True
 
@@ -153,12 +153,12 @@ NORMAL_TRIAL_DISTRIBUTIONS = {
                 "std": 0.02,
                 "min": 0.5*GEOMETRY_BASE["curve_x"],
                 "max": 1.5*GEOMETRY_BASE["curve_x"]},
-    "curve_y": {"use": False,
+    "curve_y": {"use": True,
                 "mean": GEOMETRY_BASE["curve_y"],
                 "std": 0.025,
                 "min": 0.5*GEOMETRY_BASE["curve_y"],
                 "max": 1.5*GEOMETRY_BASE["curve_y"]},
-    "box_x": {"use": True,
+    "box_x": {"use": False,
               "mean": GEOMETRY_BASE["box_x"],
               "std": 0.02,
               "min": 0.5*GEOMETRY_BASE["box_x"],
