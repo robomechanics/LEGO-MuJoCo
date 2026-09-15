@@ -64,6 +64,7 @@ PLOT_TYPES = ("Scatter", "Hexbin", "2D Histogram")
 
 def default_csv_path() -> Path:
     candidates = (
+        Path("data/sweeps/grid_7x6/sweep_results.csv"),
         Path("sweep_results_v2_2000.csv"),
         Path("sweep_results.csv"),
         Path("xy_sweep_results.csv"),

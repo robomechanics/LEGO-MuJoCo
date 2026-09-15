@@ -10,19 +10,24 @@ import itertools
 import json
 import os
 import tempfile
+import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import mujoco.viewer
 
-import gen_new_xml_v2 as mesh_gen
+import gen_new_xml_v3 as mesh_gen
+import plot_sweep_results
 import test_sim_sweep as sim_sweep
 import sweep_config as config
 
 ROOT_DIR = Path(__file__).resolve().parent
 mesh_gen.VERBOSE = False
-PREVIEW_FIRST_TRIAL = False
-PREVIEW_TRIAL_DURATION = 20.0
+PREVIEW_FIRST_TRIAL = bool(getattr(config, "PREVIEW_FIRST_TRIAL", False))
+PREVIEW_TRIAL_DURATION = float(getattr(config, "PREVIEW_TRIAL_DURATION", 20.0))
+CACHE_LOCK_TIMEOUT_S = 15.0
+CACHE_LOCK_POLL_S = 0.25
+CACHE_LOCK_WARN_AFTER_S = 3.0
 
 
 def vprint(*args, **kwargs) -> None:
@@ -38,48 +43,122 @@ def resolve_geometry(overrides: dict[str, float] | None = None) -> dict[str, flo
 
 
 def generate_modified_xml(geometry: dict[str, float], output_xml: Path, out_dir: Path) -> None:
-    scad_file = Path(mesh_gen.SCAD_DIR) / "shell_feet_generator.scad"
-
-    # Public geometry convention: +x forward, +y robot-left/lateral.
-    # The OpenSCAD local X axis is the front/back slicing axis, so pass the
-    # sweep geometry through directly.
-    sections = mesh_gen.generate_full_feet(
-        scad_file,
-        out_dir,
-        geometry["curve_x"],
-        geometry["curve_y"],
-        mesh_gen.Z,
-        geometry["box_x"],
-        geometry["box_y"],
-        mesh_gen.FN,
-        shell_thickness=mesh_gen.WALL_THICKNESS,
+    sections = mesh_gen.generate_feet(
+        scad_file=Path(mesh_gen.DEFAULT_SCAD_FILE),
+        out_dir=out_dir,
+        curve_x=geometry["curve_x"],
+        curve_y=geometry["curve_y"],
+        curve_z=geometry.get("curve_z", mesh_gen.DEFAULT_CURVE_Z),
+        box_x=geometry["box_x"],
+        box_y=geometry["box_y"],
+        box_z=geometry.get("box_z", mesh_gen.DEFAULT_BOX_Z),
+        fn=mesh_gen.DEFAULT_FN,
     )
 
-    mesh_gen.inject_feet_into_model(
-        Path(mesh_gen.ENTRY_XML),
-        sections,
-        output_xml,
-        left_correction=mesh_gen.parse_correction_string(mesh_gen.LEFT_CORRECTION),
-        right_correction=mesh_gen.parse_correction_string(mesh_gen.RIGHT_CORRECTION),
-        left_offset=mesh_gen.LEFT_OFFSET,
-        right_offset=mesh_gen.RIGHT_OFFSET,
-        offset_frame=mesh_gen.OFFSET_FRAME,
+    mesh_gen.inject_feet_preserving_dynamics(
+        entry_xml=Path(mesh_gen.DEFAULT_ENTRY_XML),
+        sections=sections,
+        output_xml=output_xml,
     )
 
 
 def cached_modified_xml(geometry: dict[str, float], cache_root: Path) -> Path:
     """Reuse each mesh shape across offset/actuation trials, including workers."""
-    shape = {key: geometry[key] for key in ("curve_x", "curve_y", "box_x", "box_y")}
+    shape = {
+        key: geometry.get(key)
+        for key in ("curve_x", "curve_y", "curve_z", "box_x", "box_y", "box_z")
+    }
     key = hashlib.sha256(json.dumps(shape, sort_keys=True).encode()).hexdigest()[:20]
     directory = cache_root / key
     directory.mkdir(parents=True, exist_ok=True)
     output_xml = directory / "modified_model.xml"
     with (directory / "build.lock").open("w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+        start = time.monotonic()
+        warned = False
+        while True:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError as exc:
+                elapsed = time.monotonic() - start
+                if not warned and elapsed >= CACHE_LOCK_WARN_AFTER_S:
+                    print(
+                        f"Waiting for geometry cache lock {directory / 'build.lock'} "
+                        f"({elapsed:.1f}s elapsed)...",
+                        flush=True,
+                    )
+                    warned = True
+                if elapsed >= CACHE_LOCK_TIMEOUT_S:
+                    raise TimeoutError(
+                        f"Timed out after {elapsed:.1f}s waiting for geometry cache lock "
+                        f"{directory / 'build.lock'}. Another run_sweep process may still be "
+                        "generating this mesh, or a previous run may have been interrupted "
+                        "while holding the lock."
+                    ) from exc
+                time.sleep(CACHE_LOCK_POLL_S)
         if not (directory / "ready").exists():
             generate_modified_xml(geometry, output_xml, directory / "feet")
             (directory / "ready").touch()
     return output_xml
+
+
+def active_normal_distributions(distributions: dict) -> dict:
+    return {
+        name: spec
+        for name, spec in distributions.items()
+        if spec.get("use", True)
+    }
+
+
+def recenter_swept_distributions(
+    distributions: dict,
+    point_values: dict,
+    axes: tuple[str, ...],
+) -> dict:
+    recentered = {}
+    for name, spec in distributions.items():
+        next_spec = dict(spec)
+        if name in axes and name in point_values and "mean" in next_spec:
+            old_mean = float(next_spec["mean"])
+            new_mean = float(point_values[name])
+            mean_delta = new_mean - old_mean
+            next_spec["mean"] = new_mean
+            if "min" in next_spec:
+                next_spec["min"] = float(next_spec["min"]) + mean_delta
+            if "max" in next_spec:
+                next_spec["max"] = float(next_spec["max"]) + mean_delta
+        recentered[name] = next_spec
+    return recentered
+
+
+def sampled_geometry(base_geometry: dict[str, float], parameter_row: dict) -> dict[str, float]:
+    geometry = dict(base_geometry)
+    for axis_name in config.GEOMETRY_SHAPE_SWEEP_AXES:
+        if axis_name in parameter_row:
+            geometry[axis_name] = float(parameter_row[axis_name])
+    return geometry
+
+
+def geometry_group_key(geometry: dict[str, float]) -> str:
+    shape = {
+        key: geometry.get(key)
+        for key in ("curve_x", "curve_y", "curve_z", "box_x", "box_y", "box_z")
+    }
+    return json.dumps(shape, sort_keys=True)
+
+
+def group_parameter_rows_by_geometry(
+    base_geometry: dict[str, float],
+    parameter_rows: list[dict],
+) -> list[tuple[dict[str, float], list[dict]]]:
+    groups: dict[str, tuple[dict[str, float], list[dict]]] = {}
+    for row in parameter_rows:
+        geometry = sampled_geometry(base_geometry, row)
+        key = geometry_group_key(geometry)
+        if key not in groups:
+            groups[key] = (geometry, [])
+        groups[key][1].append(row)
+    return list(groups.values())
 
 
 def build_jobs() -> list[dict]:
@@ -112,7 +191,7 @@ def build_jobs() -> list[dict]:
             if axis_name in trial_axes
         }
         geometry = resolve_geometry(geometry_overrides)
-        # Foot offsets are applied once by the simulator, to both geoms and CoM.
+        # Foot offsets are applied once by the simulator to the foot geoms.
         # Include unswept defaults too, so placement stays defined by GEOMETRY_BASE.
         trial_overrides.update({
             axis_name: geometry[axis_name]
@@ -225,13 +304,53 @@ def append_rows(rows: list[dict], results_csv: Path) -> int:
     if not rows:
         return 0
 
+    previous_line_count = 0
+    if results_csv.exists():
+        with results_csv.open(newline="") as handle:
+            previous_line_count = sum(1 for _ in handle)
     write_header = not results_csv.exists() or results_csv.stat().st_size == 0
     with results_csv.open("a", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
         if write_header:
             writer.writeheader()
         writer.writerows(rows)
+        handle.flush()
+        os.fsync(handle.fileno())
+    with results_csv.open(newline="") as handle:
+        new_line_count = sum(1 for _ in handle)
+    expected_new_lines = len(rows) + (1 if write_header else 0)
+    actual_new_lines = new_line_count - previous_line_count
+    if actual_new_lines != expected_new_lines:
+        raise RuntimeError(
+            f"CSV append verification failed for {results_csv}: expected "
+            f"{expected_new_lines} new line(s), found {actual_new_lines}."
+        )
     return len(rows)
+
+
+def plot_results_if_enabled(results_csv: Path) -> None:
+    if not getattr(config, "PLOT_RESULTS_AT_END", False):
+        return
+    output_path = Path(
+        getattr(
+            config,
+            "PLOT_RESULTS_PATH",
+            Path(getattr(config, "SWEEP_DIR", results_csv.parent)) / "sweep_results_plot.png",
+        )
+    ).resolve()
+    rows = plot_sweep_results.load_rows(results_csv)
+    axis_spec = plot_sweep_results.resolve_sweep_axes(rows, list(rows[0].keys()))
+    active_axes, ignored_axes = plot_sweep_results.resolve_active_axes(axis_spec.axis_names, [])
+    rows = plot_sweep_results.filter_default_axis_values(rows, axis_spec, ignored_axes)
+    plot_sweep_results.plot_scatter(
+        rows=rows,
+        axis_spec=axis_spec,
+        active_axes=active_axes,
+        min_distance=plot_sweep_results.default_success_min_distance(),
+        output_path=output_path,
+        colorbar_metric=getattr(config, "PLOT_COLORBAR", "distance"),
+    )
+    vprint(f"Wrote sweep plot to: {output_path}")
 
 
 def split_parameter_rows(parameter_rows: list[dict], chunk_count: int) -> list[tuple[int, list[dict]]]:
@@ -294,15 +413,22 @@ def run_trial_chunks(
     return results
 
 
-def build_metadata(job: dict, run_index: int, num_trials: int) -> dict[str, str]:
-    geometry = job["geometry"]
+def build_metadata(
+    job: dict,
+    run_index: int,
+    num_trials: int,
+    geometry_override: dict[str, float] | None = None,
+) -> dict[str, str]:
+    geometry = geometry_override or job["geometry"]
     return {
         **generic_axis_metadata(job),
         **legacy_axis_metadata(job),
         "Curve_X": str(geometry["curve_x"]),
         "Curve_Y": str(geometry["curve_y"]),
+        "Curve_Z": str(geometry.get("curve_z", mesh_gen.DEFAULT_CURVE_Z)),
         "Box_X": str(geometry["box_x"]),
         "Box_Y": str(geometry["box_y"]),
+        "Box_Z": str(geometry.get("box_z", mesh_gen.DEFAULT_BOX_Z)),
         "Sweep_Trial_Overrides_JSON": json_dumps_compact(job["trial_overrides"]),
         "Mesh_X": str(geometry["curve_x"]),
         "Mesh_Y": str(geometry["curve_y"]),
@@ -314,8 +440,8 @@ def build_metadata(job: dict, run_index: int, num_trials: int) -> dict[str, str]
         "Trials_Per_Point": str(num_trials),
         "Trials_Per_Pair": str(num_trials),
         "Mesh_Generator": mesh_gen.__name__,
-        "Mesh_Generator_Entry_XML": str(mesh_gen.ENTRY_XML),
-        "Mesh_Generator_SCAD": str(Path(mesh_gen.SCAD_DIR) / "shell_feet_generator.scad"),
+        "Mesh_Generator_Entry_XML": str(mesh_gen.DEFAULT_ENTRY_XML),
+        "Mesh_Generator_SCAD": str(mesh_gen.DEFAULT_SCAD_FILE),
     }
 
 
@@ -331,45 +457,58 @@ def process_point(
 
     with tempfile.TemporaryDirectory(prefix=f"geometry_sweep_point_{job['point_index']:03d}_") as temp_dir:
         temp_path = Path(temp_dir)
-        output_xml = temp_path / "modified_model.xml"
-        mesh_out_dir = temp_path / "foot_section_out"
-
-        try:
-            cache_root = getattr(config, "GEOMETRY_CACHE_DIR", None)
-            if cache_root:
-                output_xml = cached_modified_xml(geometry, Path(cache_root).resolve())
-            else:
-                generate_modified_xml(geometry, output_xml, mesh_out_dir)
-        except (ValueError, RuntimeError) as exc:
-            return {
-                "point_index": job["point_index"],
-                "pair_index": job["pair_index"],
-                "axes": job["axes"],
-                "axis_values": job["axis_values"],
-                "rows": [],
-                "skipped": True,
-                "skip_reason": str(exc),
-            }
-
         rows: list[dict] = []
         runs_per_point = getattr(config, "RUNS_PER_POINT", getattr(config, "RUNS_PER_PAIR", 1))
         for run_index in range(1, runs_per_point + 1):
             point_fixed_params = {**fixed_params, **job["trial_overrides"]}
+            point_values = {**point_fixed_params, **job["geometry"], **job["axis_values"]}
+            point_distributions = recenter_swept_distributions(
+                normal_distributions,
+                point_values,
+                job["axes"],
+            )
             parameter_rows = sim_sweep.generate_parameter_samples(
                 num_trials,
                 fixed_params=point_fixed_params,
-                normal_distributions=normal_distributions,
+                normal_distributions=point_distributions,
             )
-            metadata = build_metadata(job, run_index, num_trials)
-            rows.extend(
-                run_trial_chunks(
-                    model_xml_path=output_xml,
-                    parameter_rows=parameter_rows,
-                    save_all_results=save_all_results,
-                    metadata=metadata,
-                    trial_workers=trial_workers,
+            for group_index, (trial_geometry, group_rows) in enumerate(
+                group_parameter_rows_by_geometry(geometry, parameter_rows),
+                start=1,
+            ):
+                output_xml = temp_path / f"modified_model_run{run_index}_group{group_index}.xml"
+                mesh_out_dir = temp_path / f"foot_section_out_run{run_index}_group{group_index}"
+                try:
+                    cache_root = (
+                        getattr(config, "GEOMETRY_CACHE_DIR", None)
+                        if getattr(config, "SAVE_MESH_CACHE", True)
+                        else None
+                    )
+                    if cache_root:
+                        output_xml = cached_modified_xml(trial_geometry, Path(cache_root).resolve())
+                    else:
+                        generate_modified_xml(trial_geometry, output_xml, mesh_out_dir)
+                except (ValueError, RuntimeError, TimeoutError) as exc:
+                    return {
+                        "point_index": job["point_index"],
+                        "pair_index": job["pair_index"],
+                        "axes": job["axes"],
+                        "axis_values": job["axis_values"],
+                        "rows": [],
+                        "skipped": True,
+                        "skip_reason": str(exc),
+                    }
+
+                metadata = build_metadata(job, run_index, num_trials, trial_geometry)
+                rows.extend(
+                    run_trial_chunks(
+                        model_xml_path=output_xml,
+                        parameter_rows=group_rows,
+                        save_all_results=save_all_results,
+                        metadata=metadata,
+                        trial_workers=trial_workers,
+                    )
                 )
-            )
 
         return {
             "point_index": job["point_index"],
@@ -426,8 +565,9 @@ def preview_first_trial(
         output_xml = temp_path / "modified_model.xml"
         mesh_out_dir = temp_path / "foot_section_out"
 
-        generate_modified_xml(job["geometry"], output_xml, mesh_out_dir)
         first_params = center_trial_params(job, fixed_params, normal_distributions)
+        preview_geometry = sampled_geometry(job["geometry"], first_params)
+        generate_modified_xml(preview_geometry, output_xml, mesh_out_dir)
         vprint(
             "Previewing center sweep trial before multiprocessing starts. "
             f"Point {job['point_index']} ({format_axis_values(job['axis_values'])}), "
@@ -442,7 +582,7 @@ def preview_first_trial(
                 verbose=True,
                 viewer=viewer,
                 iteration_duration=PREVIEW_TRIAL_DURATION,
-                stop_on_fall=False,
+                stop_on_fall=True,
             )
 
 
@@ -463,13 +603,10 @@ def main() -> None:
     num_trials = config.trials_for_axes(axes)
     save_all_results = True
     fixed_params = dict(config.FIXED_TRIAL_PARAMS)
-    normal_distributions = dict(config.NORMAL_TRIAL_DISTRIBUTIONS)
+    normal_distributions = active_normal_distributions(dict(config.NORMAL_TRIAL_DISTRIBUTIONS))
 
     if not config.USE_RAMPED_START:
         normal_distributions.pop("ramp_time", None)
-    for axis_name in axes:
-        normal_distributions.pop(axis_name, None)
-
     vprint(
         f"Starting geometry sweep on {axis_label_for_logs(axes)}: "
         f"{' x '.join(str(len(config.SWEEP_VALUES[axis_name])) for axis_name in axes)} grid, "
@@ -517,7 +654,7 @@ def main() -> None:
             job = future_to_job[future]
             try:
                 result = future.result()
-            except (RuntimeError, ValueError) as exc:
+            except (RuntimeError, ValueError, TimeoutError) as exc:
                 result = {"skipped": True, "skip_reason": str(exc)}
             completed_points += 1
             if result.get("skipped"):
@@ -543,13 +680,15 @@ def main() -> None:
                 f"gait passes={passed_trials}, nonfallen={nonfallen_trials}/{merged_rows}"
             )
 
-    if last_successful_job is not None:
+    if last_successful_job is not None and getattr(config, "WRITE_FINAL_XML_SNAPSHOT", True):
         last_geometry = last_successful_job["geometry"]
         vprint(
             "Writing final XML snapshot for the last successful grid point "
             f"({format_axis_values(last_successful_job['axis_values'])}) to {output_xml}"
         )
-        generate_modified_xml(last_geometry, output_xml, Path(mesh_gen.OUT_DIR).resolve())
+        generate_modified_xml(last_geometry, output_xml, Path(mesh_gen.DEFAULT_OUT_DIR).resolve())
+    elif last_successful_job is not None:
+        vprint("Skipping final XML snapshot because WRITE_FINAL_XML_SNAPSHOT is disabled.")
     else:
         vprint("No valid geometry points were generated; final XML snapshot was not written.")
 
@@ -557,6 +696,8 @@ def main() -> None:
         f"\nDone. Combined results are in {results_csv} ({merged_rows} row(s)); "
         f"skipped {skipped_points}/{total_points} invalid geometry point(s)."
     )
+    if merged_rows:
+        plot_results_if_enabled(results_csv)
 
 
 if __name__ == "__main__":

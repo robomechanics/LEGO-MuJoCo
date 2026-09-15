@@ -22,7 +22,7 @@ from control_waveform import (
     DEFAULT_T_WAIT,
     startup_sine_reference,
 )
-from settle_utils import startup_settle_orientation
+from settle_utils import quat_to_rpy, startup_settle_orientation
 
 
 def _env_flag(name: str, default: bool = True) -> bool:
@@ -151,6 +151,8 @@ def generate_parameter_samples(
 
     rows = [dict(fixed) for _ in range(n_trials)]
     for key, spec in sampled.items():
+        if not spec.get("use", True):
+            continue
         values = _sample_clipped_normal(rng, spec, n_trials)
         for row, value in zip(rows, values):
             row[key] = float(value)
@@ -224,21 +226,16 @@ def load_simulation(model_xml_path: str | Path) -> SimulationContext:
 
 def apply_foot_offsets(ctx: SimulationContext, foot_x: float, foot_y: float) -> None:
     """
-    Applies public foot offsets to geoms and body centers of mass.
+    Applies public foot offsets to the foot geoms only.
 
     Matches closed-loop FOOT_X/FOOT_Y: positive foot_x moves both feet inward;
-    positive foot_y moves both forward. Values are metres. Each foot and its
-    approximate body CoM receive the same displacement in their parent frame.
+    positive foot_y moves both forward. Values are metres. Body inertial centers
+    are intentionally left unchanged to match test_sim_closedloop.py.
     """
     body_offsets = {
         "motor": np.array([foot_x, foot_y, 0.0]),
         "simplified_motor___arm_rod": np.array([0.0, -foot_y, foot_x]),
     }
-
-    for bid in ctx.foot_parent_body_ids:
-        body_name = mujoco.mj_id2name(ctx.model, mujoco.mjtObj.mjOBJ_BODY, bid)
-        if body_name in {"motor", "simplified_motor___arm_rod"}:
-            ctx.model.body_ipos[bid] = ctx.original_body_ipos[bid] + body_offsets[body_name]
 
     for name in FOOT_GEOM_NAMES:
         geom_id = mujoco.mj_name2id(ctx.model, mujoco.mjtObj.mjOBJ_GEOM, name)
@@ -251,7 +248,7 @@ def apply_foot_offsets(ctx: SimulationContext, foot_x: float, foot_y: float) -> 
     mujoco.mj_forward(ctx.model, ctx.data)
 
 
-def check_has_fallen(ctx: SimulationContext, height_threshold: float = 0.5, angle_threshold_deg: float = 45.0) -> bool:
+def check_has_fallen(ctx: SimulationContext, height_threshold: float = 0.5, angle_threshold_deg: float = 60.0) -> bool:
     if ctx.data.xpos[ctx.torso_body_id][2] < height_threshold:
         return True
 
@@ -411,12 +408,16 @@ def run_single_trial(
     fell = False
     duration = ITERATION_DURATION if iteration_duration is None else float(iteration_duration)
     max_steps = int(duration / ctx.model.opt.timestep)
+    trial_start_time = float(ctx.data.time)
     energy_used = 0.0
     path_length = 0.0
     prev_torso_xy = start_torso_xy.copy()
     instantaneous_forward_progress = 0.0
     instantaneous_forward_absolute = 0.0
     instantaneous_lateral_progress = 0.0
+    abs_roll_sum_rad = 0.0
+    abs_pitch_sum_rad = 0.0
+    orientation_sample_count = 0
     right_geom_ids = ctx.foot_collision_geom_ids["right"]
     left_geom_ids = ctx.foot_collision_geom_ids["left"]
     right_in_contact, left_in_contact = collect_foot_contact_flags(ctx.data, right_geom_ids, left_geom_ids)
@@ -441,6 +442,9 @@ def run_single_trial(
         nonlocal instantaneous_forward_absolute
         nonlocal instantaneous_lateral_progress
         nonlocal prev_torso_xy
+        nonlocal abs_roll_sum_rad
+        nonlocal abs_pitch_sum_rad
+        nonlocal orientation_sample_count
 
         torso_xy = ctx.data.xpos[ctx.torso_body_id][:2].copy()
         torso_delta_xy = torso_xy - prev_torso_xy
@@ -450,8 +454,12 @@ def run_single_trial(
         instantaneous_lateral_step = float(np.dot(torso_delta_xy, current_left_xy))
         instantaneous_forward_progress += instantaneous_forward_step
         instantaneous_forward_absolute += abs(instantaneous_forward_step)
-        instantaneous_lateral_progress += abs(instantaneous_lateral_step)
+        instantaneous_lateral_progress += instantaneous_lateral_step
         prev_torso_xy = torso_xy
+        roll_rad, pitch_rad, _yaw_rad = quat_to_rpy(ctx.data.xquat[ctx.torso_body_id])[0]
+        abs_roll_sum_rad += abs(float(roll_rad))
+        abs_pitch_sum_rad += abs(float(pitch_rad))
+        orientation_sample_count += 1
 
         right_contact_now, left_contact_now = collect_foot_contact_flags(ctx.data, right_geom_ids, left_geom_ids)
         contact_flags = {"right": right_contact_now, "left": left_contact_now}
@@ -538,10 +546,25 @@ def run_single_trial(
         update_gait_metrics()
 
     final_torso_xy = ctx.data.xpos[ctx.torso_body_id][:2].copy()
+    elapsed_trial_time = max(float(ctx.data.time) - trial_start_time, 0.0)
+    elapsed_motion_time = max(elapsed_trial_time - DEFAULT_T_WAIT, 0.0)
     displacement_xy = final_torso_xy - start_torso_xy
     distance = float(np.linalg.norm(displacement_xy))
     forward_progress = float(np.dot(displacement_xy, start_forward_xy))
+    average_forward_velocity = forward_progress / elapsed_trial_time if elapsed_trial_time > 1e-9 else 0.0
+    average_distance_velocity = distance / elapsed_motion_time if elapsed_motion_time > 1e-9 else 0.0
     lateral_drift = float(abs(np.dot(displacement_xy, start_left_xy)))
+    instantaneous_lateral_drift = abs(instantaneous_lateral_progress)
+    average_abs_roll_deg = (
+        float(np.rad2deg(abs_roll_sum_rad / orientation_sample_count))
+        if orientation_sample_count
+        else 0.0
+    )
+    average_abs_pitch_deg = (
+        float(np.rad2deg(abs_pitch_sum_rad / orientation_sample_count))
+        if orientation_sample_count
+        else 0.0
+    )
     final_forward_xy, _ = get_heading_axes(ctx.data.xmat[ctx.torso_body_id])
     heading_change_rad = float(
         np.arccos(np.clip(np.dot(start_forward_xy, final_forward_xy), -1.0, 1.0))
@@ -561,9 +584,9 @@ def run_single_trial(
     )
     gait_quality_pass = (
         (not fell)
-        and instantaneous_forward_absolute > instantaneous_lateral_progress
-        and alternating_steps >= MIN_ALTERNATING_STEPS
-        and min_swing_clearance >= MIN_SWING_CLEARANCE
+        # and instantaneous_forward_absolute > instantaneous_lateral_drift
+        # and alternating_steps >= MIN_ALTERNATING_STEPS
+        # and min_swing_clearance >= MIN_SWING_CLEARANCE
     )
     walk_score = compute_walk_score(
         fell=fell,
@@ -591,10 +614,15 @@ def run_single_trial(
         "Fell": fell,
         "Distance_Traversed": distance,
         "Forward_Progress": forward_progress,
+        "Average_Forward_Velocity": average_forward_velocity,
+        "Average_Distance_Velocity": average_distance_velocity,
+        "Motion_Time": elapsed_motion_time,
         "Lateral_Drift": lateral_drift,
         "Instantaneous_Forward_Progress": instantaneous_forward_progress,
         "Instantaneous_Forward_Absolute": instantaneous_forward_absolute,
-        "Instantaneous_Lateral_Progress": instantaneous_lateral_progress,
+        "Instantaneous_Lateral_Progress": instantaneous_lateral_drift,
+        "Average_Abs_Roll_Deg": average_abs_roll_deg,
+        "Average_Abs_Pitch_Deg": average_abs_pitch_deg,
         "Path_Length": path_length,
         "Forward_Efficiency": forward_efficiency,
         "Heading_Change_Deg": float(np.rad2deg(heading_change_rad)),

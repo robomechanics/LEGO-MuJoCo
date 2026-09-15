@@ -28,9 +28,12 @@ from sweep_axis_utils import (
 
 
 def default_input_csv() -> Path:
-    xy_csv = Path("xy_sweep_results.csv")
-    if xy_csv.exists():
-        return xy_csv
+    recent_sweep_csv = Path("data/sweeps/grid_7x6/sweep_results.csv")
+    if recent_sweep_csv.exists():
+        return recent_sweep_csv
+    legacy_xy_csv = Path("xy_sweep_results.csv")
+    if legacy_xy_csv.exists():
+        return legacy_xy_csv
     return Path("sweep_results.csv")
 
 

@@ -1,0 +1,16 @@
+# sweep instructions:
+
+here is the list of sweeps i want with details
+
+1. curve x and curve y, both with variance turned on, all other variances off. 75 trials per pairing. folder name cxcy. plot with velocity colorbar
+
+2. curve x and box x, both with variance turned on, all other variances off. 75 trials per pairing. folder name cxbx (can overwrite the folder). plot with pitch colorbar
+
+3. curve y and box y, both with variance turned on, all other variances off. 75 trials per pairing. folder name cyby (can overwrite the folder). plot with roll colorbar
+
+
+3d plot instructions: make a new file called sweep_plotter_3d.py that can make these plots.
+
+1. data from cxbx - plot curve x, box x, and pitch on z axis. make velocity the colorbar
+
+2. data from cyby - plot curve y, box y, and roll on z axis. make velocity the colorbar

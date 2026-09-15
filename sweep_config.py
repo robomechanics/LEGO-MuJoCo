@@ -8,8 +8,10 @@ Coordinate convention:
 Choose any number of sweep axes from:
     - "curve_x"
     - "curve_y"
+    - "curve_z"
     - "box_x"
     - "box_y"
+    - "box_z"
     - "foot_x" (metres, positive inward; matches closed-loop FOOT_X)
     - "foot_y" (metres, positive forward; matches closed-loop FOOT_Y)
     - "amp_deg"
@@ -34,15 +36,18 @@ from control_waveform import (
 )
 
 FOOT_OFFSET_SWEEP_AXES = ("foot_x", "foot_y")
-GEOMETRY_SWEEP_AXES = ("curve_x", "curve_y", "box_x", "box_y") + FOOT_OFFSET_SWEEP_AXES
+GEOMETRY_SHAPE_SWEEP_AXES = ("curve_x", "curve_y", "curve_z", "box_x", "box_y", "box_z")
+GEOMETRY_SWEEP_AXES = GEOMETRY_SHAPE_SWEEP_AXES + FOOT_OFFSET_SWEEP_AXES
 ACTUATION_SWEEP_AXES = ("amp_deg", "start_freq_mult")
 ALLOWED_SWEEP_AXES = GEOMETRY_SWEEP_AXES + ACTUATION_SWEEP_AXES
 
 GEOMETRY_BASE = {
-    "curve_x": 0.936,
-    "curve_y": 0.78,
+    "curve_x": 0.78,
+    "curve_y": 0.936,
+    "curve_z": 0.78,
     "box_x": 0.667,
     "box_y": 0.24,
+    "box_z": 0.1206,
     "foot_x": 0.004,
     "foot_y": -0.023,
 }
@@ -57,7 +62,7 @@ SWEEP_BASE = {
     **ACTUATION_BASE,
 }
 
-def linear_values(low: float, high: float, count: int = 10) -> list[float]:
+def linear_values(low: float, high: float, count: int = 11) -> list[float]:
     return [round(low + (high - low) * i / (count - 1), 9) for i in range(count)]
 
 
@@ -65,54 +70,44 @@ def scaled_values(base_value: float, percent_deltas: list[float]) -> list[float]
     return [round(base_value * (1.0 + pct / 100.0), 9) for pct in percent_deltas]
 
 
-PERCENT_DELTAS = linear_values(-30.0, 30.0)
-SWEEP_VALUES = {
-    axis_name: scaled_values(base_value, PERCENT_DELTAS)
-    for axis_name, base_value in SWEEP_BASE.items()
+SWEEP_RANGE_SPECS = {
+    "curve_x": {"mode": "scaled", "default": GEOMETRY_BASE["curve_x"], "low": -15.0, "high": 10.0, "count": 11},
+    "curve_y": {"mode": "scaled", "default": GEOMETRY_BASE["curve_y"], "low": -10.0, "high": 25.0, "count": 11},
+    "curve_z": {"mode": "scaled", "default": GEOMETRY_BASE["curve_z"], "low": -30.0, "high": 30.0, "count": 11},
+    "box_x": {"mode": "scaled", "default": GEOMETRY_BASE["box_x"], "low": -30.0, "high": 80.0, "count": 11},
+    "box_y": {"mode": "scaled", "default": GEOMETRY_BASE["box_y"], "low": -30.0, "high": 80.0, "count": 11},
+    "box_z": {"mode": "scaled", "default": GEOMETRY_BASE["box_z"], "low": -30.0, "high": 30.0, "count": 11},
+    "foot_x": {"mode": "linear", "low": -0.05, "high": 0.04, "count": 11},
+    "foot_y": {"mode": "linear", "low": -0.05, "high": 0.02, "count": 11},
+    "amp_deg": {"mode": "linear", "low": 35.0, "high": 50.0, "count": 11},
+    "start_freq_mult": {"mode": "linear", "low": 0.8, "high": 2.2, "count": 11},
 }
-SWEEP_VALUES.update({
-    "foot_x": linear_values(-0.05, 0.04),
-    "foot_y": linear_values(-0.05, 0.02),
-    "amp_deg": linear_values(35.0, 50.0),
-    "start_freq_mult": linear_values(0.8, 2.2),
-})
+
+
+def sweep_values_from_spec(spec: dict) -> list[float]:
+    mode = spec["mode"]
+    count = int(spec.get("count", 11))
+    if mode == "linear":
+        return linear_values(float(spec["low"]), float(spec["high"]), count)
+    if mode == "scaled":
+        percent_deltas = linear_values(float(spec["low"]), float(spec["high"]), count)
+        return scaled_values(float(spec["default"]), percent_deltas)
+    raise ValueError(f"Unsupported sweep range mode: {mode}")
+
+
+SWEEP_VALUES = {
+    axis_name: sweep_values_from_spec(spec)
+    for axis_name, spec in SWEEP_RANGE_SPECS.items()
+}
 
 # Pick the active geometry sweep axes here. Any non-empty subset is valid.
-SWEEP_AXES = ("foot_x", "foot_y", "curve_x", "curve_y", "amp_deg", "start_freq_mult")
+SWEEP_AXES = ("curve_x", "box_x")
 
 RUNS_PER_POINT = 1
 RUNS_PER_PAIR = RUNS_PER_POINT  # Backward-compatible alias.
-DEFAULT_TRIALS_PER_POINT = 1
+DEFAULT_TRIALS_PER_POINT = 75
 DEFAULT_TRIALS_PER_PAIR = DEFAULT_TRIALS_PER_POINT  # Backward-compatible alias.
-TRIALS_PER_AXIS_SET = {
-    ("foot_x", "foot_y"): 30,
-    ("curve_x",): 30,
-    ("curve_y",): 30,
-    ("box_x",): 30,
-    ("box_y",): 30,
-    ("amp_deg",): 30,
-    ("start_freq_mult",): 30,
-    ("curve_x", "curve_y"): 30,
-    ("curve_x", "box_x"): 3,
-    ("curve_x", "box_y"): 30,
-    ("curve_x", "amp_deg"): 30,
-    ("curve_x", "start_freq_mult"): 30,
-    ("curve_y", "box_x"): 30,
-    ("curve_y", "box_y"): 30,
-    ("curve_y", "amp_deg"): 30,
-    ("curve_y", "start_freq_mult"): 30,
-    ("box_x", "box_y"): 30,
-    ("box_x", "amp_deg"): 30,
-    ("box_x", "start_freq_mult"): 30,
-    ("box_y", "amp_deg"): 30,
-    ("box_y", "start_freq_mult"): 30,
-    ("amp_deg", "start_freq_mult"): 30,
-    ("curve_x", "curve_y", "box_x"): 30,
-    ("curve_x", "curve_y", "box_y"): 30,
-    ("curve_x", "box_x", "box_y"): 30,
-    ("curve_y", "box_x", "box_y"): 30,
-    ("curve_x", "curve_y", "box_x", "box_y"): 30,
-}
+TRIALS_PER_AXIS_SET = {}
 TRIALS_PER_PAIRING = TRIALS_PER_AXIS_SET  # Backward-compatible alias.
 
 RUNNER_VERBOSE = True
@@ -120,8 +115,16 @@ MAX_WORKERS = 12
 TRIAL_WORKERS_PER_PAIR = None
 
 OUTPUT_XML = "modified_model.xml"
-RESULTS_CSV = "data/sweeps/grid_7x6/sweep_results.csv"
-GEOMETRY_CACHE_DIR = "data/sweeps/grid_7x6/meshes"
+FOLDER_NAME = "cxbx0"
+SWEEP_DIR = f"data/sweeps/{FOLDER_NAME}"
+RESULTS_CSV = f"{SWEEP_DIR}/sweep_results.csv"
+GEOMETRY_CACHE_DIR = f"{SWEEP_DIR}/meshes"
+SAVE_MESH_CACHE = False
+WRITE_FINAL_XML_SNAPSHOT = False
+PLOT_RESULTS_AT_END = True
+PLOT_RESULTS_PATH = f"{SWEEP_DIR}/sweep_results_plot.png"
+PLOT_COLORBAR = "pitch"  # Options: "distance", "velocity", "roll", "pitch".
+PREVIEW_FIRST_TRIAL = False
 OVERWRITE_RESULTS_CSV = True
 
 # Fixed trial parameters for every simulation in the geometry sweep.
@@ -143,15 +146,45 @@ USE_RAMPED_START = False
 # Gaussian trial sampling. Each parameter is sampled independently from a
 # clipped normal distribution.
 NORMAL_TRIAL_DISTRIBUTIONS = {
-    **{name: dict(spec) for name, spec in DEFAULT_GAIN_DISTRIBUTIONS.items()},
-    "start_amp_mult": {"mean": DEFAULT_START_AMP_MULT, "std": 0.2, "min": 0.8, "max": 1.8},
-    "start_freq_mult": {"mean": DEFAULT_START_FREQ_MULT, "std": 0.15, "min": 0.7, "max": 1.4},
+    "Kp": {**DEFAULT_GAIN_DISTRIBUTIONS["Kp"], "use": False},
+    "Kd": {**DEFAULT_GAIN_DISTRIBUTIONS["Kd"], "use": False},
+    "curve_x": {"use": True,
+                "mean": GEOMETRY_BASE["curve_x"],
+                "std": 0.02,
+                "min": 0.5*GEOMETRY_BASE["curve_x"],
+                "max": 1.5*GEOMETRY_BASE["curve_x"]},
+    "curve_y": {"use": False,
+                "mean": GEOMETRY_BASE["curve_y"],
+                "std": 0.025,
+                "min": 0.5*GEOMETRY_BASE["curve_y"],
+                "max": 1.5*GEOMETRY_BASE["curve_y"]},
+    "box_x": {"use": True,
+              "mean": GEOMETRY_BASE["box_x"],
+              "std": 0.02,
+              "min": 0.5*GEOMETRY_BASE["box_x"],
+              "max": 1.5*GEOMETRY_BASE["box_x"]},
+    "box_y": {"use": False,
+              "mean": GEOMETRY_BASE["box_y"],
+              "std": 0.01,
+              "min": 0.5*GEOMETRY_BASE["box_y"],
+              "max": 1.5*GEOMETRY_BASE["box_y"]},
+    "start_amp_mult": {"use": False,
+                       "mean": DEFAULT_START_AMP_MULT, 
+                       "std": 0.15, 
+                       "min": 0.5*DEFAULT_START_AMP_MULT, 
+                       "max": 1.5*DEFAULT_START_AMP_MULT},
+    "start_freq_mult": {"use": False,
+                        "mean": DEFAULT_START_FREQ_MULT, 
+                        "std": 0.15, 
+                        "min": 0.5*DEFAULT_START_FREQ_MULT, 
+                        "max": 1.5*DEFAULT_START_FREQ_MULT},
 }
 
-NORMAL_TRIAL_DISTRIBUTIONS = {}
+# NORMAL_TRIAL_DISTRIBUTIONS = {}
 
 if USE_RAMPED_START:
     NORMAL_TRIAL_DISTRIBUTIONS["ramp_time"] = {
+        "use": False,
         "mean": 1.0,
         "std": 0.35,
         "min": 0.1,

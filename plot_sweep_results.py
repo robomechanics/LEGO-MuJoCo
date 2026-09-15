@@ -26,10 +26,28 @@ from sweep_axis_utils import (
 )
 
 
+ACTUAL_AXIS_VALUE_COLUMNS = {
+    "curve_x": "Curve_X",
+    "curve_y": "Curve_Y",
+    "curve_z": "Curve_Z",
+    "box_x": "Box_X",
+    "box_y": "Box_Y",
+    "box_z": "Box_Z",
+}
+
+
+COLORBAR_METRICS = {
+    "distance": ("Distance_Traversed", "Distance Traversed (m)"),
+    "velocity": ("Instantaneous_Forward_Velocity", "Instantaneous Forward Velocity (m/s)"),
+    "roll": ("Average_Abs_Roll_Deg", "Average Absolute Roll (deg)"),
+    "pitch": ("Average_Abs_Pitch_Deg", "Average Absolute Pitch (deg)"),
+}
+
+
 def default_input_csv() -> Path:
-    xy_csv = Path("xy_sweep_results.csv")
-    if xy_csv.exists():
-        return xy_csv
+    recent_sweep_csv = Path("data/sweeps/grid_7x6/sweep_results.csv")
+    if recent_sweep_csv.exists():
+        return recent_sweep_csv
     return Path("sweep_results.csv")
 
 
@@ -131,6 +149,12 @@ def axis_column(axis_spec, axis_name: str) -> str:
         raise ValueError(f"Unknown sweep axis: {axis_name}") from exc
 
 
+def row_axis_value(row: dict, axis_spec, axis_name: str) -> float:
+    actual_column = ACTUAL_AXIS_VALUE_COLUMNS.get(axis_name)
+    column = actual_column if actual_column in row else axis_column(axis_spec, axis_name)
+    return float(row[column])
+
+
 def numeric_values(rows: list[dict], column: str) -> list[float]:
     values = []
     for row in rows:
@@ -146,8 +170,14 @@ def numeric_values(rows: list[dict], column: str) -> list[float]:
 def filter_default_axis_values(rows: list[dict], axis_spec, ignored_axes: tuple[str, ...]) -> list[dict]:
     filtered_rows = rows
     for axis_name in ignored_axes:
-        column = axis_column(axis_spec, axis_name)
-        observed_values = numeric_values(filtered_rows, column)
+        observed_values = []
+        for row in filtered_rows:
+            try:
+                value = row_axis_value(row, axis_spec, axis_name)
+            except (KeyError, TypeError, ValueError):
+                continue
+            if math.isfinite(value):
+                observed_values.append(value)
         if not observed_values:
             raise ValueError(f"No finite values found for ignored axis {axis_name}.")
 
@@ -155,10 +185,15 @@ def filter_default_axis_values(rows: list[dict], axis_spec, ignored_axes: tuple[
         nearest_value = min(observed_values, key=lambda value: abs(value - base))
         tolerance = max(1e-9, abs(nearest_value) * 1e-6)
         before_count = len(filtered_rows)
-        filtered_rows = [
-            row for row in filtered_rows
-            if math.isclose(float(row[column]), nearest_value, rel_tol=1e-6, abs_tol=tolerance)
-        ]
+        next_rows = []
+        for row in filtered_rows:
+            try:
+                value = row_axis_value(row, axis_spec, axis_name)
+            except (KeyError, TypeError, ValueError):
+                continue
+            if math.isclose(value, nearest_value, rel_tol=1e-6, abs_tol=tolerance):
+                next_rows.append(row)
+        filtered_rows = next_rows
         print(
             f"Ignored {axis_name}: kept default/base slice {nearest_value:g} "
             f"({before_count} -> {len(filtered_rows)} rows)."
@@ -170,17 +205,54 @@ def filter_default_axis_values(rows: list[dict], axis_spec, ignored_axes: tuple[
 
 
 def axis_percent_values(rows: list[dict], axis_spec, axis_name: str) -> list[float]:
-    column = axis_column(axis_spec, axis_name)
-    values = numeric_values(rows, column)
+    values = []
+    for row in rows:
+        try:
+            value = row_axis_value(row, axis_spec, axis_name)
+        except (KeyError, TypeError, ValueError):
+            continue
+        if math.isfinite(value):
+            values.append(value)
     if not values:
         raise ValueError(f"No finite values found for active axis {axis_name}.")
     base = infer_base(values, axis_name)
-    return [percentage_difference(float(row[column]), base) for row in rows]
+    return [percentage_difference(row_axis_value(row, axis_spec, axis_name), base) for row in rows]
 
 
 def row_distance(row: dict) -> float:
     try:
         value = float(row["Distance_Traversed"])
+    except (KeyError, TypeError, ValueError):
+        return float("nan")
+    return value if math.isfinite(value) else float("nan")
+
+
+def finite_row_value(row: dict, column: str) -> float:
+    try:
+        value = float(row[column])
+    except (KeyError, TypeError, ValueError):
+        return float("nan")
+    return value if math.isfinite(value) else float("nan")
+
+
+def row_instantaneous_forward_progress(row: dict) -> float:
+    return finite_row_value(row, "Instantaneous_Forward_Progress")
+
+
+def row_instantaneous_forward_velocity(row: dict) -> float:
+    progress = row_instantaneous_forward_progress(row)
+    motion_time = finite_row_value(row, "Motion_Time")
+    if not math.isfinite(progress) or not math.isfinite(motion_time) or motion_time <= 1e-9:
+        return float("nan")
+    return progress / motion_time
+
+
+def row_colorbar_value(row: dict, colorbar_metric: str) -> float:
+    column, _label = COLORBAR_METRICS[colorbar_metric]
+    if colorbar_metric == "velocity":
+        return row_instantaneous_forward_velocity(row)
+    try:
+        value = float(row[column])
     except (KeyError, TypeError, ValueError):
         return float("nan")
     return value if math.isfinite(value) else float("nan")
@@ -197,11 +269,24 @@ def plot_scatter(
     active_axes: tuple[str, ...],
     min_distance: float,
     output_path: Path,
+    colorbar_metric: str = "distance",
 ) -> None:
+    if colorbar_metric not in COLORBAR_METRICS:
+        choices = ", ".join(sorted(COLORBAR_METRICS))
+        raise ValueError(f"Unknown colorbar metric {colorbar_metric!r}. Expected one of: {choices}")
+
     axis_values = [axis_percent_values(rows, axis_spec, axis_name) for axis_name in active_axes]
     distances = np.array([row_distance(row) for row in rows], dtype=float)
+    colorbar_values = np.array([row_colorbar_value(row, colorbar_metric) for row in rows], dtype=float)
     successes = np.array([row_success(row, min_distance) for row in rows], dtype=bool)
-    successful_distances = distances[successes]
+    successful_colorbar_values = colorbar_values[successes]
+    color_column, color_label = COLORBAR_METRICS[colorbar_metric]
+
+    if successes.any() and not np.isfinite(successful_colorbar_values).any():
+        raise ValueError(
+            f"No finite {color_column} values found for successful rows. "
+            f"Use a CSV produced after that metric was added, or choose a different --colorbar."
+        )
 
     if len(active_axes) == 3:
         fig = plt.figure(figsize=(9, 7), constrained_layout=True)
@@ -212,7 +297,7 @@ def plot_scatter(
             np.array(axis_values[2])[~successes],
             c="#bdbdbd",
             marker="x",
-            s=18,
+            s=12,
             alpha=0.35,
             linewidths=0.8,
             label="Failed",
@@ -221,9 +306,9 @@ def plot_scatter(
             np.array(axis_values[0])[successes],
             np.array(axis_values[1])[successes],
             np.array(axis_values[2])[successes],
-            c=successful_distances,
+            c=successful_colorbar_values,
             cmap="viridis",
-            s=28,
+            s=16,
             alpha=0.85,
             edgecolors="black",
             linewidths=0.25,
@@ -231,13 +316,13 @@ def plot_scatter(
         )
         ax.set_zlabel(axis_percent_label(active_axes[2]))
     else:
-        fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
+        fig, ax = plt.subplots(figsize=(10, 7), constrained_layout=True)
         ax.scatter(
             np.array(axis_values[0])[~successes],
             np.array(axis_values[1])[~successes],
             c="#bdbdbd",
             marker="x",
-            s=22,
+            s=14,
             alpha=0.35,
             linewidths=0.8,
             label="Failed",
@@ -245,28 +330,27 @@ def plot_scatter(
         scatter = ax.scatter(
             np.array(axis_values[0])[successes],
             np.array(axis_values[1])[successes],
-            c=successful_distances,
+            c=successful_colorbar_values,
             cmap="viridis",
-            s=34,
+            s=18,
             alpha=0.85,
             edgecolors="black",
             linewidths=0.25,
             label="Successful",
         )
-        ax.set_aspect("equal", adjustable="box")
 
     ax.set_xlabel(axis_percent_label(active_axes[0]))
     ax.set_ylabel(axis_percent_label(active_axes[1]))
     ax.grid(True, alpha=0.25)
-    ax.legend(loc="best")
+    ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1.0), borderaxespad=0.0)
     ax.set_title(
         f"{' vs '.join(axis_short_label(axis_name) for axis_name in active_axes)} "
         f"Scatter ({successes.sum()}/{len(rows)} successful, min distance {min_distance:g} m)"
     )
 
-    if successful_distances.size:
+    if successful_colorbar_values.size:
         colorbar = fig.colorbar(scatter, ax=ax)
-        colorbar.set_label("Distance Traversed (m)")
+        colorbar.set_label(color_label)
 
     fig.savefig(output_path, dpi=200)
     plt.close(fig)
@@ -275,7 +359,7 @@ def plot_scatter(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=Path, default=default_input_csv(), help="Combined sweep CSV path.")
-    parser.add_argument("--out", type=Path, default=Path("xy_sweep_results_plot.png"), help="Output image path.")
+    parser.add_argument("--out", type=Path, default=Path("sweep_results_plot.png"), help="Output image path.")
     parser.add_argument(
         "--min-distance",
         type=float,
@@ -287,6 +371,12 @@ def main() -> None:
         type=float,
         default=None,
         help="Drop CSV rows with Distance_Traversed below this threshold before plotting.",
+    )
+    parser.add_argument(
+        "--colorbar",
+        choices=sorted(COLORBAR_METRICS),
+        default="distance",
+        help="Metric used to color successful points.",
     )
     parser.add_argument(
         "--ignore-axis",
@@ -311,7 +401,7 @@ def main() -> None:
     ignored_axes = parse_axis_list(args.ignore_axis + args.ignore_axes)
     active_axes, ignored_axes_tuple = resolve_active_axes(axis_spec.axis_names, ignored_axes)
     rows = filter_default_axis_values(rows, axis_spec, ignored_axes_tuple)
-    plot_scatter(rows, axis_spec, active_axes, args.min_distance, args.out)
+    plot_scatter(rows, axis_spec, active_axes, args.min_distance, args.out, args.colorbar)
     print(f"Wrote plot to {args.out}")
 
 

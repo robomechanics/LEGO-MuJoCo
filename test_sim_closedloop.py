@@ -103,7 +103,7 @@ STARTUP_SETTLE_AVG_S = 2.0
 # ═══════════════════════════════════════════════════════════════════════════════
 
 model = mujoco.MjModel.from_xml_path("Bigfoot/scene.xml")
-#model = mujoco.MjModel.from_xml_path("modified_model.xml")
+model = mujoco.MjModel.from_xml_path("modified_model.xml")
 data  = mujoco.MjData(model)
 
 motor_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "motor")
